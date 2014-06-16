@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>{% block title %}Cleansweep{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"?>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">    
+  </head>
+  <body>
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Cleansweep</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="#">About</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            {% if user %}
+              <li><div style="padding: 15px 0px;">Welcome <strong>{{user}}</strong></div></li>
+              <li><a class="logout" href="javascript:;">Log Out</a></li>
+            {% else %}
+              <li><a class="login" href="javascript:;">Log In</a></li>
+            {% endif %}
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    {% block content %}
+    {% endblock %}
+    </div>
+
+    <footer>
+    <div class="container">
+    {% block footer %}
+    {% endblock %}
+    </div>
+    </footer>    
+  </body>
+</html>
