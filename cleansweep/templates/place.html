@@ -4,8 +4,10 @@
 {% block content %}
 <div class="row">
   <div class="col-md-9">
-    {{ macros.breadcrumbs(place) }}
-    <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
+    <div class="cs-header">
+        {{ macros.breadcrumbs(place) }}
+        <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
+    </div>
   </div>
   <div class="col-md-3">
     {{ widget("HelloWorld") }}
