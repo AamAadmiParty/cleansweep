@@ -1,3 +1,4 @@
+import itertools
 from flask.ext.sqlalchemy import SQLAlchemy
 from .app import app
 
@@ -26,6 +27,9 @@ class PlaceType(db.Model):
     def __repr__(self):
         return '<%s>' % self.short_name
 
+    def get_subtype(self):
+        return PlaceType.query.filter(PlaceType.level > self.level).order_by(PlaceType.level).first()
+
     @staticmethod
     def get(short_name):
         """Returns PlaceType object with given short_name.
@@ -48,10 +52,16 @@ class Place(db.Model):
     key = db.Column(db.Text, nullable=False)
     name = db.Column(db.Text, nullable=False)
     type_id = db.Column(db.Integer, db.ForeignKey('place_type.id'), nullable=False)
-    type = db.relationship('PlaceType',
+    type = db.relationship('PlaceType', foreign_keys=type_id,
         backref=db.backref('places', lazy='dynamic'))
 
+    # immediate parent
+    iparent_id = db.Column(db.Integer, db.ForeignKey('place.id'))
+    iparent = db.relationship('Place', remote_side=[id],
+        backref=db.backref('child_places', lazy='dynamic'))
+
     # List of parents
+    # Required to list immediate children on the place page
     parents = db.relationship('Place', 
         secondary=place_parents, 
         primaryjoin=(id==place_parents.c.child_id),
@@ -87,7 +97,7 @@ class Place(db.Model):
         return self._get_places_query(type=type).count()
 
     def _get_places_query(self, type=None):
-        q = self.places;
+        q = self.places
         if type:
             q = q.join(PlaceType).filter(PlaceType.id==type.id)
         return q
@@ -98,16 +108,24 @@ class Place(db.Model):
         This function takes care of setting parents for the 
         new place.
         """
+        # The place is being added as an immediate child of this node.
+        place.iparent = self
+        # so, it's parents will be self.parents and self
         place.parents = self.parents + [self]
         db.session.add(place)
 
     def get_siblings(self):
-        print self.parents
-        for p in self.parents:
-            print p.key, p.name, p.type
         parents = sorted(self.parents, key=lambda p: p.type.level)
         if parents:
             return parents[-1].get_places(self.type)
         else:
             # top-level
             return Place.query.filter_by(type=self.type).all()
+
+    def get_child_places_by_type(self):
+        """Returns an iterator over type and child-places of that type 
+        for all the immediate child places.
+        """
+        places = self.child_places.all()
+        places.sort(key=lambda p: p.type.level)
+        return itertools.groupby(places, lambda p: p.type)

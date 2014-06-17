@@ -8,6 +8,7 @@
         {{ macros.breadcrumbs(place) }}
         <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
     </div>
+    {{ widget("PlaceList", place=place) }}
   </div>
   <div class="col-md-3">
     {{ widget("HelloWorld") }}

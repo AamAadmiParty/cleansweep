@@ -38,6 +38,7 @@ class PlaceTest(DBTestCase):
         self.STATE = add('State', 'STATE', 10)
         self.REGION = add('Region', 'REGION', 20)
         self.LC = add('Loksabha Constituency', 'LC', 30)
+        self.AC = add('Assembly Constituency', 'AC', 40)
         db.session.commit()
 
     def test_create(self):
@@ -88,6 +89,14 @@ class PlaceTest(DBTestCase):
         LC25 = self.add_place('KA/LC25', 'Bangalore Central', self.LC, parent=KA)
         LC26 = self.add_place('KA/LC25', 'Bangalore South', self.LC, parent=KA)
         self.assertEquals(LC24.get_siblings(), [LC24, LC25, LC26])
+
+    def test_iparent(self):
+        KA = self.add_place("KA", "Karnataka", self.STATE)
+        LC24 = self.add_place('KA/LC24', 'Bangalore North', self.LC, parent=KA)
+        AC158 = self.add_place('KA/AC158', 'Hebbal', self.AC, parent=LC24)
+        self.assertEquals(KA.iparent, None)
+        self.assertEquals(LC24.iparent, KA)
+        self.assertEquals(AC158.iparent, LC24)
 
 if __name__ == '__main__':
     import unittest
