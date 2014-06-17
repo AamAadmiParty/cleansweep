@@ -59,6 +59,7 @@ def load_state(root_dir):
 
     for code, name in read_tsv(os.path.join(root_dir, "lc.txt")):
         key = "{}/{}".format(d['key'], code)
+        name = "{} - {}".format(code, name)
         ensure_place(key=key, name=name, type=PlaceType.get("LC"), parent=state)
     db.session.commit()
 
@@ -66,6 +67,7 @@ def load_state(root_dir):
         lc_key = "{}/{}".format(d['key'], lc_code)
         lc = Place.find(lc_key)
         ac_key = "{}/{}".format(d['key'], ac_code)
+        ac_name = "{} - {}".format(code, ac_name)
         ensure_place(key=ac_key, name=ac_name, type=PlaceType.get("AC"), parent=lc)
     db.session.commit()
 
