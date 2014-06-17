@@ -71,6 +71,24 @@ class PlaceTest(DBTestCase):
         self.assertEquals(KA.get_places(type=self.REGION), [R01])
         self.assertEquals(KA.get_places(type=self.LC), [LC24, LC26])
 
+    def add_place(self, key, name, type, parent=None):
+        p = Place('KA', 'Karnataka', self.STATE)
+        if parent:
+            parent.add_place(p)
+        else:
+            db.session.add(p)
+        db.session.commit()
+        return p
+
+    def test_get_siblings(self):
+        KA = self.add_place("KA", "Karnataka", self.STATE)
+        self.assertEquals(KA.get_siblings(), [KA])
+
+        LC24 = self.add_place('KA/LC24', 'Bangalore North', self.LC, parent=KA)
+        LC25 = self.add_place('KA/LC25', 'Bangalore Central', self.LC, parent=KA)
+        LC26 = self.add_place('KA/LC25', 'Bangalore South', self.LC, parent=KA)
+        self.assertEquals(LC24.get_siblings(), [LC24, LC25, LC26])
+
 if __name__ == '__main__':
     import unittest
     unittest.main()

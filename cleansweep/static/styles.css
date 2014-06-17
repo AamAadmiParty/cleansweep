@@ -1,0 +1,18 @@
+
+.place-navigation li {
+    border-bottom: 1px solid #eee;
+    padding: 8px 15px;
+}
+
+.place-navigation .panel-body {
+    padding: 0px;
+}
+
+.place-navigation .panel-heading {
+    background: #444;
+    color: #fff;
+    border-bottom: 1px solid #666;
+}
+.place-navigation .panel-heading a {
+    color: #ffffaa;
+}

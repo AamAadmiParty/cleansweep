@@ -1,0 +1,25 @@
+
+{% set parents = place.parents %}
+{% set siblings = place.get_siblings() %}
+<div class="place-navigation">
+  <div class="panel panel-default">
+    {% for p in parents %}
+      <div class="panel-heading">
+        <strong><a href="{{ url_for('place', key=p.key) }}"> {{ p.name }}</a></strong><br/>
+        <small>{{ p.type.name }}</small>
+      </div>
+    {% endfor %}        
+    <div class="panel-heading"><strong>{{ place.type.name | pluralize }}</strong></div>
+    <div class="panel-body">
+      <ul class="list-unstyled parents section-body">
+        {% for p in siblings %}
+          {% if p == place %}
+            <li><strong>{{ p.name }}</strong></li>
+          {% else %}
+            <li><a href="{{ url_for('place', key=p.key) }}">{{ p.name }}</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>

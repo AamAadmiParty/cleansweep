@@ -47,7 +47,7 @@ class Place(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.Text, nullable=False)
     name = db.Column(db.Text, nullable=False)
-    type_id = db.Column(db.Integer, db.ForeignKey('place_type.id'))
+    type_id = db.Column(db.Integer, db.ForeignKey('place_type.id'), nullable=False)
     type = db.relationship('PlaceType',
         backref=db.backref('places', lazy='dynamic'))
 
@@ -101,3 +101,13 @@ class Place(db.Model):
         place.parents = self.parents + [self]
         db.session.add(place)
 
+    def get_siblings(self):
+        print self.parents
+        for p in self.parents:
+            print p.key, p.name, p.type
+        parents = sorted(self.parents, key=lambda p: p.type.level)
+        if parents:
+            return parents[-1].get_places(self.type)
+        else:
+            # top-level
+            return Place.query.filter_by(type=self.type).all()
