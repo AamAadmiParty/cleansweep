@@ -1,0 +1,9 @@
+{% macro breadcrumbs(place) %}
+    {% if place.parents %}
+        <ul class="breadcrumb breadcrumb-collapse">
+            {% for p in place.parents %}
+                <li><a href="{{ url_for('place', key=p.key) }}">{{ p.name }}</a> <span class="divider"></span></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
