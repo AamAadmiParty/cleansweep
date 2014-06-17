@@ -67,7 +67,7 @@ def load_state(root_dir):
         lc_key = "{}/{}".format(d['key'], lc_code)
         lc = Place.find(lc_key)
         ac_key = "{}/{}".format(d['key'], ac_code)
-        ac_name = "{} - {}".format(code, ac_name)
+        ac_name = "{} - {}".format(ac_code, ac_name)
         ensure_place(key=ac_key, name=ac_name, type=PlaceType.get("AC"), parent=lc)
     db.session.commit()
 
