@@ -5,12 +5,41 @@ from ..models import db, Place, PlaceType
 
 
 class DBTestCase(TestCase):
+    setup_place_types = False
+
     def create_app(self):     
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'   
         return app
 
+    def add_place_types(self):
+        def add(name, short_name, level):
+            t = PlaceType(name, short_name, level)
+            db.session.add(t)
+            return t
+
+        self.STATE = add('State', 'STATE', 10)
+        self.REGION = add('Region', 'REGION', 20)
+        self.LC = add('Loksabha Constituency', 'LC', 30)
+        self.AC = add('Assembly Constituency', 'AC', 40)
+        db.session.commit()
+
+    def add_place(self, key, name, type, parent=None):
+        """Adds and returns a place with given info. 
+
+        Used by testcases for creating a test place.
+        """
+        p = Place('KA', 'Karnataka', self.STATE)
+        if parent:
+            parent.add_place(p)
+        else:
+            db.session.add(p)
+        db.session.commit()
+        return p        
+
     def setUp(self):
         db.create_all()
+        if self.setup_place_types:
+            self.add_place_types()
 
     def tearDown(self):
         db.session.remove()
@@ -27,19 +56,7 @@ class PlaceTypeTest(DBTestCase):
         self.assertEquals(t.level, 20)
 
 class PlaceTest(DBTestCase):
-    def setUp(self):
-        DBTestCase.setUp(self)
-
-        def add(name, short_name, level):
-            t = PlaceType(name, short_name, level)
-            db.session.add(t)
-            return t
-
-        self.STATE = add('State', 'STATE', 10)
-        self.REGION = add('Region', 'REGION', 20)
-        self.LC = add('Loksabha Constituency', 'LC', 30)
-        self.AC = add('Assembly Constituency', 'AC', 40)
-        db.session.commit()
+    setup_place_types = True
 
     def test_create(self):
         p = Place('KA', 'Karnataka', self.STATE)
@@ -72,15 +89,6 @@ class PlaceTest(DBTestCase):
         self.assertEquals(KA.get_places(type=self.REGION), [R01])
         self.assertEquals(KA.get_places(type=self.LC), [LC24, LC26])
 
-    def add_place(self, key, name, type, parent=None):
-        p = Place('KA', 'Karnataka', self.STATE)
-        if parent:
-            parent.add_place(p)
-        else:
-            db.session.add(p)
-        db.session.commit()
-        return p
-
     def test_get_siblings(self):
         KA = self.add_place("KA", "Karnataka", self.STATE)
         self.assertEquals(KA.get_siblings(), [KA])
@@ -97,6 +105,16 @@ class PlaceTest(DBTestCase):
         self.assertEquals(KA.iparent, None)
         self.assertEquals(LC24.iparent, KA)
         self.assertEquals(AC158.iparent, LC24)
+
+class MemberTest(DBTestCase):
+    setup_place_types = True
+
+    def test_member_create(self):  
+        KA = self.add_place("KA", "Karnataka", self.STATE)
+        m = KA.add_member(name="Test User", email="test@example.com", phone="1234567890")
+        db.session.commit()
+        self.assertEquals(m.place, KA)
+        self.assertEquals(KA.members.all(), [m])
 
 if __name__ == '__main__':
     import unittest

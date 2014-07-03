@@ -129,3 +129,25 @@ class Place(db.Model):
         places = self.child_places.all()
         places.sort(key=lambda p: p.type.level)
         return itertools.groupby(places, lambda p: p.type)
+
+    def add_member(self, name, email, phone):
+        member = Member(self, name, email, phone)
+        db.session.add(member)
+        return member   
+
+class Member(db.Model):
+    __table_name__ = "member"
+    id = db.Column(db.Integer, primary_key=True)
+
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
+    place = db.relationship('Place', backref=db.backref('members', lazy='dynamic'))
+
+    name = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, unique=True)
+    phone = db.Column(db.Text, nullable=False, unique=True)
+
+    def __init__(self, place, name, email, phone):
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.place = place
