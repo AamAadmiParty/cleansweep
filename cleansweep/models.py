@@ -151,3 +151,7 @@ class Member(db.Model):
         self.email = email
         self.phone = phone
         self.place = place
+
+    @staticmethod
+    def find(email):
+        return Member.query.filter_by(email=email).first()
