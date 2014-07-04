@@ -33,3 +33,7 @@
     border: 1px solid #ddd;
     background: #eee;
 }
+
+.navbar-inverse {
+    color: #999;
+}
