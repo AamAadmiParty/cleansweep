@@ -4,4 +4,9 @@
 
 Welcome {{user.name}}!
 
+<p>
+You are member of
+<a href="{{url_for('place', key=user.place.key)}}">{{user.place.name}}</a>.
+</p>
+
 {% endblock %}
