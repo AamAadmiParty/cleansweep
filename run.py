@@ -10,6 +10,9 @@ To load data:
 """
 import sys
 
+# importing app so that it is be used in Procfile (for Heroku)
+from cleansweep.main import main, app
+
 if __name__ == "__main__":
     if "--help" in sys.argv:
         print __doc__
@@ -18,5 +21,4 @@ if __name__ == "__main__":
         root_dir = sys.argv[1+sys.argv.index("--load")]
         main(root_dir)
     else:
-        from cleansweep.main import main
         main()
