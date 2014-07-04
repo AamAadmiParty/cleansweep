@@ -37,3 +37,11 @@ def place(key):
         abort(404)
     else:
         return render_template("place.html", place=place)
+
+@app.route("/<place:key>/members")
+def members(key):
+    place = Place.find(key)
+    if not place:
+        abort(404)
+    else:
+        return render_template("members.html", place=place)

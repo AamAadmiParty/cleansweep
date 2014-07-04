@@ -26,3 +26,10 @@
 .place-navigation .panel-heading a {
     color: #ffffaa;
 }
+
+.member-card {
+    margin: 10px 0px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #eee;
+}
