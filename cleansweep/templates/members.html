@@ -1,0 +1,26 @@
+{% import "macros.html" as macros %}
+
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-md-9">
+    <div class="cs-header">
+        {{ macros.breadcrumbs(place) }}
+        <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
+    </div>
+    <ul class="nav nav-pills">
+      <li>
+        <a href="{{url_for('place', key=place.key)}}">Home</a>
+      </li>
+      <li class="active">
+        <a href="{{url_for('members', key=place.key)}}">Members <span class="badge">{{place.members.count()}}</span></a>
+      </li>
+    </ul>
+    {{ widget("MemberList", place=place) }}
+  </div>
+  <div class="col-md-3">
+    {{ widget("HelloWorld") }}
+    {{ widget("PlaceNavigation", place=place) }}
+  </div>  
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+
+<div class="widget widget-placelist">
+  {% for subtype, places in place.get_child_places_by_type() %}
+    <h2>{{ subtype.name | pluralize }}</h2>
+      <ul class="list-unstyled parents section-body">
+        {% for p in places %}
+          <li><a href="{{ url_for('place', key=p.key) }}">{{ p.name }}</a></li>
+        {% endfor %}
+      </ul>
+  {% endfor %}
+</div>
