@@ -9,25 +9,25 @@ How to Setup
 
 * Clone the repository
 
-    git clone https://github.com/anandology/cleansweep.git
-    cd cleansweep
+        git clone https://github.com/anandology/cleansweep.git
+        cd cleansweep
 
 * setup virtualenv
 
-    virtualenv . 
-    pip install -r requirements.txt
+        virtualenv . 
+        pip install -r requirements.txt
 
 * activate the virtualenv
 
-    source bin/activate
+        source bin/activate
 
 * load data
 
-    python run.py --load data/KA
+        python run.py --load data/KA
 
 * run the webapp
 
-    python run.py
+        python run.py
 
 Visit the website at:
 <http://127.0.0.1:5000/>
