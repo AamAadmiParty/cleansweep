@@ -1,2 +1,4 @@
 Flask
+SQLAlchemy==0.9.4
 Flask-SQLAlchemy
+rauth
