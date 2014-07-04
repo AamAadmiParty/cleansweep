@@ -1,4 +1,13 @@
-Flask
+Flask==0.10.1
+Flask-SQLAlchemy==1.0
+Flask-Testing==0.4.1
+Jinja2==2.7.3
+MarkupSafe==0.23
 SQLAlchemy==0.9.4
-Flask-SQLAlchemy
-rauth
+Werkzeug==0.9.6
+gunicorn==19.0.0
+itsdangerous==0.24
+psycopg2==2.5.3
+rauth==0.7.0
+requests==2.3.0
+wsgiref==0.1.2
