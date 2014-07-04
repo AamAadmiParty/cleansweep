@@ -2,8 +2,10 @@
 
 Includes template filters and context processors.
 """
+from flask import session
 from .app import app
 from .widgets import render_widget
+from .models import Member
 
 @app.template_filter('pluralize')
 def pluralize(name):
@@ -19,8 +21,13 @@ def pluralize(name):
     else:
         return name + 's'
 
+def get_current_user():
+    if session.get('user'):
+        return Member.find(email=session['user'])
+
 @app.context_processor
 def helpers():
     return {
-        "widget": render_widget
+        "widget": render_widget,
+        "user": get_current_user()
     }

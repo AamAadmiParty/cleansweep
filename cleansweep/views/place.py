@@ -1,4 +1,4 @@
-from flask import render_template, abort
+from flask import render_template, abort, session, url_for, redirect
 from werkzeug.routing import BaseConverter
 from ..app import app
 from ..models import Place
@@ -25,7 +25,10 @@ app.url_map.converters['place'] = PlaceConverter
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    if session.get('user'):
+        return redirect(url_for("dashboard"))
+    else:
+        return render_template("home.html")
 
 @app.route("/<place:key>")
 def place(key):

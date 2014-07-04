@@ -35,10 +35,14 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             {% if user %}
-              <li><div style="padding: 15px 0px;">Welcome <strong>{{user}}</strong></div></li>
-              <li><a class="logout" href="javascript:;">Log Out</a></li>
+              <li><div style="padding: 15px 0px;">Welcome <strong>{{user.name}}</strong></div></li>
+              <li>
+                <form name="logout" action="{{url_for('logout')}}" method="POST" style="display: none;">
+                </form>
+                <a class="logout" href="/account/logout" onclick="document.forms.logout.sumit();">Log Out</a>
+              </li>
             {% else %}
-              <li><a class="login" href="javascript:;">Log In</a></li>
+              <li><a class="login" href="/account/login">Log In</a></li>
             {% endif %}
           </ul>
         </div><!-- /.navbar-collapse -->
@@ -46,8 +50,18 @@
     </nav>
 
     <div class="container">
-    {% block content %}
-    {% endblock %}
+      {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+          <ul class="flashes list-unstyled">
+          {% set classes = dict(error='danger', message='info') %}
+          {% for category, message in messages %}
+            <li class="flash flash-{{category}}"><div class="alert alert-{{classes.get(category, category)}}">{{ message }}</p></li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      {% block content %}
+      {% endblock %}
     </div>
 
     <footer>
