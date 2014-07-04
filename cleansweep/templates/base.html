@@ -35,7 +35,8 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             {% if user %}
-              <li><div style="padding: 15px 0px;">Welcome <strong>{{user.name}}</strong></div></li>
+              <li><div style="padding: 15px 0px; color: ">Welcome <strong>{{user.name}}</strong></div></li>
+              <li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
               <li>
                 <form name="logout" action="{{url_for('logout')}}" method="POST" style="display: none;">
                 </form>
