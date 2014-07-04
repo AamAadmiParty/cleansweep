@@ -31,7 +31,7 @@ def login_google():
 
 @app.route("/account/login/facebook")
 def login_facebook():
-    redirect_uri = 'http://0.0.0.0:5000/oauth/facebook'
+    redirect_uri = 'http://{}/oauth/facebook'.format(get_host())
     params = {'scope': 'email',
               'response_type': 'code',
               'redirect_uri': redirect_uri}
@@ -59,10 +59,17 @@ def login_handler(f):
             return redirect(url_for("login"))
     return g
 
+def get_host():
+    # facebook doesn't seem to like 127.0.0.1
+    if request.host == '127.0.0.1:5000':
+        return '0.0.0.0:5000'
+    else:
+        return request.host
+
 @app.route("/oauth/facebook")
 @login_handler
 def oauth_facebook():
-    redirect_uri = 'http://0.0.0.0:5000/oauth/facebook'
+    redirect_uri = 'http://{}/oauth/facebook'.format(get_host())
     try:
         auth_session = facebook.get_auth_session(data={'code': request.args['code'],
                                               'redirect_uri': redirect_uri})
