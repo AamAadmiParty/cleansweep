@@ -8,16 +8,12 @@
         {{ macros.breadcrumbs(place) }}
         <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
     </div>
-    <ul class="nav nav-pills">
-      <li class="active">
-        <a href="#">Home</a>
-      </li>
-      <li>
-        <a href="{{url_for('members', key=place.key)}}">Members <span class="badge">{{place.members.count()}}</span></a>
-      </li>
-    </ul>
-
-    {{ widget("PlaceList", place=place) }}
+    {% block subnav %}
+      {{ macros.subnavigation(place, tab="home") }}
+    {% endblock %}
+    {% block page_content %}
+      {{ widget("PlaceList", place=place) }}
+    {% endblock %}
   </div>
   <div class="col-md-3">
     {{ widget("HelloWorld") }}
