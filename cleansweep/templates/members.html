@@ -6,5 +6,8 @@
 {% endblock %}
 
 {% block page_content %}
+  <ul class="list-unstyled">
+    <li><a href="{{url_for('addmember', key=place.key)}}">Add Member</a>
+  </ul>
   {{ widget("MemberList", place=place) }}
 {% endblock %}

@@ -18,3 +18,31 @@
     </li>
   </ul>
 {% endmacro %}
+
+{% macro render_field(field) %}
+  {% set klass = "has-error" if field.errors %}
+  <div class="form-group {{klass}}">
+      {{field.label}}
+      {{field(class_="form-control", **kwargs)}}
+      {% if field.errors %}
+        <ul class="help-block list-unstyled form-errors">
+          {% for error in field.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro show_flash_messages() %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      <ul class="flashes list-unstyled">
+      {% set classes = dict(error='danger', message='info') %}
+      {% for category, message in messages %}
+        <li class="flash flash-{{category}}"><div class="alert alert-{{classes.get(category, category)}}">{{ message }}</p></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+{% endmacro %}

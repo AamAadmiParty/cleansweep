@@ -131,6 +131,10 @@ class Place(db.Model):
         return itertools.groupby(places, lambda p: p.type)
 
     def add_member(self, name, email, phone):
+        """Adds a new member.
+
+        The caller is responsible to call db.session.commit().
+        """
         member = Member(self, name, email, phone)
         db.session.add(member)
         return member   

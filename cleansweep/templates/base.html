@@ -50,19 +50,6 @@
       </div>
     </nav>
 
-    <div class="container">
-      {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-          <ul class="flashes list-unstyled">
-          {% set classes = dict(error='danger', message='info') %}
-          {% for category, message in messages %}
-            <li class="flash flash-{{category}}"><div class="alert alert-{{classes.get(category, category)}}">{{ message }}</p></li>
-          {% endfor %}
-          </ul>
-        {% endif %}
-      {% endwith %}
-    </div>
-
     {% block content %}
     {% endblock %}
 

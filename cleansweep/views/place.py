@@ -1,7 +1,8 @@
-from flask import render_template, abort, session, url_for, redirect
+from flask import (render_template, abort, session, url_for, redirect, request, flash)
 from werkzeug.routing import BaseConverter
 from ..app import app
-from ..models import Place
+from ..models import Place, db
+from .. import forms
 
 class PlaceConverter(BaseConverter):
     """Converter for place.
@@ -45,3 +46,19 @@ def members(key):
         abort(404)
     else:
         return render_template("members.html", place=place)
+
+@app.route("/<place:key>/members/add", methods=["GET", "POST"])
+def addmember(key):
+    place = Place.find(key)
+    if not place:
+        abort(404)
+
+    form = forms.AddMemberForm(request.form)
+    if request.method == "POST" and form.validate():
+        # voterid is ignored for now
+        place.add_member(form.name.data, form.email.data, form.phone.data)
+        db.session.commit()
+        flash("Successfully added {} as member.".format(form.name.data), category="success")
+        return redirect(url_for("members", key=place.key))
+    else:
+        return render_template("members/add.html", place=place, form=form)
