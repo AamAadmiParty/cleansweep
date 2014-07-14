@@ -127,7 +127,7 @@ class Place(db.Model):
         for all the immediate child places.
         """
         places = self.child_places.all()
-        places.sort(key=lambda p: p.type.level)
+        places.sort(key=lambda p: (p.type.level, p.key))
         return itertools.groupby(places, lambda p: p.type)
 
     def add_member(self, name, email, phone):
