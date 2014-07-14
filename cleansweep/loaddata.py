@@ -52,6 +52,14 @@ def ensure_place(key, name, type, parent=None):
 def read_tsv(path):
     return [[c.strip() for c in row] for row in csv.reader(open(path), delimiter='\t')]    
 
+cache = {}
+def find_place(key):
+    """Cached implementation of Place.find.
+    """
+    if key not in cache:
+        cache[key] = Place.find(key)
+    return cache[key]
+
 def load_state(root_dir):
     path = os.path.join(root_dir, "state.json")
     d = json.loads(open(path).read())
@@ -65,13 +73,19 @@ def load_state(root_dir):
 
     for lc_code, ac_code, ac_name in read_tsv(os.path.join(root_dir, "ac.txt")):
         lc_key = "{}/{}".format(d['key'], lc_code)
-        lc = Place.find(lc_key)
+        lc = find_place(lc_key)
         ac_key = "{}/{}".format(d['key'], ac_code)
         ac_name = "{} - {}".format(ac_code, ac_name)
         ensure_place(key=ac_key, name=ac_name, type=PlaceType.get("AC"), parent=lc)
     db.session.commit()
 
-    # TODO: Load polling booths
+    for ac_code, pb_code, pb_name in read_tsv(os.path.join(root_dir, "pb.txt")):
+        ac_key = "{}/{}".format(d['key'], ac_code)
+        ac = find_place(ac_key)
+        pb_key = "{}/{}".format(ac_key, pb_code)
+        pb_name = "{} - {}".format(pb_code, pb_name)
+        ensure_place(key=pb_key, name=pb_name, type=PlaceType.get("PB"), parent=ac)
+    db.session.commit()
 
 def main(root_dir):
     db.create_all()
