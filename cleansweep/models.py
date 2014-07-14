@@ -80,6 +80,12 @@ class Place(db.Model):
     def find(key):
         return Place.query.filter_by(key=key).first()
 
+    @staticmethod
+    def get_toplevel_places():
+        """Returns all places without any parent.
+        """
+        return Place.query.filter_by(iparent_id=None).all()
+
     def get_parent(self, type):
         """Returns parent place of given type.
         """

@@ -5,7 +5,7 @@ Includes template filters and context processors.
 from flask import session
 from .app import app
 from .widgets import render_widget
-from .models import Member
+from .models import Member, Place
 
 @app.template_filter('pluralize')
 def pluralize(name):
@@ -29,5 +29,6 @@ def get_current_user():
 def helpers():
     return {
         "widget": render_widget,
-        "user": get_current_user()
+        "user": get_current_user(),
+        "get_toplevel_places": Place.get_toplevel_places
     }
