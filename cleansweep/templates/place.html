@@ -2,22 +2,28 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="row">
-  <div class="col-md-9">
-    <div class="cs-header">
-        {{ macros.breadcrumbs(place) }}
-        <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
+  <div class="cs-header">
+    <div class="container">
+      {{ macros.breadcrumbs(place) }}
+      <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
+      {% block subnav %}
+        {{ macros.subnavigation(place, tab="home") }}
+      {% endblock %}
     </div>
-    {% block subnav %}
-      {{ macros.subnavigation(place, tab="home") }}
-    {% endblock %}
-    {% block page_content %}
-      {{ widget("PlaceList", place=place) }}
-    {% endblock %}
   </div>
-  <div class="col-md-3">
-    {{ widget("HelloWorld") }}
-    {{ widget("PlaceNavigation", place=place) }}
-  </div>  
-</div>
+  <div class="page-content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-9">
+          {% block page_content %}
+            {{ widget("PlaceList", place=place) }}
+          {% endblock %}
+        </div>
+        <div class="col-md-3">
+          {{ widget("HelloWorld") }}
+          {{ widget("PlaceNavigation", place=place) }}
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -37,3 +37,17 @@
 .navbar-inverse {
     color: #999;
 }
+
+.navbar {
+    margin-bottom: 0px;
+}
+
+.cs-header {
+    background: black;
+    color: #fff;
+    margin-bottom: 10px;
+    padding: 10px 0px;
+}
+.breadcrumb-collapse {
+    background: inherit;
+}
