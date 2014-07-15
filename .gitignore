@@ -1,3 +1,6 @@
+.Python
+.tm_properties
+cleansweep/local_settings.py
 *.pyc
 bin
 include
