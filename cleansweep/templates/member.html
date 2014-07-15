@@ -1,0 +1,22 @@
+{% from "macros.html" import render_field %}
+
+{% extends "base.html" %}
+{% block content %}
+  <div class="cs-header">
+    <div class="container">
+        <h3>#{{ member.id }} {{ member.name }}</h3>
+    </div>
+  </div>
+  <div class="container">
+    <form role="form" method="POST" style="width: 400px">
+    {{ form.csrf_token }}
+    {{ render_field(form.member_type) }}
+    {{ render_field(form.name, placeholder="Enter name") }}
+    {{ render_field(form.phone, placeholder="Phone Number") }}
+    {{ render_field(form.email, placeholder="Email Address") }}
+    {{ render_field(form.voterid) }}
+    <button type="submit" class="btn btn-default">Add</button>
+    </form>
+
+  </div>
+{% endblock %}

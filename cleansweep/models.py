@@ -62,8 +62,8 @@ class Place(db.Model):
 
     # List of parents
     # Required to list immediate children on the place page
-    parents = db.relationship('Place', 
-        secondary=place_parents, 
+    parents = db.relationship('Place',
+        secondary=place_parents,
         primaryjoin=(id==place_parents.c.child_id),
         secondaryjoin=(id==place_parents.c.parent_id),
         backref=db.backref('places', lazy='dynamic', order_by='Place.key'))
@@ -111,7 +111,7 @@ class Place(db.Model):
     def add_place(self, place):
         """Addes a new place as direct child of this place.
 
-        This function takes care of setting parents for the 
+        This function takes care of setting parents for the
         new place.
         """
         # The place is being added as an immediate child of this node.
@@ -129,7 +129,7 @@ class Place(db.Model):
             return Place.query.filter_by(type=self.type).all()
 
     def get_child_places_by_type(self):
-        """Returns an iterator over type and child-places of that type 
+        """Returns an iterator over type and child-places of that type
         for all the immediate child places.
         """
         places = self.child_places.all()
@@ -143,7 +143,7 @@ class Place(db.Model):
         """
         member = Member(self, name, email, phone)
         db.session.add(member)
-        return member   
+        return member
 
 class Member(db.Model):
     __table_name__ = "member"
@@ -155,13 +155,20 @@ class Member(db.Model):
     name = db.Column(db.Text, nullable=False)
     email = db.Column(db.Text, unique=True)
     phone = db.Column(db.Text, nullable=False, unique=True)
+    member_type = db.Column(db.Enum("Administrator", "Member"), nullable=False, )
 
     def __init__(self, place, name, email, phone):
         self.name = name
         self.email = email
         self.phone = phone
         self.place = place
+        self.member_type = "Member" # default type is member
 
     @staticmethod
     def find(email):
         return Member.query.filter_by(email=email).first()
+
+    @staticmethod
+    def find_by_id(id):
+        return Member.query.filter_by(id=id).first()
+
