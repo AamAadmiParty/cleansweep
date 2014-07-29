@@ -32,3 +32,8 @@ How to Setup
 Visit the website at:
 <http://127.0.0.1:5000/>
 
+LICENSE
+-------
+
+This software is licensed under AGPLv3.
+
