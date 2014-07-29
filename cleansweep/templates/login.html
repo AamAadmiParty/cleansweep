@@ -1,7 +1,11 @@
+{% import "macros.html" as macros %}
+
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
   <h1>Log In</h1>
+
+  {{macros.show_flash_messages()}}  
 
   <h3>Log in instantly using:</h3>
   <p>
