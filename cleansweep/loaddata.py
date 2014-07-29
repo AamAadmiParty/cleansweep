@@ -87,6 +87,15 @@ def load_state(root_dir):
         ensure_place(key=pb_key, name=pb_name, type=PlaceType.get("PB"), parent=ac)
     db.session.commit()
 
+def add_member(place_key, name, email, phone):
+    place = find_place(place_key)
+    if not place:
+        print >> sys.stderr, "Unable to find place with key:", repr(place_key)
+        sys.exit(1)
+
+    place.add_member(name, email, phone)
+    db.session.commit()
+
 def main(root_dir):
     db.create_all()
     create_place_types()
