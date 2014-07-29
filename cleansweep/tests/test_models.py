@@ -1,14 +1,15 @@
 from flask.ext.testing import TestCase
 
 from ..app import app
-from ..models import db, Place, PlaceType
-
+from ..models import db, Place, PlaceType, CommitteeType
 
 class DBTestCase(TestCase):
     setup_place_types = False
+    setup_places = False
 
     def create_app(self):     
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'   
+        app.config['SQLALCHEMY_ECHO'] = True
         return app
 
     def add_place_types(self):
@@ -21,14 +22,21 @@ class DBTestCase(TestCase):
         self.REGION = add('Region', 'REGION', 20)
         self.LC = add('Loksabha Constituency', 'LC', 30)
         self.AC = add('Assembly Constituency', 'AC', 40)
+        self.WARD = add('Ward', 'WARD', 50)
         db.session.commit()
+
+    def add_places(self):
+        self.KA = self.add_place("KA", "Karnataka", self.STATE)
+        self.LC01 = self.add_place("KA/LC01", "Bangalore South", self.LC, parent=self.KA)
+        self.AC001 = self.add_place("KA/AC001", "Jayanagar", self.AC, parent=self.LC01)
+        self.W001 = self.add_place("KA/AC001/W001", "Jayanagar East", self.WARD, parent=self.AC001)
 
     def add_place(self, key, name, type, parent=None):
         """Adds and returns a place with given info. 
 
         Used by testcases for creating a test place.
         """
-        p = Place('KA', 'Karnataka', self.STATE)
+        p = Place(key, name, type)
         if parent:
             parent.add_place(p)
         else:
@@ -40,6 +48,9 @@ class DBTestCase(TestCase):
         db.create_all()
         if self.setup_place_types:
             self.add_place_types()
+
+        if self.setup_places:
+            self.add_places()
 
     def tearDown(self):
         db.session.remove()
@@ -115,6 +126,31 @@ class MemberTest(DBTestCase):
         db.session.commit()
         self.assertEquals(m.place, KA)
         self.assertEquals(KA.members.all(), [m])
+
+class CommitteeTypeTest(DBTestCase):
+    setup_place_types = True
+    setup_places = True
+
+    def test_committee_type(self):
+        t = CommitteeType(self.KA, self.LC, "Political Action Committee", "xxx")
+        db.session.add(t)
+        db.session.commit()
+        self.assertTrue(t.id is not None)
+        self.assertTrue(self.KA.committee_types.all(), [t])
+
+    def test_committee_role(self):
+        t = CommitteeType(self.KA, self.LC, "Political Action Committee", "xxx")
+        db.session.add(t)
+        db.session.commit()
+
+        t.add_role("Convener")
+        t.add_role("Co-convener")
+        db.session.commit()
+
+        t2 = self.KA.committee_types.first()
+
+        self.assertTrue(t2.committee_roles[0].role, 'Convener')
+        self.assertTrue(t2.committee_roles[1].role, 'Co-convener')
 
 if __name__ == '__main__':
     import unittest

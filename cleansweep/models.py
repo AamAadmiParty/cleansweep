@@ -37,6 +37,10 @@ class PlaceType(db.Model):
         return PlaceType.query.filter_by(short_name=short_name).first()
 
     @staticmethod
+    def all():
+        return PlaceType.query.order_by(PlaceType.level).all()
+
+    @staticmethod
     def new(name, short_name, level):
         t = PlaceType(name, short_name, level)
         db.sesson.add(t)
@@ -66,7 +70,8 @@ class Place(db.Model):
         secondary=place_parents, 
         primaryjoin=(id==place_parents.c.child_id),
         secondaryjoin=(id==place_parents.c.parent_id),
-        backref=db.backref('places', lazy='dynamic', order_by='Place.key'))
+        backref=db.backref('places', lazy='dynamic', order_by='Place.key'),
+        order_by='Place.id')
 
     def __init__(self, key, name, type):
         self.key = key
@@ -145,6 +150,21 @@ class Place(db.Model):
         db.session.add(member)
         return member   
 
+    def add_committee_type(self, place_type, name, description, slug):
+        """Adds a new CommitteeType to this place.
+
+        It is caller's responsibility to call db.session.commit().
+        """
+        c = CommitteeType(
+                place=self,
+                place_type=place_type,
+                name=name,
+                description=description,
+                slug=slug)
+        db.session.add(c)
+        return c
+
+
 class Member(db.Model):
     __table_name__ = "member"
     id = db.Column(db.Integer, primary_key=True)
@@ -165,3 +185,118 @@ class Member(db.Model):
     @staticmethod
     def find(email):
         return Member.query.filter_by(email=email).first()
+
+class CommitteeType(db.Model):
+    """Specification of a Committee.
+    """
+    __table_name__ = "committee_type"
+    __table_args__ = (db.UniqueConstraint('place_id', 'slug'), {})
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # id of the place below which this committee can be created.
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
+    place = db.relationship('Place', backref=db.backref('committee_types', lazy='dynamic'))
+
+    # A committee is always available for a type of places.
+    # For example, a state can specify a committee that every ward can have.
+    place_type_id = db.Column(db.Integer, db.ForeignKey('place_type.id'))
+    place_type = db.relationship('PlaceType', foreign_keys=[place_type_id])
+
+    # name and description of the committee
+    name = db.Column(db.Text, nullable=False)
+    slug = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text)
+
+    def __init__(self, place, place_type, name, description, slug):
+        self.place = place
+        self.place_type = place_type
+        self.name = name
+        self.description = description
+        self.slug = slug
+
+    def __repr__(self):
+        return "<CommitteeType#{} - {} - {}>".format(self.id, self.place.key, self.name)
+
+    def add_role(self, role_name, multiple, permission):
+        """Adds a new role to this CommitteeType.
+
+        The caller must call db.session.commit() explicitly to see these changes.
+        """
+        role = CommitteeRole(self, role_name, multiple, permission)
+        db.session.add(role)
+
+    @staticmethod
+    def find(place, slug):
+        return CommitteeType.query.filter_by(place_id=place.id, slug=slug).first()
+
+    @staticmethod
+    def new_from_formdata(place, form):
+        """Creates new CommitteeType instance from form data.
+        """
+        c = CommitteeType(place,
+            place_type=PlaceType.get(form.level.data),
+            name=form.name.data,
+            description=form.description.data,
+            slug=form.slug.data)
+        db.session.add(c)
+        for roledata in form.data['roles']:
+            if roledata['name'].strip():
+                c.add_role(
+                    roledata['name'],
+                    roledata['multiple'] == 'yes',
+                    roledata['permission'])
+        return c
+
+class CommitteeRole(db.Model):
+    """Role in a committee.
+
+    A CommitteeType defines all roles that a committee is composed of.
+    Right now there can be only one person for a role in the committee.
+    Support for specify multiple members and min/max limits is yet to be
+    implemented.
+    """
+    __table_name__ = "committee_role"
+    id = db.Column(db.Integer, primary_key=True)
+    committee_type_id = db.Column(db.Integer, db.ForeignKey('committee_type.id'))
+    committee_type = db.relationship('CommitteeType', backref=db.backref('roles'))
+
+    role = db.Column(db.Text)
+    multiple = db.Column(db.Boolean)
+    permission = db.Column(db.Text)
+
+    def __init__(self, committee_type, role_name, multiple, permission):
+        self.committee_type = committee_type
+        self.role = role_name
+        self.multiple = multiple
+        self.permission = permission
+
+class Committee(db.Model):
+    """A real committee.
+
+    The commitee structure is defined by the CommiteeType and a commitee can
+    have members for each role defined by the CommitteeType.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+
+    # A committee is tied to a place
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
+    place = db.relationship('Place', foreign_keys=place_id,
+        backref=db.backref('committees', lazy='dynamic'))
+
+    # And specs of a committe are defined by a CommitteeType
+    type_id = db.Column(db.Integer, db.ForeignKey('committee_type.id'))
+    type = db.relationship('CommitteeType', foreign_keys=type_id,
+        backref=db.backref('committees', lazy='dynamic'))
+
+class CommitteeMember(db.Model):
+    """The members of a committee.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    member = db.relationship('Member', foreign_keys=member_id,
+        backref=db.backref('committees', lazy='dynamic'))
+
+    role_id = db.Column(db.Integer, db.ForeignKey('committee_role.id'))
+    role = db.relationship('CommitteeRole', foreign_keys=role_id,
+        backref=db.backref('members', lazy='dynamic'))

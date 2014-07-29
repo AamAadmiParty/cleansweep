@@ -51,3 +51,7 @@
 .breadcrumb-collapse {
     background: inherit;
 }
+
+.table.table-borderless td, .table.table-borderless th {
+    border: none;
+}
