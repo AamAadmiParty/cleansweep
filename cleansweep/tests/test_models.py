@@ -159,6 +159,23 @@ class CommitteeTypeTest(DBTestCase):
         assert_role(t2.roles[1], 'Co-convener', False, "read,write")
         assert_role(t2.roles[2], 'Member', True, "read")
 
+    def test_find(self):
+        t = CommitteeType(self.KA, self.LC, "Political Action Committee", "xxx", "pac")
+        db.session.add(t)
+        db.session.commit()
+
+        t2 = CommitteeType.find(self.KA, "pac")
+        self.assertTrue(t2 is not None)
+        self.assertEquals(t.id, t2.id)
+
+        t2 = CommitteeType.find(self.KA, "pac", recursive=True)
+        self.assertTrue(t2 is not None)
+        self.assertEquals(t.id, t2.id)
+
+        t2 = CommitteeType.find(self.LC01, "pac", recursive=True)
+        self.assertTrue(t2 is not None)
+        self.assertEquals(t.id, t2.id)
+
 if __name__ == '__main__':
     import unittest
     unittest.main()

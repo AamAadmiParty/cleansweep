@@ -227,8 +227,22 @@ class CommitteeType(db.Model):
         db.session.add(role)
 
     @staticmethod
-    def find(place, slug):
-        return CommitteeType.query.filter_by(place_id=place.id, slug=slug).first()
+    def find(place, slug, recursive=False):
+        """Returns CommitteeType defined at given place with given slug.
+
+        If recursive=True, it tries to find the place at nearest parent.
+        """
+        if recursive:
+            parents = [place] + place.parents
+            parent_ids = [p.id for p in parents]
+
+            # XXX-Anand
+            # Taking the first matching row for now.
+            # The right thing is to take the one the is nearest.
+            # Will fix that later
+            return CommitteeType.query.filter(CommitteeType.place_id.in_(parent_ids)).first()
+        else:
+            return CommitteeType.query.filter_by(place_id=place.id, slug=slug).first()
 
     @staticmethod
     def new_from_formdata(place, form):
