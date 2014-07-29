@@ -164,6 +164,21 @@ class Place(db.Model):
         db.session.add(c)
         return c
 
+    def get_committee(self, slug):
+        """Returns a committee with given slug.
+
+        * If there is already a committee with that slug, it will be returned.
+        * If there is no committee with that slug, but a committee structure
+        is defined here or by a parent, a new committee instance will returned.
+        * If neither a committe nor a committee strucutre is found for that
+        slug, then None is returned.
+        """
+        committee_type = CommitteeType.find(self, slug, recursive=True)
+        if committee_type:
+            c = committee_type.committees.filter_by(place_id=self.id).first()
+            if not c:
+                c = Committee(self, committee_type)
+            return c
 
 class Member(db.Model):
     __table_name__ = "member"
@@ -230,7 +245,8 @@ class CommitteeType(db.Model):
     def find(place, slug, recursive=False):
         """Returns CommitteeType defined at given place with given slug.
 
-        If recursive=True, it tries to find the place at nearest parent.
+        If recursive=True, it tries to find the CommitteType at nearest parent,
+        but make sures the committee_type matches the place_type.
         """
         if recursive:
             parents = [place] + place.parents
@@ -240,9 +256,13 @@ class CommitteeType(db.Model):
             # Taking the first matching row for now.
             # The right thing is to take the one the is nearest.
             # Will fix that later
-            return CommitteeType.query.filter(CommitteeType.place_id.in_(parent_ids)).first()
+            q = CommitteeType.query.filter(CommitteeType.place_id.in_(parent_ids))
+            q = q.filter_by(place_type_id=place.type_id)
         else:
-            return CommitteeType.query.filter_by(place_id=place.id, slug=slug).first()
+            q = CommitteeType.query.filter_by(place_id=place.id)
+
+        q = q.filter_by(slug=slug)
+        return q.first()
 
     @staticmethod
     def new_from_formdata(place, form):
@@ -303,10 +323,18 @@ class Committee(db.Model):
     type = db.relationship('CommitteeType', foreign_keys=type_id,
         backref=db.backref('committees', lazy='dynamic'))
 
+    def __init__(self, place, type):
+        self.place = place
+        self.type = type
+
 class CommitteeMember(db.Model):
     """The members of a committee.
     """
     id = db.Column(db.Integer, primary_key=True)
+    committee_id = db.Column(db.Integer, db.ForeignKey("committee.id"))
+    committee = db.relationship('Committee', foreign_keys=committee_id,
+        backref=db.backref('members'))
+
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship('Member', foreign_keys=member_id,
         backref=db.backref('committees', lazy='dynamic'))

@@ -168,13 +168,33 @@ class CommitteeTypeTest(DBTestCase):
         self.assertTrue(t2 is not None)
         self.assertEquals(t.id, t2.id)
 
+        # should be None because the committee_type is defined for LC, not STATE
         t2 = CommitteeType.find(self.KA, "pac", recursive=True)
-        self.assertTrue(t2 is not None)
-        self.assertEquals(t.id, t2.id)
+        self.assertTrue(t2 is None)
 
         t2 = CommitteeType.find(self.LC01, "pac", recursive=True)
         self.assertTrue(t2 is not None)
         self.assertEquals(t.id, t2.id)
+
+        # should be None again because of place_type mismatch.
+        t2 = CommitteeType.find(self.AC001, "pac", recursive=True)
+        self.assertTrue(t2 is None)
+
+    def test_get_committee(self):
+        # Tests Place.get_committee
+        t = CommitteeType(self.KA, self.LC, "Political Action Committee", "xxx", "pac")
+        db.session.add(t)
+        db.session.commit()
+
+        c = self.KA.get_committee("pac")
+        self.assertTrue(c is None)
+
+        c = self.LC01.get_committee("pac")
+        self.assertTrue(c is not None)
+        self.assertTrue(c.id is None) # new committee
+
+        c = self.AC001.get_committee("pac")
+        self.assertTrue(c is None)
 
 if __name__ == '__main__':
     import unittest
