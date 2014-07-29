@@ -132,25 +132,32 @@ class CommitteeTypeTest(DBTestCase):
     setup_places = True
 
     def test_committee_type(self):
-        t = CommitteeType(self.KA, self.LC, "Political Action Committee", "xxx")
+        t = CommitteeType(self.KA, self.LC, "Political Action Committee", "xxx", "pac")
         db.session.add(t)
         db.session.commit()
         self.assertTrue(t.id is not None)
         self.assertTrue(self.KA.committee_types.all(), [t])
 
     def test_committee_role(self):
-        t = CommitteeType(self.KA, self.LC, "Political Action Committee", "xxx")
+        t = CommitteeType(self.KA, self.LC, "Political Action Committee", "xxx", "pac")
         db.session.add(t)
         db.session.commit()
 
-        t.add_role("Convener")
-        t.add_role("Co-convener")
+        t.add_role("Convener", False, "read,write")
+        t.add_role("Co-convener", False, "read,write")
+        t.add_role("Member", True, "read")
         db.session.commit()
 
         t2 = self.KA.committee_types.first()
 
-        self.assertTrue(t2.committee_roles[0].role, 'Convener')
-        self.assertTrue(t2.committee_roles[1].role, 'Co-convener')
+        def assert_role(role, name, multiple, permission):
+            self.assertEquals(role.role, name)
+            self.assertEquals(role.multiple, multiple)
+            self.assertEquals(role.permission, permission)
+
+        assert_role(t2.roles[0], 'Convener', False, "read,write")
+        assert_role(t2.roles[1], 'Co-convener', False, "read,write")
+        assert_role(t2.roles[2], 'Member', True, "read")
 
 if __name__ == '__main__':
     import unittest
