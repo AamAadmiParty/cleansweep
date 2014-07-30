@@ -22,3 +22,19 @@ DEBUG = True
 # Facebook client id and secret for dev app
 FACEBOOK_CLIENT_ID = '1472667626314160'
 FACEBOOK_CLIENT_SECRET = 'b1d73b0247d72dee407251ecac5efa5c'
+
+def _load_from_config():
+    g = globals()
+
+    keys = [
+        'MAIL_SERVER',
+        'MAIL_USERNAME',
+        'MAIL_PASSWORD',
+        'MAIL_DEFAULT_SENDER',
+        'ERROR_EMAIL_RECIPIENTS',
+    ]
+    for k in keys:
+        if k in os.environ:
+            g[k] = os.environ[k]
+
+_load_from_config()
