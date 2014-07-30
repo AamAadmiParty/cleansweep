@@ -1,5 +1,6 @@
 import logging
 from logging.handlers import SMTPHandler
+from logging import StreamHandler
 
 def setup_error_emails(app):
     """Sets up emails on errors if the SMTP server is specified in the settings.
@@ -25,3 +26,7 @@ def setup_error_emails(app):
                                secure=True)
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
+
+def setup_logging(app):
+    app.logger.setLevel(logging.INFO)
+    app.logger.addHandler(StreamHandler())
