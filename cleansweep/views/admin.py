@@ -46,6 +46,13 @@ def new_committee_structure(key):
     else:
         return render_template("admin/new_committee_structure.html", place=place, form=form)
 
+@app.route("/<place:key>/admin/committee-structures")
+def committee_structures(key):
+    place = Place.find(key)
+    if not place:
+        abort(404)
+    return render_template("admin/committee_structures.html", place=place)
+
 @app.route("/<place:key>/admin/committee-structures/<slug>")
 def view_committee_structure(key, slug):
     place = Place.find(key)
