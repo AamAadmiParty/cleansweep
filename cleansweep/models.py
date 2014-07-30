@@ -164,6 +164,15 @@ class Place(db.Model):
         db.session.add(c)
         return c
 
+    def get_committees(self):
+        """Returns all committees at this place.
+        """
+        q = CommitteeType.query_by_place(self, recursive=True)
+        committee_types = q.all()
+        def get_committee(type):
+            return type.committees.filter_by(place_id=self.id).first() or Committee(self, type)
+        return [get_committee(type) for type in committee_types]
+
     def get_committee(self, slug):
         """Returns a committee with given slug.
 
@@ -248,6 +257,16 @@ class CommitteeType(db.Model):
         If recursive=True, it tries to find the CommitteType at nearest parent,
         but make sures the committee_type matches the place_type.
         """
+        q = CommitteeType.query_by_place(place, recursive=recursive).filter_by(slug=slug)
+        return q.first()
+
+    @staticmethod
+    def query_by_place(place, recursive=True):
+        """Returns a query object to query by place.
+
+        If recursive=True, the returned query tries to find the committee_types
+        at nearest parent, but make sures the committee_type matches the place_type.
+        """
         if recursive:
             parents = [place] + place.parents
             parent_ids = [p.id for p in parents]
@@ -260,9 +279,7 @@ class CommitteeType(db.Model):
             q = q.filter_by(place_type_id=place.type_id)
         else:
             q = CommitteeType.query.filter_by(place_id=place.id)
-
-        q = q.filter_by(slug=slug)
-        return q.first()
+        return q
 
     @staticmethod
     def new_from_formdata(place, form):

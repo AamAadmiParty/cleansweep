@@ -1,0 +1,139 @@
+{% extends "admin/index.html" %}
+{% block page_content %}
+  <h2>{{committee.type.name}}</h2>
+  <div>{{committee.type.description}}</div>
+
+  <h3>Committee Members</h3>
+  <div class="committee-members">
+    <div class="committee-role">
+      <h4>Convener</h4>
+      <div class="member-card">
+        <a href="#"><strong>Person One</strong></a>
+        <div>test@example.com</div>
+        <div>1234567891</div>
+        <div><a class="remove" href="#" title="Remove this member from this role."><span class="glyphicon glyphicon-remove"></span> Remove</a></div>        
+      </div>      
+    </div>
+
+    <div class="committee-role">
+      <h4>Jt. Convener</h4>
+      <div class="member-card">
+        <a href="#"><strong>Person One</strong></a>
+        <div>test@example.com</div>
+        <div>1234567891</div>
+        <div><a class="remove" href="#" title="Remove this member from this role."><span class="glyphicon glyphicon-remove"></span> Remove</a></div>
+      </div>      
+    </div>
+
+    <div class="committee-role">
+      <h4>Secretary</h4>
+      <div class="new-member">
+        <form class="form">
+          <input type="hidden" name="role" value="Political Activist">
+          <input type="email" name="email" value="" placeholder="Enter e-mail address" style="min-width: 300px;">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="committee-role">
+      <h4>Treasurer</h4>
+      <div class="new-member">
+        <form class="form">
+          <input type="hidden" name="role" value="Political Activist">
+          <input type="email" name="email" value="" placeholder="Enter e-mail address" style="min-width: 300px;">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="committee-role">
+      <h4>Political Activist</h4>
+      <div class="member-card">
+        <a href="#"><strong>Person Two</strong></a>
+        <div>test@example.com</div>
+        <div>1234567890</div>
+        <div><a class="remove" href="#" title="Remove this member from this role."><span class="glyphicon glyphicon-remove"></span> Remove</a></div>
+      </div>      
+      <div class="member-card">
+        <a href="#"><strong>Person Two</strong></a>
+        <div>test@example.com</div>
+        <div>1234567890</div>
+        <div><a class="remove" href="#" title="Remove this member from this role."><span class="glyphicon glyphicon-remove"></span> Remove</a></div>        
+      </div>      
+      <div class="member-card">
+        <a href="#"><strong>Person Two</strong></a>
+        <div>test@example.com</div>
+        <div>1234567890</div>
+        <div><a class="remove" href="#" title="Remove this member from this role."><span class="glyphicon glyphicon-remove"></span> Remove</a></div>
+      </div>      
+      <div class="new-member">
+        <form class="form">
+          <input type="hidden" name="role" value="Political Activist">
+          <input type="email" name="email" value="" placeholder="Enter e-mail address" style="min-width: 300px;">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+      </div>      
+    </div>
+
+    <div class="committee-role">
+      <h4>Organization Builder</h4>
+      <div class="member-card">
+        <a href="#"><strong>Person Two</strong></a>
+        <div>test@example.com</div>
+        <div>1234567890</div>
+        <div><a class="remove" href="#" title="Remove this member from this role."><span class="glyphicon glyphicon-remove"></span> Remove</a></div>
+      </div>      
+      <div class="new-member">
+        <form class="form">
+          <input type="hidden" name="role" value="Political Activist">
+          <input type="email" name="email" value="" placeholder="Enter e-mail address" style="min-width: 300px;">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+      </div>      
+    </div>
+
+    <div class="committee-role">
+      <h4>Support Team Manager</h4>
+      <div class="new-member">
+        <form class="form">
+          <input type="hidden" name="role" value="Political Activist">
+          <input type="email" name="email" value="" placeholder="Enter e-mail address" style="min-width: 300px;">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+      </div>      
+    </div>
+
+  </div>
+  <style type="text/css">
+    .member-card2 {
+      margin: 20px 0px;
+    }
+    .member-card {
+      margin: 20px 0px;
+      padding: 0px;
+      background: inherit;
+      border: none;
+    }
+    a.remove, a.remove:hover {
+      color: #f00;
+    }
+
+    .committee-role {
+      margin: 20px 0px; 
+      padding: 20px; 
+      background: #eee;
+    }
+
+    .committee-role .member-card:last-child {
+      margin-bottom: 0px;
+    }
+    .committee-role h4 {
+      margin: 0px;
+    }
+
+    .new-member {
+      margin-top: 20px;
+    }
+
+{% endblock %}

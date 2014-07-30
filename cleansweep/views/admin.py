@@ -13,6 +13,24 @@ def admin(key):
         abort(404)    
     return render_template("admin/index.html", place=place)
 
+@app.route("/<place:key>/admin/committees")
+def committees(key):
+    place = Place.find(key)
+    if not place:
+        abort(404)
+    return render_template("admin/committees.html", place=place)
+
+@app.route("/<place:key>/admin/committees/<slug>")
+def view_committee(key, slug):
+    place = Place.find(key)
+    if not place:
+        abort(404)
+    committee = place.get_committee(slug)
+    if not committee:
+        abort(404)
+
+    return render_template("admin/view_committee.html", place=place, committee=committee)
+
 @app.route("/<place:key>/admin/committee-structures/new", methods=['GET', 'POST'])
 def new_committee_structure(key):
     place = Place.find(key)
@@ -26,7 +44,6 @@ def new_committee_structure(key):
         flash("Successfully defined new committee {}.".format(form.slug.data), category="success")
         return redirect(url_for("view_committee_structure", key=place.key, slug=committee_type.slug))
     else:
-        print "validation errors", form.errors
         return render_template("admin/new_committee_structure.html", place=place, form=form)
 
 @app.route("/<place:key>/admin/committee-structures/<slug>")

@@ -55,3 +55,7 @@
 .table.table-borderless td, .table.table-borderless th {
     border: none;
 }
+
+footer {
+    min-height: 50px;
+}

@@ -1,0 +1,9 @@
+{% extends "admin/index.html" %}
+{% block page_content %}
+  <h2>Committees</h2>
+  <ul class="list-unstyled committees">
+    {% for c in place.get_committees() %}
+      <li><a href="{{ url_for('view_committee', key=place.key, slug=c.type.slug) }}">{{c.type.name}}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
