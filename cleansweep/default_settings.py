@@ -32,6 +32,7 @@ def _load_from_config():
         'MAIL_PASSWORD',
         'MAIL_DEFAULT_SENDER',
         'ERROR_EMAIL_RECIPIENTS',
+        'SQLALCHEMY_ECHO'
     ]
     for k in keys:
         if k in os.environ:
