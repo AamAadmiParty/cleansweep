@@ -59,3 +59,12 @@
 footer {
     min-height: 50px;
 }
+
+.cs-header h1 a {
+    color: white;
+}
+
+
+.cs-header .breadcrumb a {
+    color: #ddd;
+}

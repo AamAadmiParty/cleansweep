@@ -5,7 +5,7 @@
   <div class="cs-header">
     <div class="container">
       {{ macros.breadcrumbs(place, include_self=True) }}
-      <h1>Admin Center</h1>
+      <h1><a href="{{url_for('admin', key=place.key)}}">Admin Center</a></h1>
       {% block subnav %}
         {{ macros.subnavigation(place, tab="admin") }}
       {% endblock %}
@@ -18,7 +18,10 @@
     <div class="container">
       {% block page_content %}
         <h2>Admin Center</h2>
-        <div>TODO</div>
+        <ul class="list-unstyled">
+          <li><a href="{{url_for('committees', key=place.key)}}">Committees</a></li>
+          <li><a href="{{url_for('committee_structures', key=place.key)}}">Committee Structures</a></li>
+        </ul>
       {% endblock %}
     </div>
   </div>

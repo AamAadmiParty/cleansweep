@@ -1,9 +1,18 @@
 {% extends "admin/index.html" %}
 {% block page_content %}
   <h2>Committee Strutures</h2>
-  <ul class="list-unstyled committees">
-    {% for c in place.committee_types.all() %}
-      <li><a href="{{ url_for('view_committee_structure', key=place.key, slug=c.slug) }}">{{c.name}}</a></li>
-    {% endfor %}
-  </ul>
+  {% set committee_types = place.committee_types.all() %}
+  {% if committee_types %}
+    <ul class="list-unstyled committees">
+      {% for c in place.committee_types.all() %}
+        <li><a href="{{ url_for('view_committee_structure', key=place.key, slug=c.slug) }}">{{c.name}}</a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      <em>No committee structures are defined here.</em>
+    {% endif %}
+    <div style="margin-top: 20px;">
+      <a class="btn btn-primary" href="{{ url_for('new_committee_structure', key=place.key) }}">Add new committee structure</a></li>
+    </div>
+
 {% endblock %}
