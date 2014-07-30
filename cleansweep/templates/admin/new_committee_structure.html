@@ -1,0 +1,30 @@
+{% from "macros.html" import render_field %}
+{% extends "admin/index.html" %}
+{% block page_content %}
+  <h2>Add a New Committee Struture</h2>
+
+<form role="form" method="POST" style="width: 400px">
+  {{ form.csrf_token }}
+  {{ render_field(form.name) }}
+  {{ render_field(form.slug) }}
+  {{ render_field(form.level) }}
+  {{ render_field(form.description) }}
+
+  <h3>Roles</strong></h3>
+  <table class="table table-borderless">
+    <tr>
+      <th>Role</th><th>#Members</th><th>Permissions</th>
+    </tr>
+    {% for role in form.roles %}
+      <tr>
+        <td>{{ role.form.name }}</td>
+        <td>{{ role.form.multiple }}</td>
+        <td>{{ role.form.permission }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  <button type="submit" class="btn btn-default">Add Committee</button>
+</form>
+
+
+{% endblock %}

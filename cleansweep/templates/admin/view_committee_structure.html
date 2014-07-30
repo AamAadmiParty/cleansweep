@@ -1,0 +1,19 @@
+{% extends "admin/index.html" %}
+{% block page_content %}
+  <h2>{{committee_type.name}}</h2>
+  <div>Slug: {{committee_type.slug}}</div>
+  <div>{{committee_type.description}}</div>
+  <h3>Roles</h3>
+  <div class="row">
+    <div class="col-md-6">
+      <table class="table">
+        {% for role in committee_type.roles %}
+          <tr>
+            <td>{{role.role}} {{ "*" if role.multiple else "" }}</td>
+            <td>{{role.permission}}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

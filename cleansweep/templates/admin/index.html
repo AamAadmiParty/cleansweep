@@ -1,0 +1,25 @@
+{% import "macros.html" as macros %}
+
+{% extends "base.html" %}
+{% block content %}
+  <div class="cs-header">
+    <div class="container">
+      {{ macros.breadcrumbs(place, include_self=True) }}
+      <h1>Admin Center</h1>
+      {% block subnav %}
+        {{ macros.subnavigation(place, tab="admin") }}
+      {% endblock %}
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="container">
+      {{macros.show_flash_messages()}}
+    </div>
+    <div class="container">
+      {% block page_content %}
+        <h2>Admin Center</h2>
+        <div>TODO</div>
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}
