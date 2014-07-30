@@ -3,7 +3,7 @@
 
 from flask import (render_template, abort, url_for, redirect, request, flash)
 from ..app import app
-from ..models import CommitteeType, Place, db
+from ..models import CommitteeType, CommitteeRole, Member, Place, db
 from .. import forms
 
 @app.route("/<place:key>/admin")
@@ -20,7 +20,7 @@ def committees(key):
         abort(404)
     return render_template("admin/committees.html", place=place)
 
-@app.route("/<place:key>/admin/committees/<slug>")
+@app.route("/<place:key>/admin/committees/<slug>", methods=["GET", "POST"])
 def view_committee(key, slug):
     place = Place.find(key)
     if not place:
@@ -28,6 +28,25 @@ def view_committee(key, slug):
     committee = place.get_committee(slug)
     if not committee:
         abort(404)
+
+    if request.method == "POST":
+        action = request.form.get('action')
+        if action == "add":
+            role_id = request.form['role']
+            email = request.form['email']
+            role = CommitteeRole.query.filter_by(id=role_id).first()
+            member = Member.find(email=email)
+            committee.add_member(role, member)
+            db.session.commit()
+            flash("{} has been added as {}".format(email, role.role))
+        elif action == 'remove':
+            role_id = request.form['role']
+            email = request.form['email']
+            role = CommitteeRole.query.filter_by(id=role_id).first()
+            member = Member.find(email=email)
+            committee.remove_member(role, member)
+            db.session.commit()
+            flash("{} has been removed as {}".format(email, role.role))
 
     return render_template("admin/view_committee.html", place=place, committee=committee)
 

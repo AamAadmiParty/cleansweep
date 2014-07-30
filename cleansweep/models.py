@@ -1,4 +1,5 @@
 import itertools
+from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
 from .app import app
 
@@ -344,13 +345,41 @@ class Committee(db.Model):
         self.place = place
         self.type = type
 
+    def get_members(self):
+        """Returns an iterator over role, members for each role in this group.
+        """
+        d = defaultdict(list)
+        for m in self.committee_members:
+            d[m.role.id].append(m.member)
+
+        for role in self.type.roles:
+            yield role, d[role.id]
+
+    def add_member(self, role, member):
+        # TODO: Validate role and member
+        # The role should be one of the roles defined in the committee type.
+        # The member must be from a place in the subtree of committee's place.
+        if not role or not member:
+            return
+
+        # Already added
+        if CommitteeMember.query.filter_by(committee=self, role=role, member=member).first():
+            return
+        committee_member = CommitteeMember(self, role, member)
+        db.session.add(committee_member)
+
+    def remove_member(self, role, member):
+        m = CommitteeMember.query.filter_by(committee_id=self.id, role_id=role.id, member_id=member.id).first()
+        if m:
+            db.session.delete(m)
+
 class CommitteeMember(db.Model):
     """The members of a committee.
     """
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey("committee.id"))
     committee = db.relationship('Committee', foreign_keys=committee_id,
-        backref=db.backref('members'))
+        backref=db.backref('committee_members'))
 
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship('Member', foreign_keys=member_id,
@@ -359,3 +388,8 @@ class CommitteeMember(db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('committee_role.id'))
     role = db.relationship('CommitteeRole', foreign_keys=role_id,
         backref=db.backref('members', lazy='dynamic'))
+
+    def __init__(self, committee, role, member):
+        self.committee = committee
+        self.role = role
+        self.member = member
