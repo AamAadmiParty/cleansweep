@@ -39,9 +39,22 @@ def get_voter_info(voterid):
     if data:
         # return the first matching record
         try:
-            return data['response']['docs'][0]
+            return _process_voter_info(data['response']['docs'][0])
         except (KeyError, IndexError):
             pass
+
+re_voter_info_id = re.compile("^S(\d\d)(\d\d\d)(\d\d\d\d)\d\d(\d\d\d\d)$")
+def _process_voter_info(d):
+    """Process the voter info suitable for use in cleansweep.
+    """
+    print repr(d['id'])
+    m = re_voter_info_id.match(d['id'])
+    if m:
+        d['state_code'] = m.group(1)
+        d['ac_code'] = m.group(2)
+        d['pb_code'] = m.group(3)
+        d['serial'] = m.group(4)
+        return d
 
 re_token = re.compile("function _aquire\(\) *{ *return '([0-9a-f-]+)';")
 def get_token(text):
@@ -56,5 +69,7 @@ def get_token(text):
     return m and m.group(1)
 
 if __name__ == "__main__":
-    import sys
-    print get_voter_info(sys.argv[1])
+    import sys, json
+    d = get_voter_info(sys.argv[1])
+    print json.dumps(d, indent=True)
+    
