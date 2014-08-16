@@ -23,13 +23,14 @@ def create_place_types():
             db.session.add(t)
 
     ensure_place_type('Country', 'COUNTRY', 10)
-    ensure_place_type('State', 'STATE', 20)
-    ensure_place_type('Region', 'REGION', 30)
-    ensure_place_type('Loksabha Constituency', 'LC', 40)
-    ensure_place_type('Assembly Constituency', 'AC', 50)
-    ensure_place_type('Ward', 'WARD', 60)
-    ensure_place_type('Polling Center', 'PC', 70)
-    ensure_place_type('Polling Booth', 'PB', 80)
+    ensure_place_type('Region', 'REGION', 20)
+    ensure_place_type('State', 'STATE', 30)
+    ensure_place_type('Zone', 'ZONE', 40)
+    ensure_place_type('District', 'DT', 50)
+    ensure_place_type('Assembly Constituency', 'AC', 60)
+    ensure_place_type('Ward', 'WARD', 70)
+    ensure_place_type('Polling Center', 'PC', 80)
+    ensure_place_type('Polling Booth', 'PB', 90)
     db.session.commit()
 
 def ensure_place_type(name, short_name, level):
