@@ -14,7 +14,7 @@
     <h3>Log in instantly using:</h3>
     <p>
       {% for provider in get_oauth_providers() %}
-        <a href="{{ url_for('login_oauth', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
+        <a href="{{ url_for('oauth_redirect', view='login', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
       {% endfor %}
     </p>
   {% endif %}

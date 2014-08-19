@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content_head %}
+  <h1>Sign Up as Volunteer</h1>
+{% endblock %}
+
+{% block content_body %}
+  {% if userdata %}
+      <div class="well">
+        You've been authenticated as <strong>{{userdata['email']}}</strong> via {{userdata['service']}}. <a href="{{url_for('oauth_reset')}}">Not you?</a>
+        <br/>
+        <br/>
+        Please fill the form below to complete the volunteer sign up process.
+      </div>
+    </div>
+  {% else %}
+    <p>Please authenticate yourself using the following services to continue with the sign up process.</p>
+    <p>
+      {% for provider in get_oauth_providers() %}      
+        <a href="{{ url_for('oauth_redirect', view='signup', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
+      {% endfor %}
+    </p>
+  {% endif %}
+</div>
+{% endblock %}

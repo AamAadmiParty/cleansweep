@@ -28,7 +28,17 @@ def logout():
 
 @app.route("/account/signup")
 def signup():
-    return "not yet implemented"
+    userdata = session.get("oauth")
+    app.logger.info("userdata: %s", userdata)
+    if userdata:
+        user = Member.find(email=userdata['email'])
+        if user:
+            session['user'] = user.email
+            return redirect(url_for("dashboard"))
+        else:
+            return render_template("signup.html", userdata=userdata)
+    else:
+        return render_template("signup.html", userdata=None)
 
 def get_host():
     # facebook doesn't seem to like 127.0.0.1
@@ -40,14 +50,20 @@ def get_host():
 def get_redirect_uri(provider):
     return 'http://{}/oauth/{}'.format(get_host(), provider)
 
-@app.route("/account/login/<provider>")
-def login_oauth(provider):
+@app.route("/oauth/redirect-<provider>/<view>")
+def oauth_redirect(provider, view):
+    """OAuth redirect hander.
+
+    When used from login view with google as oauth provider, the URL will be
+    "/oauth/redirect-google/login" or
+    url_for("oauth_redirect", provider="google", view="login")
+    """
     redirect_uri = get_redirect_uri(provider)
     client = oauth.get_oauth_service(provider, redirect_uri)
     if not client:
         abort(404)
     url = client.get_authorize_url()
-    session['next'] = url_for("login")
+    session['next'] = url_for(view)
     return redirect(url)
 
 @app.route("/oauth/reset")
