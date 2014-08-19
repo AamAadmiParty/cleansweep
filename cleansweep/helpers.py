@@ -6,6 +6,7 @@ from flask import session
 from .app import app
 from .widgets import render_widget
 from .models import Member, Place
+from . import oauth
 
 @app.template_filter('pluralize')
 def pluralize(name):
@@ -31,5 +32,6 @@ def helpers():
         "widget": render_widget,
         "user": get_current_user(),
         "get_toplevel_places": Place.get_toplevel_places,
-        "get_config": app.config.get
+        "get_config": app.config.get,
+        "get_oauth_providers": oauth.get_oauth_providers
     }

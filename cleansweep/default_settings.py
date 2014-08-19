@@ -25,6 +25,9 @@ DEBUG = True
 FACEBOOK_CLIENT_ID = '1472667626314160'
 FACEBOOK_CLIENT_SECRET = 'b1d73b0247d72dee407251ecac5efa5c'
 
+GOOGLE_CLIENT_ID = "563938957424-8sb0jqrkt9s8cp5hvs8lnsg66i3cq0ko.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "Qa-afy19Z9J6gqyqnpcHJjvQ"
+
 def _load_from_config():
     g = globals()
 

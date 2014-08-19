@@ -1,3 +1,4 @@
+{% import "macros.html" as macros %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -51,6 +52,15 @@
     </nav>
 
     {% block content %}
+      <div class="container">
+        {% block content_head %}
+        {% endblock %}
+
+        {{macros.show_flash_messages()}}
+
+        {% block content_body %}
+        {% endblock %}
+      </div>
     {% endblock %}
 
     <footer>

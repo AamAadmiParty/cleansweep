@@ -2,82 +2,76 @@
 
 Includes login, signup, oauth handlers etc.
 """
-from flask import (render_template, request, redirect, url_for, flash, session)
+from flask import (abort, render_template, request, redirect, url_for, flash, session)
 from ..app import app
 from ..models import Member
-from rauth import OAuth2Service
-import functools
-
-facebook = OAuth2Service(
-    client_id=app.config['FACEBOOK_CLIENT_ID'],
-    client_secret=app.config['FACEBOOK_CLIENT_SECRET'],
-    name='facebook',
-    authorize_url='https://graph.facebook.com/oauth/authorize',
-    access_token_url='https://graph.facebook.com/oauth/access_token',
-    base_url='https://graph.facebook.com/')
+from .. import oauth
 
 @app.route("/account/login")
 def login():
-    return render_template("login.html")
+    userdata = session.get("oauth")
+    app.logger.info("userdata: %s", userdata)
+    if userdata:
+        user = Member.find(email=userdata['email'])
+        if user:
+            session['user'] = user.email
+            return redirect(url_for("dashboard"))
+        else:
+            return render_template("login.html", userdata=userdata, error=True)
+    else:
+        return render_template("login.html", userdata=None)
 
 @app.route("/account/logout")
 def logout():
-    session.pop('user')
+    session.clear()
     return redirect(url_for("home"))
 
-@app.route("/account/login/google")
-def login_google():
-    return "hello google"
-
-@app.route("/account/login/facebook")
-def login_facebook():
-    redirect_uri = 'http://{}/oauth/facebook'.format(get_host())
-    params = {'scope': 'email',
-              'response_type': 'code',
-              'redirect_uri': redirect_uri}
-    url = facebook.get_authorize_url(**params)
-    return redirect(url)
-
-@app.route("/oauth/google")
-def oauth_google():
-    pass
-
-def login_handler(f):
-    @functools.wraps(f)
-    def g():
-        email = f()
-        if email:
-            m = Member.find(email=email)
-            if m:
-                session['user'] = m.email
-                return redirect(url_for("dashboard"))
-            else:
-                flash("Sorry, could't find any user with that email.", category="error")
-                return redirect(url_for("login"))
-        else:
-            flash("Login failed", category='error')
-            return redirect(url_for("login"))
-    return g
+@app.route("/account/signup")
+def signup():
+    return "not yet implemented"
 
 def get_host():
     # facebook doesn't seem to like 127.0.0.1
-    if request.host == '127.0.0.1:5000':
+    if request.host == '127.0.0.1:5000' and False:
         return '0.0.0.0:5000'
     else:
         return request.host
 
-@app.route("/oauth/facebook")
-@login_handler
-def oauth_facebook():
-    redirect_uri = 'http://{}/oauth/facebook'.format(get_host())
-    try:
-        auth_session = facebook.get_auth_session(data={'code': request.args['code'],
-                                              'redirect_uri': redirect_uri})
-    except Exception:
-        app.logger.error("Failed to authenticate facebook oauth", exc_info=True)
-        return None
-    user = auth_session.get('me').json()
-    return user['email']
+def get_redirect_uri(provider):
+    return 'http://{}/oauth/{}'.format(get_host(), provider)
+
+@app.route("/account/login/<provider>")
+def login_oauth(provider):
+    redirect_uri = get_redirect_uri(provider)
+    client = oauth.get_oauth_service(provider, redirect_uri)
+    if not client:
+        abort(404)
+    url = client.get_authorize_url()
+    session['next'] = url_for("login")
+    return redirect(url)
+
+@app.route("/oauth/reset")
+def oauth_reset():
+    session.pop("oauth", None)
+    next = request.args.get('next') or \
+           request.referrer or \
+           url_for('home')
+    return redirect(next)
+
+@app.route("/oauth/<provider>")
+def oauth_callback(provider):
+    redirect_uri = get_redirect_uri(provider)
+    client = oauth.get_oauth_service(provider, redirect_uri)
+    if not client:
+        abort(404)
+
+    if "code" in request.args:
+        userdata = client.get_userdata(request.args['code'])
+        if userdata:
+            session["oauth"] = userdata
+            return redirect(session.get("next"))
+    flash("Authorization failed, please try again.", category="error")
+    return redirect(session.get("next", url_for("home")))
 
 @app.route("/dashboard")
 def dashboard():

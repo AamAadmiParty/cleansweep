@@ -1,16 +1,22 @@
-{% import "macros.html" as macros %}
-
 {% extends "base.html" %}
-{% block content %}
-<div class="container">
+{% block content_head %}
   <h1>Log In</h1>
+{% endblock %}
 
-  {{macros.show_flash_messages()}}  
-
-  <h3>Log in instantly using:</h3>
-  <p>
-      <a href="{{ url_for('login_google') }}" class="btn btn-primary">Google</a>
-      <a href="{{ url_for('login_facebook') }}" class="btn btn-primary">Facebook</a>
-  </p>
+{% block content_body %}
+  {% if error %}
+    <div class="alert alert-danger">
+        <p><a href="{{ url_for('oauth_reset') }}" class="pull-right" style="color: inherit;">Sign out?</a>
+        You've been authenticated as <strong>{{userdata['email']}}</strong> via {{userdata['service']}}, but you are not a registered user.</p>
+        <p>Would you like to <a class="alert-link" href="{{url_for('signup')}}">sign up as a volunteer</a>?</p>
+    </div>
+  {% else %}
+    <h3>Log in instantly using:</h3>
+    <p>
+      {% for provider in get_oauth_providers() %}
+        <a href="{{ url_for('login_oauth', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
+      {% endfor %}
+    </p>
+  {% endif %}
 </div>
 {% endblock %}
