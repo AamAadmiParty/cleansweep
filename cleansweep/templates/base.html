@@ -44,7 +44,8 @@
                 <a class="logout" href="/account/logout" onclick="document.forms.logout.sumit();">Log Out</a>
               </li>
             {% else %}
-              <li><a class="login" href="/account/login">Log In</a></li>
+              <li><a class="login" href="{{url_for('login')}}">Log In</a></li>
+              <li><a class="login" href="{{url_for('signup')}}">Sign Up</a></li>
             {% endif %}
           </ul>
         </div><!-- /.navbar-collapse -->
