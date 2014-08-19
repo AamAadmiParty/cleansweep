@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>{% block title %}Cleansweep{% endblock %}</title>
+    <title>{% block title %}{{ get_config("SITE_TITLE") }}{% endblock %}</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}">
@@ -25,7 +25,7 @@
       <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Cleansweep</a>
+          <a class="navbar-brand" href="/">{{ get_config("SITE_TITLE") }}</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->

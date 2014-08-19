@@ -30,5 +30,6 @@ def helpers():
     return {
         "widget": render_widget,
         "user": get_current_user(),
-        "get_toplevel_places": Place.get_toplevel_places
+        "get_toplevel_places": Place.get_toplevel_places,
+        "get_config": app.config.get
     }

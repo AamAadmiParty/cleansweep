@@ -3,6 +3,8 @@ by specifying CLEANSWEEP_SETTINGS env variable.
 """
 import os
 
+SITE_TITLE = "Cleansweep"
+
 # Should be changed on production
 SECRET_KEY = "uXRlssdhCjiVyDZYiQlMFOYdmEvUoKHf"
 
