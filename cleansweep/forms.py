@@ -41,3 +41,8 @@ class NewCommitteeForm(Form):
     def validate_slug(self, field):
         if models.CommitteeType.find(self.place, field.data):
             raise validators.ValidationError("Already used")
+
+class SignupForm(Form):
+    name = StringField('Name', [validators.Required()])
+    phone = StringField('Phone Number', [validators.Required()])
+    voterid = StringField('Voter ID', [validators.Required()])

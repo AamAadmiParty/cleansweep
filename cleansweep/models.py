@@ -1,3 +1,4 @@
+import datetime
 import itertools
 from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -189,6 +190,19 @@ class Place(db.Model):
             if not c:
                 c = Committee(self, committee_type)
             return c
+
+    def get_pending_members(self, limit=100, offset=0):
+        """Returns all the pending signups below this place.
+        """
+        return (PendingMember
+                .query
+                .filter(db.or_(
+                    Place.id==PendingMember.place_id,
+                    db.and_(Place.id==place_parents.c.parent_id,
+                            PendingMember.place_id==place_parents.c.child_id)))
+                .limit(limit)
+                .offset(offset)
+                .all())
 
 class Member(db.Model):
     __table_name__ = "member"
@@ -393,3 +407,30 @@ class CommitteeMember(db.Model):
         self.committee = committee
         self.role = role
         self.member = member
+
+class PendingMember(db.Model):
+    __table_name__ = "pending_member"
+    id = db.Column(db.Integer, primary_key=True)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False)
+    place = db.relationship('Place', foreign_keys=place_id)
+
+    name = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, unique=True)
+    phone = db.Column(db.Text, unique=True, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    voterid = db.Column(db.Text)
+
+    status = db.Column(
+        db.Enum("pending", "approved", "rejected", name="pending_member_status"),
+        default="pending")
+
+    def __init__(self, place, name, email, phone, voterid):
+        self.place = place
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.voterid = voterid
+
+    @classmethod
+    def find(cls, email):
+        return cls.query.filter_by(email=email).first()

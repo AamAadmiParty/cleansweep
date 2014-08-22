@@ -1,16 +1,36 @@
+{% from "macros.html" import render_field %}
 {% extends "base.html" %}
 {% block content_head %}
-  <h1>Sign Up as Volunteer</h1>
+  <h1>Sign Up As Volunteer</h1>
 {% endblock %}
 
 {% block content_body %}
-  {% if userdata %}
+  {% if pending_member %}
+      <div class="well">
+        You have already applied as volunteer. You'll hear from us shortly.
+      </div>
+  {% elif userdata %}
       <div class="well">
         You've been authenticated as <strong>{{userdata['email']}}</strong> via {{userdata['service']}}. <a href="{{url_for('oauth_reset')}}">Not you?</a>
         <br/>
         <br/>
         Please fill the form below to complete the volunteer sign up process.
       </div>
+
+      <form role="form" method="POST" style="max-width: 400px;">
+        {{ form.csrf_token }}
+        {{ render_field(form.name) }}
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" class="form-control" id="email" value="{{userdata['email']}}" disabled>
+        </div>
+        {{ render_field(form.phone) }}
+        {{ render_field(form.voterid) }}
+
+        <button type="submit" class="btn btn-default">Sign Up</button>
+      </form>
+
     </div>
   {% else %}
     <p>Please authenticate yourself using the following services to continue with the sign up process.</p>

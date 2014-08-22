@@ -1,0 +1,24 @@
+{% extends "admin/index.html" %}
+{% block page_content %}
+  <h2>Pending Volunteer Signups</h2>
+  <table class="table">
+    <tr>
+      <th>When</th>
+      <th>Who</th>
+      <th>Where</th>
+      <th>Actions</th>
+    </tr>
+    {% for person in place.get_pending_members() %}
+      <tr>
+        <td>{{person.timestamp | naturaltime }}</td>
+        <td>
+          <strong>{{person.name}}</strong>
+          <div>{{person.email}}</div>
+          <div>{{person.phone}}</div>
+        </td>
+        <td><a href="{{url_for('place', key=person.place.key)}}">{{person.place.name}}</a></td>
+        <td><a href="#" class="btn btn-primary">Confirm this volunteer</a></td>
+      </tr>
+    {% endfor %}
+{% endblock %}
+

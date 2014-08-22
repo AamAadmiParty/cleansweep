@@ -47,7 +47,6 @@ re_voter_info_id = re.compile("^S(\d\d)(\d\d\d)(\d\d\d\d)\d\d(\d\d\d\d)$")
 def _process_voter_info(d):
     """Process the voter info suitable for use in cleansweep.
     """
-    print repr(d['id'])
     m = re_voter_info_id.match(d['id'])
     if m:
         d['state_code'] = m.group(1)

@@ -4,8 +4,10 @@ Includes login, signup, oauth handlers etc.
 """
 from flask import (abort, render_template, request, redirect, url_for, flash, session)
 from ..app import app
-from ..models import Member
+from ..models import Member, PendingMember
 from .. import oauth
+from .. import forms
+from ..core import signups
 
 @app.route("/account/login")
 def login():
@@ -26,19 +28,38 @@ def logout():
     session.clear()
     return redirect(url_for("home"))
 
-@app.route("/account/signup")
+@app.route("/account/signup", methods=["GET", "POST"])
 def signup():
     userdata = session.get("oauth")
-    app.logger.info("userdata: %s", userdata)
-    if userdata:
-        user = Member.find(email=userdata['email'])
-        if user:
-            session['user'] = user.email
-            return redirect(url_for("dashboard"))
-        else:
-            return render_template("signup.html", userdata=userdata)
-    else:
+
+    # is user autheticated?
+    if not userdata:
         return render_template("signup.html", userdata=None)
+
+    # is already a member?
+    user = Member.find(email=userdata['email'])
+    if user:
+        session['user'] = user.email
+        return redirect(url_for("dashboard"))
+
+    # is already a member?
+    pending_member = PendingMember.find(email=userdata['email'])
+    if pending_member:
+        return render_template("signup.html", userdata=None, pending_member=pending_member)
+
+    # show the form
+    form = forms.SignupForm()
+    if request.method == "GET":
+        form.name.data = userdata['name']
+    if request.method == "POST" and form.validate():
+        person = signups.signup(
+            name=form.name.data,
+            email=userdata['email'],
+            phone=form.phone.data,
+            voterid=form.voterid.data)
+        return render_template("signup_complete.html", person=person)
+    return render_template("signup.html", userdata=userdata, form=form)
+
 
 def get_host():
     # facebook doesn't seem to like 127.0.0.1

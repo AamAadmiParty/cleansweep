@@ -3,6 +3,7 @@
 Includes template filters and context processors.
 """
 from flask import session
+import humanize
 from .app import app
 from .widgets import render_widget
 from .models import Member, Place
@@ -21,6 +22,11 @@ def pluralize(name):
         return name[:-1] + "ies"
     else:
         return name + 's'
+
+@app.template_filter()
+def naturaltime(datetime):
+    return humanize.naturaltime(datetime)
+
 
 def get_current_user():
     if session.get('user'):

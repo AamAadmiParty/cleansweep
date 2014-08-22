@@ -79,3 +79,10 @@ def view_committee_structure(key, slug):
         abort(404)
     committee_type = CommitteeType.find(place, slug)
     return render_template("admin/view_committee_structure.html", place=place, committee_type=committee_type)
+
+@app.route("/<place:key>/admin/signups")
+def admin_signups(key):
+    place = Place.find(key)
+    if not place:
+        abort(404)
+    return render_template("admin/signups.html", place=place)
