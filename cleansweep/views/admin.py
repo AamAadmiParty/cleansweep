@@ -3,7 +3,7 @@
 
 from flask import (render_template, abort, url_for, redirect, request, flash)
 from ..app import app
-from ..models import CommitteeType, CommitteeRole, Member, Place, db
+from ..models import CommitteeType, CommitteeRole, Member, Place, db, PendingMember
 from .. import forms
 
 @app.route("/<place:key>/admin")
@@ -80,9 +80,23 @@ def view_committee_structure(key, slug):
     committee_type = CommitteeType.find(place, slug)
     return render_template("admin/view_committee_structure.html", place=place, committee_type=committee_type)
 
-@app.route("/<place:key>/admin/signups")
+@app.route("/<place:key>/admin/signups", methods=['GET', 'POST'])
 def admin_signups(key):
     place = Place.find(key)
     if not place:
         abort(404)
+    if request.method == 'POST':
+        member = PendingMember.find(id=request.form.get('member_id'))
+        action = request.form.get('action')
+        if member and (member.place == place or member.place.has_parent(place)):
+            if action == 'approve-member':
+                member.approve()
+                db.session.commit()
+                flash('Successfully approved {} as a volunteer.'.format(member.name))
+                return redirect(url_for("admin_signups", key=place.key))
+            elif action == 'reject-member':
+                member.reject()
+                db.session.commit()
+                flash('Successfully rejected {}.'.format(member.name))
+                return redirect(url_for("admin_signups", key=place.key))
     return render_template("admin/signups.html", place=place)

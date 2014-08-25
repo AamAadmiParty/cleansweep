@@ -103,6 +103,9 @@ class Place(db.Model):
         except IndexError:
             return None
 
+    def has_parent(self, parent):
+        return parent in self.parents
+
     def get_places(self, type=None):
         """Returns all places of given type below this place.
         """
@@ -145,12 +148,12 @@ class Place(db.Model):
         places.sort(key=lambda p: (p.type.level, p.key))
         return itertools.groupby(places, lambda p: p.type)
 
-    def add_member(self, name, email, phone):
+    def add_member(self, name, email, phone, voterid=None):
         """Adds a new member.
 
         The caller is responsible to call db.session.commit().
         """
-        member = Member(self, name, email, phone)
+        member = Member(self, name, email, phone, voterid)
         db.session.add(member)
         return member   
 
@@ -198,6 +201,7 @@ class Place(db.Model):
         """
         return (PendingMember
                 .query
+                .filter_by(status='pending')
                 .filter(db.or_(
                     Place.id==PendingMember.place_id,
                     db.and_(Place.id==place_parents.c.parent_id,
@@ -205,6 +209,10 @@ class Place(db.Model):
                 .limit(limit)
                 .offset(offset)
                 .all())
+
+    def __eq__(self, other):
+        return isinstance(other, Place) and self.id == other.id
+
 
 class Member(db.Model):
     __table_name__ = "member"
@@ -216,12 +224,14 @@ class Member(db.Model):
     name = db.Column(db.Text, nullable=False)
     email = db.Column(db.Text, unique=True)
     phone = db.Column(db.Text, nullable=False, unique=True)
+    voterid = db.Column(db.Text)
 
-    def __init__(self, place, name, email, phone):
+    def __init__(self, place, name, email, phone, voterid):
         self.name = name
         self.email = email
         self.phone = phone
         self.place = place
+        self.voterid = voterid
 
     @staticmethod
     def find(email):
@@ -434,5 +444,14 @@ class PendingMember(db.Model):
         self.voterid = voterid
 
     @classmethod
-    def find(cls, email):
-        return cls.query.filter_by(email=email).first()
+    def find(cls, **kw):
+        return cls.query.filter_by(**kw).first()
+
+    def reject(self):
+        self.status = 'rejected'
+        db.session.add(self)
+
+    def approve(self):
+        self.status = 'approved'
+        db.session.add(self)
+        self.place.add_member(self.name, self.email, self.phone, self.voterid)

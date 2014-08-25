@@ -23,8 +23,19 @@
           <a href="{{url_for('place', key=ac.key)}}">{{ac.name}}</a> <small>Assembly Constituency</small>,
           <a href="{{url_for('place', key=state.key)}}">{{state.name}}</a>
         </td>
-        <td><a href="#" class="btn btn-primary">Confirm this volunteer</a></td>
+        <td class="actions">
+          <form method="POST">
+            <input type="hidden" name="member_id" value="{{person.id}}"/>
+            <button class="btn btn-primary" name="action" value="approve-member">Approve</button>
+            <button class="btn btn-danger" name="action" value="reject-member">Reject</button>
+          </td>
       </tr>
     {% endfor %}
+    </table>
+    <style type="text/css">
+      td.actions {
+        max-width: 250px;
+      }
+    </style>
 {% endblock %}
 
