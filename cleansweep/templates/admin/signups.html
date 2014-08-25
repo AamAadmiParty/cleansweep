@@ -16,7 +16,13 @@
           <div>{{person.email}}</div>
           <div>{{person.phone}}</div>
         </td>
-        <td><a href="{{url_for('place', key=person.place.key)}}">{{person.place.name}}</a></td>
+        <td>
+          <a href="{{url_for('place', key=person.place.key)}}">{{person.place.name}}</a>,<br/>
+          {% set ac = person.place.get_parent("AC") %}
+          {% set state = person.place.get_parent("STATE") %}
+          <a href="{{url_for('place', key=ac.key)}}">{{ac.name}}</a> <small>Assembly Constituency</small>,
+          <a href="{{url_for('place', key=state.key)}}">{{state.name}}</a>
+        </td>
         <td><a href="#" class="btn btn-primary">Confirm this volunteer</a></td>
       </tr>
     {% endfor %}

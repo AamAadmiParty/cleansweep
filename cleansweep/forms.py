@@ -1,6 +1,6 @@
 from flask_wtf import Form
 import wtforms
-from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField
+from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField
 from wtforms import validators
 from . import models
 
@@ -45,4 +45,12 @@ class NewCommitteeForm(Form):
 class SignupForm(Form):
     name = StringField('Name', [validators.Required()])
     phone = StringField('Phone Number', [validators.Required()])
-    voterid = StringField('Voter ID', [validators.Required()])
+    voterid = StringField('Voter ID')
+    locality = StringField('Locality')
+    place = HiddenField()
+
+    def validate(self):
+        if not self.voterid.data and not self.place.data:
+            self.voterid.errors = tuple(["You must provide either a valid voter ID or locality."])
+            return False
+        return Form.validate(self)

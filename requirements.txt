@@ -8,6 +8,7 @@ SQLAlchemy==0.9.4
 WTForms==1.0.5
 Werkzeug==0.9.6
 gunicorn==19.0.0
+humanize==0.5
 itsdangerous==0.24
 psycopg2==2.5.3
 rauth==0.7.0

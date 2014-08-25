@@ -6,6 +6,9 @@ from ..models import db, Place, PendingMember
 def resolve_voterid(voterid):
     """Takes a voterid and returns a place object.
     """
+    if not voterid:
+        return None
+
     # TEMP FIX:
     #info = get_voter_info()
     info = {
@@ -15,8 +18,10 @@ def resolve_voterid(voterid):
     if 'pb_key' in info:
         return Place.find(key=info['pb_key'])
 
-def signup(name, email, phone, voterid):
+def signup(name, email, phone, voterid, place_key=None):
     place = resolve_voterid(voterid)
+    if not place:
+        place = Place.find(place_key)
     pending_member = PendingMember(
         place=place, 
         name=name,

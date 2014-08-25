@@ -96,6 +96,8 @@ class Place(db.Model):
     def get_parent(self, type):
         """Returns parent place of given type.
         """
+        if isinstance(type, basestring):
+            type = PlaceType.get(type)
         try:
             return [p for p in self.parents if p.type == type][0]
         except IndexError:

@@ -56,7 +56,8 @@ def signup():
             name=form.name.data,
             email=userdata['email'],
             phone=form.phone.data,
-            voterid=form.voterid.data)
+            voterid=form.voterid.data,
+            place_key=form.place.data)
         return render_template("signup_complete.html", person=person)
     return render_template("signup.html", userdata=userdata, form=form)
 

@@ -10,27 +10,47 @@
         You have already applied as volunteer. You'll hear from us shortly.
       </div>
   {% elif userdata %}
-      <div class="well">
-        You've been authenticated as <strong>{{userdata['email']}}</strong> via {{userdata['service']}}. <a href="{{url_for('oauth_reset')}}">Not you?</a>
-        <br/>
-        <br/>
-        Please fill the form below to complete the volunteer sign up process.
-      </div>
-
-      <form role="form" method="POST" style="max-width: 400px;">
-        {{ form.csrf_token }}
-        {{ render_field(form.name) }}
-
-        <div class="form-group">
-          <label for="email">Email address</label>
-          <input type="email" class="form-control" id="email" value="{{userdata['email']}}" disabled>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="well">
+          You've been authenticated as <strong>{{userdata['email']}}</strong> via {{userdata['service']}}. <a href="{{url_for('oauth_reset')}}">Not you?</a>
+          <br/>
+          <br/>
+          Please fill the form below to complete the volunteer sign up process.
         </div>
-        {{ render_field(form.phone) }}
-        {{ render_field(form.voterid) }}
 
-        <button type="submit" class="btn btn-default">Sign Up</button>
-      </form>
+        <form id="signup-form" role="form" method="POST" style="max-width: 400px;">
+          {{ form.csrf_token }}
+          {{ render_field(form.name) }}
 
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" value="{{userdata['email']}}" disabled>
+          </div>
+          {{ render_field(form.phone) }}
+          {{ render_field(form.voterid) }}
+          {{ render_field(form.locality, placeholder="Select your locality") }}
+          <div>
+          <p class="help-block help-first">Please pick a locality from the dropdown so that we can identify your polling booth automatically.</p>
+            <p class="help-block help-second" style="display: none;"><i class="fa fa-spinner fa-spin"></i> Please wait while we discover your assembly constituency from the location.</p>
+          </div>
+          <input type="hidden" id="place" name="place" value="{{form.place.data}}"/>
+          <div class="locality-details alert alert-info" style="display: none;">
+            We've identified the polling station near to your location as:<br/>
+            <div><strong><span class="pb">xx</span></strong></div>
+            <div><span class="ac">xx</span> <small>Assembly Constituency</small>, <span class="state"></span></div>
+            <br/>
+            <div><small>If you think it is not correct, please correct the locality in the above text box.</small></div>
+          </div>
+          <div class="locality-error alert alert-danger" style="display: none;">
+            <strong>Sorry!</strong> The selected locality is not covered yet.
+          </div>
+          <button type="submit" class="btn btn-default">Sign Up</button>
+        </form>
+      </div>
+      <div class="col-md-8" style="height: 100%">
+          <div id="map-canvas" style="height: 100%; min-height: 570px;"></div>
+      </div>
     </div>
   {% else %}
     <p>Please authenticate yourself using the following services to continue with the sign up process.</p>
@@ -41,4 +61,128 @@
     </p>
   {% endif %}
 </div>
+
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+<script src="https://geosearch-anandology.rhcloud.com/js/jquery-geosearch.js"></script>
+
+<script type="text/javascript">
+function locate(location, callback) {
+    $("#locality").parent().find(".help-first").hide();
+    $("#locality").parent().find(".help-second").show();
+
+    //$(".locality-spinner").show();
+    var url = "/api/geosearch?lat=" + location.lat() + "&lon=" + location.lng();
+    $.getJSON(url, function(response) {
+        $("#locality").parent().find(".help-second").hide();
+        if (response) {
+          var result  = response.result;
+          $(".locality-error").hide();
+          $(".locality-details").show();
+          $(".locality-details .pb").html(result.pb_name);
+          $(".locality-details .ac").html(result.ac_name);
+          $(".locality-details .state").html(result.state_name);
+          $("input#place").val(result.pb_key);
+        }
+        else {
+          $(".locality-error").show();
+          $(".locality-details").hide();
+        }
+        callback();
+        console.log(response);
+    });
+}
+
+function initialize() {
+  var latlng = new google.maps.LatLng(8.4875, 76.9525);
+  var mapOptions = {
+    center: latlng,
+    zoom: 12
+  };
+  var map = new google.maps.Map(document.getElementById('map-canvas'),
+    mapOptions);
+
+  var input = /** @type {HTMLInputElement} */(
+      document.getElementById('locality'));
+
+  /*
+  var types = document.getElementById('type-selector');
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(types);
+ */
+
+  var autocomplete = new google.maps.places.Autocomplete(input);
+  //autocomplete.bindTo('bounds', map);
+
+  var infowindow = new google.maps.InfoWindow();
+  var marker = new google.maps.Marker({
+    map: map
+  });
+
+  google.maps.event.addListener(autocomplete, 'place_changed', function() {
+    infowindow.close();
+    marker.setVisible(false);
+    var place = autocomplete.getPlace();
+    if (!place.geometry) {
+      return;
+    }
+
+    locate(place.geometry.location, function() {
+      // If the place has a geometry, then present it on a map.
+      if (place.geometry.viewport) {
+        map.fitBounds(place.geometry.viewport);
+      } else {
+        map.setCenter(place.geometry.location);
+        map.setZoom(17);  // Why 17? Because it looks good.
+      }
+      marker.setIcon(/** @type {google.maps.Icon} */({
+        url: place.icon,
+        size: new google.maps.Size(71, 71),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(35, 35)
+      }));
+      marker.setPosition(place.geometry.location);
+      marker.setVisible(true);
+
+      var address = '';
+      if (place.address_components) {
+        address = [
+          (place.address_components[0] && place.address_components[0].short_name || ''),
+          (place.address_components[1] && place.address_components[1].short_name || ''),
+          (place.address_components[2] && place.address_components[2].short_name || '')
+        ].join(' ');
+      }
+
+      infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+      infowindow.open(map, marker);
+    });
+  });
+  // Sets a listener on a radio button to change the filter type on Places
+  // Autocomplete.
+  function setupClickListener(id, types) {
+    var radioButton = document.getElementById(id);
+    google.maps.event.addDomListener(radioButton, 'click', function() {
+      autocomplete.setTypes(types);
+    });
+  }
+
+  setupClickListener('changetype-all', []);
+  setupClickListener('changetype-establishment', ['establishment']);
+  setupClickListener('changetype-geocode', ['geocode']);
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+$(function() {
+  // disable form submit on enter
+  $('#signup-form').bind("keyup keypress", function(e) {
+    var code = e.keyCode || e.which;
+    if (code  == 13) {
+      e.preventDefault();
+      return false;
+    }
+  });
+});
+
+</script>
 {% endblock %}
