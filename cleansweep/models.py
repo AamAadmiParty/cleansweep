@@ -196,12 +196,12 @@ class Place(db.Model):
                 c = Committee(self, committee_type)
             return c
 
-    def get_pending_members(self, limit=100, offset=0):
+    def get_pending_members(self, status='pending', limit=100, offset=0):
         """Returns all the pending signups below this place.
         """
         return (PendingMember
                 .query
-                .filter_by(status='pending')
+                .filter_by(status=status)
                 .filter(db.or_(
                     Place.id==PendingMember.place_id,
                     db.and_(Place.id==place_parents.c.parent_id,

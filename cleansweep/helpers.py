@@ -2,7 +2,7 @@
 
 Includes template filters and context processors.
 """
-from flask import session
+from flask import (request, session)
 import humanize
 from .app import app
 from .widgets import render_widget
@@ -35,6 +35,7 @@ def get_current_user():
 @app.context_processor
 def helpers():
     return {
+        "request_path": request.path,
         "widget": render_widget,
         "user": get_current_user(),
         "get_toplevel_places": Place.get_toplevel_places,

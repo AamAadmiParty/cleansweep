@@ -1,41 +1,58 @@
+{% from "macros.html" import render_pill %}
 {% extends "admin/index.html" %}
 {% block page_content %}
-  <h2>Pending Volunteer Signups</h2>
-  <table class="table">
-    <tr>
-      <th>When</th>
-      <th>Who</th>
-      <th>Where</th>
-      <th>Actions</th>
-    </tr>
-    {% for person in place.get_pending_members() %}
+  <h2>Volunteer Signups</h2>
+  <ul class="nav nav-pills">
+    {{ render_pill("Pending", url_for('admin_signups', key=place.key), request_path)}}
+    {{ render_pill("Approved", url_for('admin_signups', key=place.key, status='approved'), request_path)}}
+    {{ render_pill("Rejected", url_for('admin_signups', key=place.key, status='rejected'), request_path)}}
+  </ul>
+  {% set signups = place.get_pending_members(status=status) %}
+  {% if not signups %}
+    <em>None found</em>
+  {% else %}
+    <table class="table">
       <tr>
-        <td>{{person.timestamp | naturaltime }}</td>
-        <td>
-          <strong>{{person.name}}</strong>
-          <div>{{person.email}}</div>
-          <div>{{person.phone}}</div>
-        </td>
-        <td>
-          <a href="{{url_for('place', key=person.place.key)}}">{{person.place.name}}</a>,<br/>
-          {% set ac = person.place.get_parent("AC") %}
-          {% set state = person.place.get_parent("STATE") %}
-          <a href="{{url_for('place', key=ac.key)}}">{{ac.name}}</a> <small>Assembly Constituency</small>,
-          <a href="{{url_for('place', key=state.key)}}">{{state.name}}</a>
-        </td>
-        <td class="actions">
-          <form method="POST">
-            <input type="hidden" name="member_id" value="{{person.id}}"/>
-            <button class="btn btn-primary" name="action" value="approve-member">Approve</button>
-            <button class="btn btn-danger" name="action" value="reject-member">Reject</button>
-          </td>
+        <th>When</th>
+        <th>Who</th>
+        <th>Where</th>
+        <th>Actions</th>
       </tr>
-    {% endfor %}
+      {% for person in signups %}
+        <tr>
+          <td>{{person.timestamp | naturaltime }}</td>
+          <td>
+            <strong>{{person.name}}</strong>
+            <div>{{person.email}}</div>
+            <div>{{person.phone}}</div>
+          </td>
+          <td>
+            <a href="{{url_for('place', key=person.place.key)}}">{{person.place.name}}</a>,<br/>
+            {% set ac = person.place.get_parent("AC") %}
+            {% set state = person.place.get_parent("STATE") %}
+            <a href="{{url_for('place', key=ac.key)}}">{{ac.name}}</a> <small>Assembly Constituency</small>,
+            <a href="{{url_for('place', key=state.key)}}">{{state.name}}</a>
+          </td>
+          <td class="actions">
+            {% if status == 'pending' %}
+              <form method="POST">
+                <input type="hidden" name="member_id" value="{{person.id}}"/>
+                <button class="btn btn-primary" name="action" value="approve-member">Approve</button>
+                <button class="btn btn-danger" name="action" value="reject-member">Reject</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
     </table>
-    <style type="text/css">
-      td.actions {
-        max-width: 250px;
-      }
-    </style>
+  {% endif %}
+  <style type="text/css">
+    td.actions {
+      max-width: 250px;
+    }
+    ul.nav-pills {
+      margin-bottom: 20px;
+    }
+  </style>
 {% endblock %}
 

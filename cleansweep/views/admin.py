@@ -80,11 +80,17 @@ def view_committee_structure(key, slug):
     committee_type = CommitteeType.find(place, slug)
     return render_template("admin/view_committee_structure.html", place=place, committee_type=committee_type)
 
+@app.route("/<place:key>/admin/signups/<status>", methods=['GET', 'POST'])
 @app.route("/<place:key>/admin/signups", methods=['GET', 'POST'])
-def admin_signups(key):
+def admin_signups(key, status=None):
     place = Place.find(key)
     if not place:
         abort(404)
+    if status not in [None, 'approved', 'rejected']:
+        return redirect(url_for("admin_signups", key=key))
+    if status is None:
+        status = 'pending'
+
     if request.method == 'POST':
         member = PendingMember.find(id=request.form.get('member_id'))
         action = request.form.get('action')
@@ -99,4 +105,4 @@ def admin_signups(key):
                 db.session.commit()
                 flash('Successfully rejected {}.'.format(member.name))
                 return redirect(url_for("admin_signups", key=place.key))
-    return render_template("admin/signups.html", place=place)
+    return render_template("admin/signups.html", place=place, status=status)
