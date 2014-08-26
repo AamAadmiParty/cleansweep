@@ -9,7 +9,7 @@ def resolve_voterid(voterid):
     if not voterid:
         return None
     
-    info = get_voter_info()
+    info = get_voter_info(voterid)
     if 'pb_key' in info:
         return Place.find(key=info['pb_key'])
 
