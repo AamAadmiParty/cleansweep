@@ -29,4 +29,8 @@ if __name__ == "__main__":
         phone = sys.argv[index+4]
         add_member(place, name, email, phone)
     else:
-        main()
+        try:
+            port = int(sys.argv[1])
+        except IndexError:
+            port = 5000
+        main(port=port)

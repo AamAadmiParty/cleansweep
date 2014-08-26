@@ -7,9 +7,9 @@ from . import helpers
 # load all the views 
 from . import views
 
-def main():
+def main(port=5000):
     db.create_all()
-    app.run()
+    app.run(port=port)
 
 if __name__ == '__main__':
     main()
