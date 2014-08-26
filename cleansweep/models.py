@@ -455,3 +455,18 @@ class PendingMember(db.Model):
         self.status = 'approved'
         db.session.add(self)
         self.place.add_member(self.name, self.email, self.phone, self.voterid)
+
+class VoterInfo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    state = db.Column(db.CHAR(2), nullable=False)
+    ac = db.Column(db.SmallInteger, nullable=False)
+    pb = db.Column(db.SmallInteger, nullable=False)
+    voterid = db.Column(db.Text, nullable=False, index=True)
+
+    @classmethod
+    def find(cls, **kw):
+        return cls.query.filter_by(**kw).first()
+
+    def get_booth(self):
+        key = "{}/AC{:0>3}/PB{:0>4}".format(self.state, self.ac, self.pb)
+        return Place.find(key=key)

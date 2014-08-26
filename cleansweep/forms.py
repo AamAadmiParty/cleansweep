@@ -53,4 +53,12 @@ class SignupForm(Form):
         if not self.voterid.data and not self.place.data:
             self.voterid.errors = tuple(["You must provide either a valid voter ID or locality."])
             return False
+
+        if self.voterid.data:
+            voterid = self.voterid.data
+            voterinfo = models.VoterInfo.find(voterid=voterid)
+            if not voterinfo:
+                self.voterid.errors = tuple(["Invalid Voter ID"])
+                return False
+
         return Form.validate(self)
