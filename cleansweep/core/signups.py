@@ -8,13 +8,8 @@ def resolve_voterid(voterid):
     """
     if not voterid:
         return None
-
-    # TEMP FIX:
-    #info = get_voter_info()
-    info = {
-        "pb_key": "KL/AC001/PB0001"
-    }
-
+    
+    info = get_voter_info()
     if 'pb_key' in info:
         return Place.find(key=info['pb_key'])
 
