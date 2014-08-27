@@ -1,4 +1,6 @@
 Flask==0.10.1
+Flask-ErrorMail==0.2.2
+Flask-Mail==0.9.0
 Flask-SQLAlchemy==1.0
 Flask-Testing==0.4.1
 Flask-WTF==0.9.5
@@ -11,6 +13,8 @@ gunicorn==19.0.0
 humanize==0.5
 itsdangerous==0.24
 psycopg2==2.5.3
+py==1.4.21
+pytest==2.5.2
 rauth==0.7.0
 requests==2.3.0
 wsgiref==0.1.2
