@@ -237,6 +237,17 @@ class Member(db.Model):
     def find(email):
         return Member.query.filter_by(email=email).first()
 
+    def get_permissions(self, place):
+        """Finds the permissions the user has at given place.
+
+        Every person will have read permission at his own place and the
+        permission that he gets by becoming member of one or more committees.
+        """
+        perms = set()
+        if self.place == place or self.place.has_parent(place):
+            perms.add("read")
+        return perms
+
 class CommitteeType(db.Model):
     """Specification of a Committee.
     """

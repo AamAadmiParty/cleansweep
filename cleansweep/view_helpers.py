@@ -21,8 +21,7 @@ def _get_current_user():
     if session.get('user'):
         return Member.find(email=session['user'])
 
-
-def place_view(path, func=None, *args, **kwargs):
+def place_view(path, func=None, permission='read', *args, **kwargs):
     """Decorator to simplify all views that work on places.
 
     Takes care of loading a place, permissions and 404 error if place is not found.
@@ -41,10 +40,16 @@ def place_view(path, func=None, *args, **kwargs):
         user = _get_current_user()
         if not user:
             return render_template("permission_denied.html")
+
+        perms = user.get_permissions(place)
+        if permission not in perms:
+            return render_template("permission_denied.html")
         
         return func(place, *a, **kw)
     return f
 
+def admin_view(path, func=None, *args, **kwargs):
+    return place_view(path, func=func, permission='write', *args, **kwargs)
 
 class PlaceConverter(BaseConverter):
     """Converter for place.
