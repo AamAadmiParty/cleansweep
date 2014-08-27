@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content_head %}
+    <h1>Permission Denined</h1>
+{% endblock %}
+
+{% block content_body %}
+    {% if not user %}
+        <p>You must be <a href="{{url_for('login')}}">logged in</a> to access this page.</p>
+    {% else %}
+        <p>You don't have sufficient privileges to access this page.</p>
+    {% endif %}
+{% endblock %}
