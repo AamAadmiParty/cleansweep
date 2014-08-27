@@ -246,6 +246,11 @@ class Member(db.Model):
         perms = set()
         if self.place == place or self.place.has_parent(place):
             perms.add("read")
+
+        for cm in self.committees.all():
+            committee_place = cm.committee.place
+            if committee_place == place or place.has_parent(committee_place):
+                perms.update(cm.role.permission.split(","))
         return perms
 
 class CommitteeType(db.Model):
