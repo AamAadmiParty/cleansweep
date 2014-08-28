@@ -106,6 +106,11 @@ class Place(db.Model):
             .order_by(PlaceType.level))
         return q.all()
 
+    def get_member_count(self):
+        return Member.query.filter(
+            place_parents.c.child_id==Member.place_id,
+            place_parents.c.parent_id==self.id).count()
+
     def get_parent(self, type):
         """Returns parent place of given type.
         """
