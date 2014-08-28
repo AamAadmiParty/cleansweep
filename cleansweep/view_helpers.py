@@ -21,6 +21,15 @@ def _get_current_user():
     if session.get('user'):
         return Member.find(email=session['user'])
 
+def get_permissions(user, place):
+    """Returns the list of permissions the user has at the given place.
+    """
+    # ADMIN_USERS have all the permissions
+    if user.email in app.config['ADMIN_USERS']:
+        return ['read', 'write', 'admin']
+    else:
+        return user.get_permissions(place)
+
 def place_view(path, func=None, permission='read', *args, **kwargs):
     """Decorator to simplify all views that work on places.
 
@@ -41,7 +50,7 @@ def place_view(path, func=None, permission='read', *args, **kwargs):
         if not user:
             return render_template("permission_denied.html")
 
-        perms = user.get_permissions(place)
+        perms = get_permissions(user, place)
         if permission not in perms:
             return render_template("permission_denied.html")
         
