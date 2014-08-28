@@ -1,0 +1,14 @@
+<div class="widget widget-placelist">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <strong>Summary</strong>
+    </div>
+    <div class="panel-body">
+      <ul class="list-unstyled">
+        {% for typename, count in place.get_counts() %}
+          <li><strong>{{count}}</strong> {{typename| pluralize}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </ul>
+</div>

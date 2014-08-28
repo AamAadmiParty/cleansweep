@@ -32,6 +32,9 @@ class PlaceType(db.Model):
     def get_subtype(self):
         return PlaceType.query.filter(PlaceType.level > self.level).order_by(PlaceType.level).first()
 
+    def get_subtypes(self):
+        return PlaceType.query.filter(PlaceType.level > self.level).order_by(PlaceType.level).all()
+
     @staticmethod
     def get(short_name):
         """Returns PlaceType object with given short_name.
@@ -92,6 +95,16 @@ class Place(db.Model):
         """Returns all places without any parent.
         """
         return Place.query.filter_by(iparent_id=None).all()
+
+    def get_counts(self):
+        q = (db.session.query(PlaceType.short_name, db.func.count(Place.id))
+            .filter(
+                PlaceType.id==Place.type_id,
+                place_parents.c.child_id==Place.id,
+                place_parents.c.parent_id==self.id)
+            .group_by(PlaceType.short_name, PlaceType.level)
+            .order_by(PlaceType.level))
+        return q.all()
 
     def get_parent(self, type):
         """Returns parent place of given type.
