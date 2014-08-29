@@ -68,3 +68,7 @@ footer {
 .cs-header .breadcrumb a {
     color: #ddd;
 }
+
+.fixme {
+    background: #dcd;
+}

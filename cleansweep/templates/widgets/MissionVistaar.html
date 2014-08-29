@@ -24,4 +24,19 @@
       </div>
     </div>
   </div>
+{% elif place.type.short_name != 'PB' and 'read' in permissions %}
+  <div class="widget widget-placelist">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <strong>Mission Vistaar</strong>
+      </div>
+      <div class="panel-body">
+        <div class="progress" style="margin-bottom: 5px;">
+          <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="$percent" aria-valuemin="0" aria-valuemax="100" style="width: 2.3%;">
+          </div>
+        </div>
+        <p class="text-danger"><strong>250</strong> of <strong>12345</strong> PX covered (<strong>2.3%</strong>)</p>
+      </div>
+    </div>
+  </div>
 {% endif %}
