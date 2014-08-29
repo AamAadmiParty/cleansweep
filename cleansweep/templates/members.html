@@ -1,13 +1,11 @@
 {% import "macros.html" as macros %}
+
 {% extends "place.html" %}
 
 {% block subnav %}
-  {{ macros.subnavigation(place,tab="members") }}
+    {{ macros.subnavigation(place, tab="home", permissions=permissions) }}
 {% endblock %}
 
 {% block page_content %}
-  <ul class="list-unstyled">
-    <li><a href="{{url_for('addmember', key=place.key)}}">Add Member</a>
-  </ul>
   {{ widget("MemberList", place=place) }}
 {% endblock %}

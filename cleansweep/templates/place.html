@@ -7,7 +7,7 @@
       {{ macros.breadcrumbs(place) }}
       <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
       {% block subnav %}
-        {{ macros.subnavigation(place, tab="home") }}
+        {{ macros.subnavigation(place, tab="home", permissions=permissions) }}
       {% endblock %}
     </div>
   </div>

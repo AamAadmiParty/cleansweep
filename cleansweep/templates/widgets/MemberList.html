@@ -1,7 +1,8 @@
-{% for m in place.members %}
+{% for m in place.get_all_members() %}
     <div class="member-card">
       <strong>{{m.name}}</strong>
       <div>{{m.email}}</div>
       <div>{{m.phone}}</div>
+    <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.name}}</a></div>
     </div>
 {% endfor %}

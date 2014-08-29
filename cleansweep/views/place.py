@@ -17,8 +17,8 @@ def home():
 def place(place):
     return render_template("place.html", place=place)
 
-@place_view("/members")
-def members(place):
+@place_view("/volunteers", permission="read")
+def volunteers(place):
     return render_template("members.html", place=place)
 
 @place_view("/members/add", methods=["GET", "POST"])

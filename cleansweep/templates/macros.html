@@ -15,17 +15,21 @@
   {% endif %}
 {% endmacro %}
 
-{% macro subnavigation(place, tab="home") %}
+{% macro subnavigation(place, tab="home", permissions=[]) %}
   <ul class="nav nav-pills">
     <li class="{{'active' if tab=='home' }}">
       <a href="{{url_for('place', key=place.key)}}">Home</a>
     </li>
-    <li class="{{'active' if tab=='members' }}">
-      <a href="{{url_for('members', key=place.key)}}">Members <span class="badge">{{place.members.count()}}</span></a>
-    </li>
-    <li class="pull-right {{'active' if tab=='admin' }}">
-      <a href="{{url_for('admin', key=place.key)}}">Admin Center</a>
-    </li>
+    {% if "read" in permissions %}
+      <li class="{{'active' if tab=='members' }}">
+        <a href="{{url_for('volunteers', key=place.key)}}">Volunteers <span class="badge">{{place.get_member_count()}}</span></a>
+      </li>
+    {% endif %}
+    {% if "write" in permissions %}
+      <li class="pull-right {{'active' if tab=='admin' }}">
+        <a href="{{url_for('admin', key=place.key)}}">Admin Center</a>
+      </li>
+    {% endif %}
   </ul>
 {% endmacro %}
 

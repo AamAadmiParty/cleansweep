@@ -2,7 +2,7 @@
 
 Includes template filters and context processors.
 """
-from flask import (request, session)
+from flask import (request, session, g)
 import humanize
 from .app import app
 from .widgets import render_widget
@@ -40,5 +40,6 @@ def helpers():
         "user": get_current_user(),
         "get_toplevel_places": Place.get_toplevel_places,
         "get_config": app.config.get,
-        "get_oauth_providers": oauth.get_oauth_providers
+        "get_oauth_providers": oauth.get_oauth_providers,
+        "permissions": getattr(g, "permissions", []),
     }
