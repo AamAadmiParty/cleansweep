@@ -21,7 +21,7 @@
       <a href="{{url_for('place', key=place.key)}}">Home</a>
     </li>
     {% if "read" in permissions %}
-      <li class="{{'active' if tab=='members' }}">
+      <li class="{{'active' if tab=='volunteers' }}">
         <a href="{{url_for('volunteers', key=place.key)}}">Volunteers <span class="badge">{{place.get_member_count()}}</span></a>
       </li>
     {% endif %}

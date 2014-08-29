@@ -17,13 +17,16 @@
     </div>
     <div class="container">
       <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-6">
           {% block page_content %}
             {{ widget("PlaceList", place=place) }}
           {% endblock %}
         </div>
         <div class="col-md-3">
           {{ widget("Summary", place=place) }}
+          {{ widget("MissionVistaar", place=place) }}
+        </div>
+        <div class="col-md-3">
           {{ widget("PlaceNavigation", place=place) }}
         </div>
       </div>

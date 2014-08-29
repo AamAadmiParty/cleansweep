@@ -1,0 +1,27 @@
+{% if place.type.short_name == "PX" %}
+  <div class="widget widget-placelist">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <strong>Mission Vistaar</strong>
+      </div>
+      <div class="panel-body">
+        {% set status  = get_mv_request_status(user, place) %}
+        {% if status == "approved" %}
+          <p>You are currently working at this polling center.</p>
+        {% elif status == "pending" %}
+          <p>You've send request to work at this polling center. Your request is being reviewed.</p>
+          {#
+          <button class="btn btn-danger">Withdraw your request</button>
+          #}
+        {% elif status == "rejected" %}
+          <p>Sorry! Your request to work at this place has been rejected.</p>
+        {% else %}
+          <p>Interested to work at this polling center?</p>
+          <form method="POST" action="{{url_for('mv_request', key=place.key)}}">
+            <button class="btn btn-primary">Request to work here</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}

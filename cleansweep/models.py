@@ -56,7 +56,8 @@ place_parents = db.Table('place_parents',
 )
 
 class Place(db.Model):
-    __table_name__ = "place"
+    __tablename__ = "place"
+
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.Text, nullable=False)
     name = db.Column(db.Text, nullable=False)
@@ -238,12 +239,25 @@ class Place(db.Model):
                 .offset(offset)
                 .all())
 
+    def get_mv_requests(self, status='pending', limit=100, offset=0):
+        """Returns all the pending MV requests below this place.
+        """
+        return (MVRequest
+                .query
+                .filter_by(status=status)
+                .filter(
+                    MVRequest.place_id==place_parents.c.child_id,
+                    place_parents.c.parent_id==self.id)
+                .limit(limit)
+                .offset(offset)
+                .all())
+
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
 
 
 class Member(db.Model):
-    __table_name__ = "member"
+    __tablename__ = "member"
     id = db.Column(db.Integer, primary_key=True)
 
     place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
@@ -284,7 +298,7 @@ class Member(db.Model):
 class CommitteeType(db.Model):
     """Specification of a Committee.
     """
-    __table_name__ = "committee_type"
+    __tablename__ = "committee_type"
     __table_args__ = (db.UniqueConstraint('place_id', 'slug'), {})
 
     id = db.Column(db.Integer, primary_key=True)
@@ -378,7 +392,7 @@ class CommitteeRole(db.Model):
     Support for specify multiple members and min/max limits is yet to be
     implemented.
     """
-    __table_name__ = "committee_role"
+    __tablename__ = "committee_role"
     id = db.Column(db.Integer, primary_key=True)
     committee_type_id = db.Column(db.Integer, db.ForeignKey('committee_type.id'))
     committee_type = db.relationship('CommitteeType', backref=db.backref('roles'))
@@ -465,7 +479,7 @@ class CommitteeMember(db.Model):
         self.member = member
 
 class PendingMember(db.Model):
-    __table_name__ = "pending_member"
+    __tablename__ = "pending_member"
     id = db.Column(db.Integer, primary_key=True)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False)
     place = db.relationship('Place', foreign_keys=place_id)
@@ -514,3 +528,42 @@ class VoterInfo(db.Model):
     def get_booth(self):
         key = "{}/AC{:0>3}/PB{:0>4}".format(self.state, self.ac, self.pb)
         return Place.find(key=key)
+
+class MVRequest(db.Model):
+    __tablename__ = "mv_request"
+
+    id = db.Column(db.Integer, primary_key=True)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
+    place = db.relationship('Place', foreign_keys=place_id)
+
+    member_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable=False, index=True)
+    member = db.relationship('Member', foreign_keys=member_id)
+
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    status = db.Column(
+        db.Enum("pending", "approved", "rejected", name="mv_request_status"),
+        default="pending")
+
+    __table_args__ = (db.UniqueConstraint('place_id', 'member_id'), {})
+
+    def __init__(self, user, place):
+        self.member = user
+        self.place = place
+
+    @classmethod
+    def find(cls, **kw):
+        return cls.query.filter_by(**kw).first()
+
+    @classmethod
+    def get_request_status(cls, user, place):
+        request = cls.find(member_id=user.id, place_id=place.id)
+        if request:
+            return request.status
+
+    def reject(self):
+        self.status = 'rejected'
+        db.session.add(self)
+
+    def approve(self):
+        self.status = 'approved'
+        db.session.add(self)

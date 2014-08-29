@@ -6,7 +6,7 @@ from flask import (request, session, g)
 import humanize
 from .app import app
 from .widgets import render_widget
-from .models import Member, Place
+from .models import Member, Place, MVRequest
 from . import oauth
 
 @app.template_filter('pluralize')
@@ -42,4 +42,5 @@ def helpers():
         "get_config": app.config.get,
         "get_oauth_providers": oauth.get_oauth_providers,
         "permissions": getattr(g, "permissions", []),
+        "get_mv_request_status": MVRequest.get_request_status,
     }
