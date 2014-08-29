@@ -10,8 +10,6 @@ following files as input.
 """
 import os, sys
 import re
-import csv
-import json
 import logging
 from .models import Place, PlaceType, db
 
@@ -90,6 +88,7 @@ class Loader:
             # ignore comment and empty lines
             if line.startswith("#") or not line.strip():
                 continue
+            line = line.decode('utf-8')
             parent_key, key, name = line.strip().split(None, 2)
             yield parent_key, key, name
 
@@ -116,6 +115,9 @@ class Loader:
                 logger.info("updating %r %r - %r", place_type.short_name, key, name)
                 if place.name != name:
                     place.name = name
+                if place.iparent != parent:
+                    logger.info("updating parent of %s to %s", key, parent.key)
+                    parent.add_place(place)
             else:
                 logger.info("adding %r %r - %r", place_type.short_name, key, name)
                 place = Place(key=key, name=name, type=place_type)
@@ -134,59 +136,6 @@ class Loader:
             self.place_cache[key] = place
         return self.place_cache[key]
 
-    def load_place(self, place_type, parent_key, key, name):
-        logger.info("adding %r %r - %r", place_type.short_name, key, name)
-        sys.stdout.flush()
-        parent = self.get_parent_place(parent_key)
-        place = Place.find(key=key)
-        if not place:
-            place = Place(key=key, name=name, type=place_type)
-        else:
-            if place.name != name:
-                place.name = name
-        db.session.add(place)
-        if parent:
-            parent.add_place(place)
-
-def create_place_types():
-    def ensure_place_type(name, short_name, level):
-        t = PlaceType.query.filter_by(short_name=short_name).first()
-        if not t:
-            print "adding", name, short_name, level
-            t = PlaceType(name=name, short_name=short_name, level=level)
-            db.session.add(t)
-
-    ensure_place_type('Country', 'COUNTRY', 10)
-    ensure_place_type('Region', 'REGION', 20)
-    ensure_place_type('State', 'STATE', 30)
-    ensure_place_type('Zone', 'ZONE', 40)
-    ensure_place_type('District', 'DT', 50)
-    ensure_place_type('Assembly Constituency', 'AC', 60)
-    ensure_place_type('Ward', 'WARD', 70)
-    ensure_place_type('Polling Center', 'PC', 80)
-    ensure_place_type('Polling Booth', 'PB', 90)
-    db.session.commit()
-
-def ensure_place_type(name, short_name, level):
-    t = PlaceType.query.filter_by(short_name=short_name).first()
-    if not t:
-        print "adding", name, short_name, level
-        t = PlaceType(name=name, short_name=short_name, level=level)
-        db.session.add(t)
-
-def ensure_place(key, name, type, parent=None):
-    p = Place.find(key)
-    if not p:
-        p = Place(key=key, name=name, type=type)
-        if parent:
-            parent.add_place(p)
-        else:
-            db.session.add(p)
-    return p
-
-def read_tsv(path):
-    return [[c.strip() for c in row] for row in csv.reader(open(path), delimiter='\t')]    
-
 cache = {}
 def find_place(key):
     """Cached implementation of Place.find.
@@ -194,42 +143,6 @@ def find_place(key):
     if key not in cache:
         cache[key] = Place.find(key)
     return cache[key]
-
-def load_state(root_dir):
-    path = os.path.join(root_dir, "state.json")
-    d = json.loads(open(path).read())
-    state = ensure_place(key=d['key'], name=d['name'], type=PlaceType.get("STATE"))
-
-    for code, name in read_tsv(os.path.join(root_dir, "lc.txt")):
-        key = "{}/{}".format(d['key'], code)
-        name = "{} - {}".format(code, name)
-        ensure_place(key=key, name=name, type=PlaceType.get("LC"), parent=state)
-    db.session.commit()
-
-    i = 0
-    for lc_code, ac_code, ac_name in read_tsv(os.path.join(root_dir, "ac.txt")):
-        lc_key = "{}/{}".format(d['key'], lc_code)
-        lc = find_place(lc_key)
-        ac_key = "{}/{}".format(d['key'], ac_code)
-        ac_name = "{} - {}".format(ac_code, ac_name)
-        ensure_place(key=ac_key, name=ac_name, type=PlaceType.get("AC"), parent=lc)
-        if i and i % 100 == 0:
-            db.session.commit()
-        i += 1
-            
-    db.session.commit()
-
-    i = 0
-    for ac_code, pb_code, pb_name in read_tsv(os.path.join(root_dir, "pb.txt")):
-        ac_key = "{}/{}".format(d['key'], ac_code)
-        ac = find_place(ac_key)
-        pb_key = "{}/{}".format(ac_key, pb_code)
-        pb_name = "{} - {}".format(pb_code, pb_name)
-        ensure_place(key=pb_key, name=pb_name, type=PlaceType.get("PB"), parent=ac)
-        if i and i % 100 == 0:
-            db.session.commit()
-        i += 1
-    db.session.commit()
 
 def add_member(place_key, name, email, phone):
     place = find_place(place_key)
