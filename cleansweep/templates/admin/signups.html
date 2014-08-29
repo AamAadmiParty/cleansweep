@@ -1,8 +1,13 @@
 {% from "macros.html" import render_pill %}
 {% extends "admin/index.html" %}
+
+{% block subnav %}
+  {{ admin_nav(place, tab="signups") }}
+{% endblock %}
+
 {% block page_content %}
   <h2>Volunteer Signups</h2>
-  <ul class="nav nav-pills">
+  <ul class="nav nav-pills nav-status">
     {{ render_pill("Pending", url_for('admin_signups', key=place.key), request_path)}}
     {{ render_pill("Approved", url_for('admin_signups', key=place.key, status='approved'), request_path)}}
     {{ render_pill("Rejected", url_for('admin_signups', key=place.key, status='rejected'), request_path)}}
@@ -50,7 +55,7 @@
     td.actions {
       max-width: 250px;
     }
-    ul.nav-pills {
+    ul.nav-status {
       margin-bottom: 20px;
     }
   </style>

@@ -7,7 +7,7 @@
       {{ macros.breadcrumbs(place, include_self=True) }}
       <h1><a href="{{url_for('admin', key=place.key)}}">Admin Center</a></h1>
       {% block subnav %}
-        {{ macros.subnavigation(place, tab="admin") }}
+        {{ admin_nav(place, tab="admin") }}
       {% endblock %}
     </div>
   </div>
@@ -26,3 +26,17 @@
     </div>
   </div>
 {% endblock %}
+
+{% macro admin_nav(place, tab="admin") %}
+  <ul class="nav nav-pills">
+    <li>
+      <a href="{{url_for('place', key=place.key)}}">&larr; Back</a>
+    </li>
+    <li class="{{'active' if tab=='admin' }}">
+      <a href="{{url_for('admin', key=place.key)}}">Admin Home</a>
+    </li>
+    <li class="{{'active' if tab=='signups' }}">
+      <a href="{{url_for('admin_signups', key=place.key)}}">Signups</a>
+    </li>
+  </ul>
+{% endmacro %}
