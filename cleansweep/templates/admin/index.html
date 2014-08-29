@@ -38,5 +38,10 @@
     <li class="{{'active' if tab=='signups' }}">
       <a href="{{url_for('admin_signups', key=place.key)}}">Signups</a>
     </li>
+    {% if place.type.short_name != "PB" %}
+      <li class="{{'active' if tab=='mv-requests' }}">
+        <a href="{{url_for('admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
+      </li>
+    {% endif %}
   </ul>
 {% endmacro %}
