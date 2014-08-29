@@ -2,30 +2,20 @@
 """
 
 from flask import (render_template, abort, url_for, redirect, request, flash)
-from ..app import app
-from ..models import CommitteeType, CommitteeRole, Member, Place, db, PendingMember
+from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, MVRequest
 from .. import forms
 from ..view_helpers import place_view
 
 @place_view("/admin", permission="write")
-def admin(key):
-    place = Place.find(key)
-    if not place:
-        abort(404)    
+def admin(place):
     return render_template("admin/index.html", place=place)
 
 @place_view("/admin/committees", permission="write")
-def committees(key):
-    place = Place.find(key)
-    if not place:
-        abort(404)
+def committees(place):
     return render_template("admin/committees.html", place=place)
 
 @place_view("/admin/committees/<slug>", methods=["GET", "POST"], permission="write")
-def view_committee(key, slug):
-    place = Place.find(key)
-    if not place:
-        abort(404)
+def view_committee(place, slug):
     committee = place.get_committee(slug)
     if not committee:
         abort(404)
@@ -52,10 +42,7 @@ def view_committee(key, slug):
     return render_template("admin/view_committee.html", place=place, committee=committee)
 
 @place_view("/admin/committee-structures/new", methods=['GET', 'POST'], permission="write")
-def new_committee_structure(key):
-    place = Place.find(key)
-    if not place:
-        abort(404)
+def new_committee_structure(place):
     form = forms.NewCommitteeForm(place)
     if request.method == "POST" and form.validate():
         committee_type = CommitteeType.new_from_formdata(place, form)
@@ -67,28 +54,19 @@ def new_committee_structure(key):
         return render_template("admin/new_committee_structure.html", place=place, form=form)
 
 @place_view("/admin/committee-structures", permission="write")
-def committee_structures(key):
-    place = Place.find(key)
-    if not place:
-        abort(404)
+def committee_structures(place):
     return render_template("admin/committee_structures.html", place=place)
 
 @place_view("/admin/committee-structures/<slug>", permission="write")
-def view_committee_structure(key, slug):
-    place = Place.find(key)
-    if not place:
-        abort(404)
+def view_committee_structure(place, slug):
     committee_type = CommitteeType.find(place, slug)
     return render_template("admin/view_committee_structure.html", place=place, committee_type=committee_type)
 
 @place_view("/admin/signups/<status>", methods=['GET', 'POST'], permission="write")
 @place_view("/admin/signups", methods=['GET', 'POST'], permission="write")
-def admin_signups(key, status=None):
-    place = Place.find(key)
-    if not place:
-        abort(404)
+def admin_signups(place, status=None):
     if status not in [None, 'approved', 'rejected']:
-        return redirect(url_for("admin_signups", key=key))
+        return redirect(url_for("admin_signups", key=place.key))
     if status is None:
         status = 'pending'
 

@@ -40,6 +40,11 @@ def place_view(path, func=None, permission=None, *args, **kwargs):
     if func is None:
         return functools.partial(place_view, path, permission=permission, *args, **kwargs)
 
+    # Handle the case of multiple view decorators
+    if hasattr(func, "_place_view"):
+        app.route("/<place:key>" + path, *args, **kwargs)(func)
+        return func
+
     @app.route("/<place:key>" + path, *args, **kwargs)
     @functools.wraps(func)
     def f(key, *a, **kw):
@@ -58,6 +63,7 @@ def place_view(path, func=None, permission=None, *args, **kwargs):
             return render_template("permission_denied.html")
         
         return func(place, *a, **kw)
+    f._place_view = func
     return f
 
 def admin_view(path, func=None, *args, **kwargs):
