@@ -292,6 +292,11 @@ class Member(db.Model):
             committee_place = cm.committee.place
             if committee_place == place or place.has_parent(committee_place):
                 perms.update(cm.role.permission.split(","))
+
+        status = MVRequest.get_request_status(self, place)
+        if status == 'approved':
+            perms.update(["read", "write"])
+
         return perms
 
 class CommitteeType(db.Model):
