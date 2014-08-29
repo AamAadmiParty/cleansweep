@@ -5,22 +5,23 @@ from flask import (render_template, abort, url_for, redirect, request, flash)
 from ..app import app
 from ..models import CommitteeType, CommitteeRole, Member, Place, db, PendingMember
 from .. import forms
+from ..view_helpers import place_view
 
-@app.route("/<place:key>/admin")
+@place_view("/admin", permission="write")
 def admin(key):
     place = Place.find(key)
     if not place:
         abort(404)    
     return render_template("admin/index.html", place=place)
 
-@app.route("/<place:key>/admin/committees")
+@place_view("/admin/committees", permission="write")
 def committees(key):
     place = Place.find(key)
     if not place:
         abort(404)
     return render_template("admin/committees.html", place=place)
 
-@app.route("/<place:key>/admin/committees/<slug>", methods=["GET", "POST"])
+@place_view("/admin/committees/<slug>", methods=["GET", "POST"], permission="write")
 def view_committee(key, slug):
     place = Place.find(key)
     if not place:
@@ -50,7 +51,7 @@ def view_committee(key, slug):
 
     return render_template("admin/view_committee.html", place=place, committee=committee)
 
-@app.route("/<place:key>/admin/committee-structures/new", methods=['GET', 'POST'])
+@place_view("/admin/committee-structures/new", methods=['GET', 'POST'], permission="write")
 def new_committee_structure(key):
     place = Place.find(key)
     if not place:
@@ -65,14 +66,14 @@ def new_committee_structure(key):
     else:
         return render_template("admin/new_committee_structure.html", place=place, form=form)
 
-@app.route("/<place:key>/admin/committee-structures")
+@place_view("/admin/committee-structures", permission="write")
 def committee_structures(key):
     place = Place.find(key)
     if not place:
         abort(404)
     return render_template("admin/committee_structures.html", place=place)
 
-@app.route("/<place:key>/admin/committee-structures/<slug>")
+@place_view("/admin/committee-structures/<slug>", permission="write")
 def view_committee_structure(key, slug):
     place = Place.find(key)
     if not place:
@@ -80,8 +81,8 @@ def view_committee_structure(key, slug):
     committee_type = CommitteeType.find(place, slug)
     return render_template("admin/view_committee_structure.html", place=place, committee_type=committee_type)
 
-@app.route("/<place:key>/admin/signups/<status>", methods=['GET', 'POST'])
-@app.route("/<place:key>/admin/signups", methods=['GET', 'POST'])
+@place_view("/admin/signups/<status>", methods=['GET', 'POST'], permission="write")
+@place_view("/admin/signups", methods=['GET', 'POST'], permission="write")
 def admin_signups(key, status=None):
     place = Place.find(key)
     if not place:
