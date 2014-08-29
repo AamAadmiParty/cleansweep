@@ -231,10 +231,9 @@ class Place(db.Model):
         return (PendingMember
                 .query
                 .filter_by(status=status)
-                .filter(db.or_(
-                    Place.id==PendingMember.place_id,
-                    db.and_(Place.id==place_parents.c.parent_id,
-                            PendingMember.place_id==place_parents.c.child_id)))
+                .filter(
+                    PendingMember.place_id==place_parents.c.child_id,
+                    place_parents.c.parent_id==self.id)
                 .limit(limit)
                 .offset(offset)
                 .all())
