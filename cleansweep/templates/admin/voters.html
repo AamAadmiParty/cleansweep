@@ -1,0 +1,23 @@
+{% extends "admin/index.html" %}
+
+{% block subnav %}
+  {{ admin_nav(place, tab="voters") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Voters</h2>
+  {% set voters = place.get_voters() %}
+  {% if not voters %}
+    <em>None found</em>
+  {% else %}
+    <div class="row">
+      {% for voter in voters %}
+        <div class="col-md-4">
+          <strong>{{voter.voterid}}</strong>
+          <div>Y. Aaam Aadmmi</div>
+          <div>House No. 1234</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}
