@@ -251,6 +251,15 @@ class Place(db.Model):
                 .offset(offset)
                 .all())
 
+    def get_voters(self, limit=100, offset=0):
+        if self.type.short_name == "PB":
+            q = VoterInfo.query.filter_by(place_id=self.id)
+        else:
+            q = (VoterInfo.query.filter(
+                    VoterInfo.place_id==place_parents.c.child_id,
+                    place_parents.c.parent_id==self.id))
+        return q.limit(limit).offset(offset).all()
+
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
 
@@ -520,18 +529,16 @@ class PendingMember(db.Model):
 
 class VoterInfo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    state = db.Column(db.CHAR(2), nullable=False)
-    ac = db.Column(db.SmallInteger, nullable=False)
-    pb = db.Column(db.SmallInteger, nullable=False)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), index=True)
     voterid = db.Column(db.Text, nullable=False, index=True)
+    place = db.relationship('Place', foreign_keys=place_id)
 
     @classmethod
     def find(cls, **kw):
         return cls.query.filter_by(**kw).first()
 
     def get_booth(self):
-        key = "{}/AC{:0>3}/PB{:0>4}".format(self.state, self.ac, self.pb)
-        return Place.find(key=key)
+        return self.place
 
 class MVRequest(db.Model):
     __tablename__ = "mv_request"

@@ -43,5 +43,8 @@
         <a href="{{url_for('admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
       </li>
     {% endif %}
+    <li class="{{'active' if tab=='voters' }}">
+      <a href="{{url_for('admin_voters', key=place.key)}}">Voters</a>
+    </li>
   </ul>
 {% endmacro %}

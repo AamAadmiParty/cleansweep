@@ -109,3 +109,8 @@ def admin_mv_requests(place, status=None):
                 flash('Successfully rejected {}.'.format(mv_req.name))
                 return redirect(url_for("admin_mv_requests", key=place.key))
     return render_template("admin/mv_requests.html", place=place, status=status)
+
+@place_view("/admin/voters", methods=['GET', 'POST'], permission="write")
+def admin_voters(place):
+    page = int(request.args.get('page', 1))
+    return render_template("admin/voters.html", place=place, page=page)
