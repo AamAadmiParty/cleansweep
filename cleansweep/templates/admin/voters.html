@@ -12,10 +12,12 @@
   {% else %}
     <div class="row">
       {% for voter in voters %}
-        <div class="col-md-4">
-          <strong>{{voter.voterid}}</strong>
-          <div>Y. Aaam Aadmmi</div>
-          <div>House No. 1234</div>
+        <div class="col-md-3">
+          <div class="voter-info" style="padding: 10px; border: 1px dotted #aaa;">
+            <a href="{{url_for('admin_voter_view', key=voter.place.key, voterid=voter.voterid)}}"><strong>{{voter.voterid}}</strong></a>
+            <div>Y. Aaam Aadmi</div>
+            <div>House No. 1234</div>
+          </div>
         </div>
       {% endfor %}
     </div>

@@ -2,7 +2,7 @@
 """
 
 from flask import (render_template, abort, url_for, redirect, request, flash)
-from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, MVRequest
+from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, MVRequest, VoterInfo
 from .. import forms
 from ..view_helpers import place_view
 
@@ -114,3 +114,10 @@ def admin_mv_requests(place, status=None):
 def admin_voters(place):
     page = int(request.args.get('page', 1))
     return render_template("admin/voters.html", place=place, page=page)
+
+@place_view("/admin/voters/<voterid>", methods=['GET', 'POST'], permission="write")
+def admin_voter_view(place, voterid):
+    voter = VoterInfo.find(place_id=place.id, voterid=voterid)
+    if not voter:
+        return abort(404)
+    return render_template("admin/voter.html", place=place, voter=voter)
