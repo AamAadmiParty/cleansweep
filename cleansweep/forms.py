@@ -49,6 +49,11 @@ class SignupForm(Form):
     locality = StringField('Locality')
     place = HiddenField()
 
+    def validate_phone(self, field):
+        phone = field.data
+        if models.PendingMember.find(phone=phone) or models.Member.find(phone=phone):
+            raise validators.ValidationError('This phone number is already used')
+
     def validate(self):
         if not self.voterid.data and not self.place.data:
             self.voterid.errors = tuple(["You must provide either a valid voter ID or locality."])
