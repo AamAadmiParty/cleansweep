@@ -284,8 +284,10 @@ class Member(db.Model):
         self.voterid = voterid
 
     @staticmethod
-    def find(email):
-        return Member.query.filter_by(email=email).first()
+    def find(email=None, **kw):
+        if email:
+            kw['email'] = email
+        return Member.query.filter_by(**kw).first()
 
     def get_permissions(self, place):
         """Finds the permissions the user has at given place.
