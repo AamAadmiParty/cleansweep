@@ -20,6 +20,12 @@ def api_geosearch():
             d = {'error': 'Sorry, the specified location is not yet covered.'}
             return Response(json.dumps(d), mimetype="application/json")
 
+        if 'within' in request.args:
+            parent = Place.find(request.args['within'])
+            if parent and not place.has_parent(parent):
+                d = {'error': 'Sorry, the specified location is not outside the current region.'}
+                return Response(json.dumps(d), mimetype="application/json")
+
         d = {
             "query": data['query'],
             "result": {

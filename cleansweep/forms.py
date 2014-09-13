@@ -62,8 +62,31 @@ class SignupForm(Form):
         if self.voterid.data:
             voterid = self.voterid.data
             voterinfo = models.VoterInfo.find(voterid=voterid)
-            if not voterinfo:
-                self.voterid.errors = tuple(["Invalid Voter ID"])
+            if not self.check_voterinfo(voterinfo):
                 return False
 
         return Form.validate(self)
+
+    def check_voterinfo(self, voterinfo):
+        if not voterinfo:
+            self.voterid.errors = tuple(["Invalid Voter ID"])
+            return False
+
+class AddVolunteerForm(SignupForm):
+    email = StringField('Email Address', [validators.Email()])
+
+    def __init__(self, place, *a, **kw):
+        SignupForm.__init__(self, *a, **kw)
+        self.place = place
+
+    def validate_email(self, field):
+        email = field.data
+        if models.PendingMember.find(email=email) or models.Member.find(email=email):
+            raise validators.ValidationError('This email address is already used')
+
+    def check_voterinfo(self, voterinfo):
+        if voterinfo and not voterinfo.place.has_parent(self.place):
+            self.voterid.errors = tuple(["This voter ID doesn't belong to the current place."])
+            return False
+        else:
+            return SignupForm.check_voterinfo(self, voterinfo)

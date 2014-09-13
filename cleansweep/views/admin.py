@@ -2,7 +2,7 @@
 """
 
 from flask import (render_template, abort, url_for, redirect, request, flash)
-from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, MVRequest, VoterInfo
+from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, Place, MVRequest, VoterInfo
 from .. import forms
 from ..view_helpers import place_view
 
@@ -121,3 +121,19 @@ def admin_voter_view(place, voterid):
     if not voter:
         return abort(404)
     return render_template("admin/voter.html", place=place, voter=voter)
+
+
+@place_view("/admin/add-volunteer", methods=['GET', 'POST'], permission="write")
+def admin_add_volunteer(place):
+    form = forms.AddVolunteerForm(place, request.form)
+    if request.method == "POST" and form.validate():
+        p = Place.find(key=form.place.data)
+        p.add_member(
+            name=form.name.data, 
+            email=form.email.data,
+            phone=form.phone.data,
+            voterid=form.voterid.data)
+        db.session.commit()
+        flash(u"Added {} as volunteer to {}.".format(form.name.data, p.name))
+        return redirect(url_for("admin", key=place.key))
+    return render_template("admin/add_volunteer.html", place=place, form=form)
