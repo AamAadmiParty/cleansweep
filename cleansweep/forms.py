@@ -77,7 +77,7 @@ class AddVolunteerForm(SignupForm):
 
     def __init__(self, place, *a, **kw):
         SignupForm.__init__(self, *a, **kw)
-        self.place = place
+        self._place = place
 
     def validate_email(self, field):
         email = field.data
@@ -85,8 +85,20 @@ class AddVolunteerForm(SignupForm):
             raise validators.ValidationError('This email address is already used')
 
     def check_voterinfo(self, voterinfo):
-        if voterinfo and not voterinfo.place.has_parent(self.place):
+        if voterinfo and not voterinfo.place.has_parent(self._place):
             self.voterid.errors = tuple(["This voter ID doesn't belong to the current place."])
             return False
         else:
             return SignupForm.check_voterinfo(self, voterinfo)
+
+    def validate_locality(self, field):
+        if not self.place.data:
+            return
+        p = models.Place.find(key=self.place.data)
+        if not p:
+            raise validators.ValidationError('Unable to identify this locality.')
+        if not p.has_parent(self._place):
+            raise validators.ValidationError("Sorry, the specified location is not outside the current region.")
+        return True
+
+
