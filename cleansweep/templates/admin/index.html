@@ -46,5 +46,8 @@
     <li class="{{'active' if tab=='voters' }}">
       <a href="{{url_for('admin_voters', key=place.key)}}">Voters</a>
     </li>
+    <li class="{{'active' if tab=='volunteers' }}">
+      <a href="{{url_for('admin_add_volunteer', key=place.key)}}">Add New Volunteer</a>
+    </li>
   </ul>
 {% endmacro %}
