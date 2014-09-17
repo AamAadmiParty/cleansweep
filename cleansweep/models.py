@@ -2,6 +2,7 @@ import datetime
 import itertools
 from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import JSON
 from .app import app
 
 db = SQLAlchemy(app)
@@ -282,6 +283,7 @@ class Member(db.Model):
     email = db.Column(db.Text, unique=True)
     phone = db.Column(db.Text, nullable=False, unique=True)
     voterid = db.Column(db.Text)
+    details = db.Column(JSON)
 
     def __init__(self, place, name, email, phone, voterid):
         self.name = name
@@ -295,6 +297,19 @@ class Member(db.Model):
         if email:
             kw['email'] = email
         return Member.query.filter_by(**kw).first()
+
+    def add_details(self, name, value):
+        """Adds/updates a new name-value pair to member details.
+        """
+        if self.details is None:
+            self.details = {}
+        if self.details.get(name) != value:
+            self.details[name] = value
+            db.session.add(self)
+
+    def get_detail(self, name):
+        if self.details:
+            return self.details.get(name)
 
     def get_permissions(self, place):
         """Finds the permissions the user has at given place.

@@ -2,6 +2,7 @@ import os
 from . import utils, view_helpers
 from .app import app
 from .models import db
+from . import notifications
 
 def init_app(app):
     app.config.from_object('cleansweep.default_settings')

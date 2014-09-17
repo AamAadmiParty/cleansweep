@@ -7,7 +7,7 @@ from ..app import app
 from ..models import Member, PendingMember
 from .. import oauth
 from .. import forms
-from ..core import signups
+from ..core import signups, signals
 
 @app.route("/account/login")
 def login():
@@ -17,6 +17,7 @@ def login():
         user = Member.find(email=userdata['email'])
         if user:
             session['user'] = user.email
+            signals.login_successful.send(user, userdata=userdata)
             return redirect(url_for("dashboard"))
         else:
             return render_template("login.html", userdata=userdata, error=True)
