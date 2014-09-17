@@ -127,7 +127,12 @@ def admin_voter_view(place, voterid):
 def admin_add_volunteer(place):
     form = forms.AddVolunteerForm(place, request.form)
     if request.method == "POST" and form.validate():
-        p = Place.find(key=form.place.data)
+        if form.voterid.data:
+            voterid = form.voterid.data
+            voter = VoterInfo.find(voterid=voterid)
+            p = voter.place
+        else:
+            p = Place.find(key=form.place.data)
         p.add_member(
             name=form.name.data, 
             email=form.email.data,

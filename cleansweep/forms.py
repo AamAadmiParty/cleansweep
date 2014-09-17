@@ -54,23 +54,15 @@ class SignupForm(Form):
         if models.PendingMember.find(phone=phone) or models.Member.find(phone=phone):
             raise validators.ValidationError('This phone number is already used')
 
-    def validate(self):
+    def validate_voterid(self, field):
         if not self.voterid.data and not self.place.data:
-            self.voterid.errors = tuple(["You must provide either a valid voter ID or locality."])
-            return False
+            raise validators.ValidationError("You must provide either a valid voter ID or locality.")
 
         if self.voterid.data:
             voterid = self.voterid.data
             voterinfo = models.VoterInfo.find(voterid=voterid)
-            if not self.check_voterinfo(voterinfo):
-                return False
-
-        return Form.validate(self)
-
-    def check_voterinfo(self, voterinfo):
-        if not voterinfo:
-            self.voterid.errors = tuple(["Invalid Voter ID"])
-            return False
+            if not voterinfo:
+                raise validators.ValidationError("Invalid Voter ID")
 
 class AddVolunteerForm(SignupForm):
     email = StringField('Email Address', [validators.Email()])
@@ -84,12 +76,13 @@ class AddVolunteerForm(SignupForm):
         if models.PendingMember.find(email=email) or models.Member.find(email=email):
             raise validators.ValidationError('This email address is already used')
 
-    def check_voterinfo(self, voterinfo):
-        if voterinfo and not voterinfo.place.has_parent(self._place):
-            self.voterid.errors = tuple(["This voter ID doesn't belong to the current place."])
-            return False
-        else:
-            return SignupForm.check_voterinfo(self, voterinfo)
+    def validate_voterid(self, field):
+        SignupForm.validate_voterid(self, field)
+        if self.voterid.data:
+            voterid = self.voterid.data
+            voterinfo = models.VoterInfo.find(voterid=voterid)
+            if voterinfo and not voterinfo.place.has_parent(self._place):
+                raise validators.ValidationError("This voter ID doesn't belong to the current place.")
 
     def validate_locality(self, field):
         if not self.place.data:
@@ -99,6 +92,5 @@ class AddVolunteerForm(SignupForm):
             raise validators.ValidationError('Unable to identify this locality.')
         if not p.has_parent(self._place):
             raise validators.ValidationError("Sorry, the specified location is not outside the current region.")
-        return True
 
 

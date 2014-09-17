@@ -24,7 +24,7 @@
         <p class="help-block help-first">Please pick a locality from the dropdown so that we can identify your polling booth automatically.</p>
           <p class="help-block help-second" style="display: none;"><i class="fa fa-spinner fa-spin"></i> Please wait while we discover your assembly constituency from the location.</p>
         </div>
-        <input type="hidden" id="place" name="place" value="{{form.place.data}}"/>
+        <input type="hidden" id="place" name="place" value="{{form.place.data or ''}}"/>
         <div class="locality-details alert alert-info" style="display: none;">
           We've identified the polling station near to your location as:<br/>
           <div><strong><span class="pb">xx</span></strong></div>
