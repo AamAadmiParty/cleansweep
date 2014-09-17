@@ -87,6 +87,7 @@ class Place(db.Model):
         self.key = key
         self.name = name
         self.type = type
+        self._parents = [self]
 
     def __repr__(self):
         return "Place(%r)" % self.key
@@ -146,7 +147,7 @@ class Place(db.Model):
     def get_places(self, type=None):
         """Returns all places of given type below this place.
         """
-        return self._get_places_query(type=type).all()
+        return self._get_places_query(type=type).filter(place_parents.c.child_id != self.id).all()
 
     def get_places_count(self, type=None):
         return self._get_places_query(type=type).count()
