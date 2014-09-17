@@ -6,29 +6,91 @@
     <div class="container">
       {{ macros.breadcrumbs(place) }}
       <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
-      {% block subnav %}
-        {{ macros.subnavigation(place, tab="home", permissions=permissions) }}
-      {% endblock %}
     </div>
   </div>
   <div class="page-content">
     <div class="container">
       {{macros.show_flash_messages()}}
     </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          {% block page_content %}
-            {{ widget("PlaceList", place=place) }}
-          {% endblock %}
-        </div>
-        <div class="col-md-3">
-          {{ widget("Summary", place=place) }}
-          {{ widget("MissionVistaar", place=place) }}
-        </div>
-        <div class="col-md-3">
-          {{ widget("PlaceNavigation", place=place) }}
-        </div>
+    {% block page_container %}
+      {{ self.three_column_layout() }}
+    {% endblock %}
+  </div>
+{% endblock %}
+
+{% block subnav %}
+  {{ subnav(place, tab="home") }}
+{% endblock %}
+
+{% block page_content %}
+  {{ widget("PlaceList", place=place) }}
+{% endblock %}
+
+{% block rightsidebar %}
+    {{ widget("Summary", place=place) }}
+    {{ widget("MissionVistaar", place=place) }}
+    {{ widget("PlaceNavigation", place=place) }}
+{% endblock %}
+
+{% macro subnav(place, tab="home") %}
+  <div class="subnav">
+    <ul class="list-group">
+      <li class="list-group-item {{'active' if tab=='home' }}">
+        <a href="{{url_for('place', key=place.key)}}">Home</a>
+      </li>
+      {% if "read" in permissions %}
+        <li class="list-group-item {{'active' if tab=='volunteers' }}">
+          <a href="{{url_for('volunteers', key=place.key)}}">Volunteers <span class="badge pull-right">{{place.get_member_count()}}</span></a>
+        </li>
+      {% endif %}
+    </ul>
+
+    {% if "write" in permissions %}
+      <h4>Admin</h4>
+      <ul class="list-group">
+        <li class="list-group-item {{'active' if tab=='signups' }}">
+          <a href="{{url_for('admin_signups', key=place.key)}}">Signups</a>
+        </li>
+        {% if place.type.short_name != "PB" %}
+          <li class="list-group-item {{'active' if tab=='mv-requests' }}">
+            <a href="{{url_for('admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
+          </li>
+        {% endif %}
+        <li class="list-group-item {{'active' if tab=='voters' }}">
+          <a href="{{url_for('admin_voters', key=place.key)}}">Voters</a>
+        </li>
+        <li class="list-group-item {{'active' if tab=='add-new-volunteer' }}">
+          <a href="{{url_for('admin_add_volunteer', key=place.key)}}">Add New Volunteer</a>
+        </li>    
+      </ul>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% block three_column_layout %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2">
+        {{self.subnav()}}
+      </div>
+      <div class="col-md-7">
+        {{self.page_content()}}
+      </div>
+      <div class="col-md-3">
+        {{ self.rightsidebar() }}
+      </div>      
+    </div>
+  </div>
+{% endblock %}
+
+{% block two_column_layout %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2">
+        {{self.subnav()}}
+      </div>
+      <div class="col-md-10">
+        {{self.page_content()}}
       </div>
     </div>
   </div>

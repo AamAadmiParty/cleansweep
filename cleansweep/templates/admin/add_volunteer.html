@@ -1,11 +1,16 @@
 {% from "macros.html" import render_field %}
 {% extends "admin/index.html" %}
+
+{% block page_container %}
+  {{self.two_column_layout()}}
+{% endblock %}
+
 {% block subnav %}
-  {{ admin_nav(place, tab="members") }}
+  {{ subnav(place, tab="add-new-volunteer") }}
 {% endblock %}
 
 {% block page_content %}
-  <h2>Add New Member</h2>
+  <h2>Add New Volunteer</h2>
   <div class="row">
     <div class="col-md-4">
       <form id="signup-form" role="form" method="POST" style="max-width: 400px;">

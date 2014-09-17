@@ -64,11 +64,21 @@ footer {
     color: white;
 }
 
-
 .cs-header .breadcrumb a {
     color: #ddd;
 }
 
 .fixme {
     background: #dcd;
+}
+
+.list-group-item.active a {
+    color: white;
+}
+
+.page-content {
+    padding-top: 10px;
+}
+.page-content h2 {
+    margin-top: 0px;
 }

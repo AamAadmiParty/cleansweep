@@ -1,53 +1,10 @@
 {% import "macros.html" as macros %}
 
-{% extends "base.html" %}
-{% block content %}
-  <div class="cs-header">
-    <div class="container">
-      {{ macros.breadcrumbs(place, include_self=True) }}
-      <h1><a href="{{url_for('admin', key=place.key)}}">Admin Center</a></h1>
-      {% block subnav %}
-        {{ admin_nav(place, tab="admin") }}
-      {% endblock %}
-    </div>
-  </div>
-  <div class="page-content">
-    <div class="container">
-      {{macros.show_flash_messages()}}
-    </div>
-    <div class="container">
-      {% block page_content %}
-        <h2>Admin Center</h2>
-        <ul class="list-unstyled">
-          <li><a href="{{url_for('committees', key=place.key)}}">Committees</a></li>
-          <li><a href="{{url_for('committee_structures', key=place.key)}}">Committee Structures</a></li>
-        </ul>
-      {% endblock %}
-    </div>
-  </div>
-{% endblock %}
-
-{% macro admin_nav(place, tab="admin") %}
-  <ul class="nav nav-pills">
-    <li>
-      <a href="{{url_for('place', key=place.key)}}">&larr; Back</a>
-    </li>
-    <li class="{{'active' if tab=='admin' }}">
-      <a href="{{url_for('admin', key=place.key)}}">Admin Home</a>
-    </li>
-    <li class="{{'active' if tab=='signups' }}">
-      <a href="{{url_for('admin_signups', key=place.key)}}">Signups</a>
-    </li>
-    {% if place.type.short_name != "PB" %}
-      <li class="{{'active' if tab=='mv-requests' }}">
-        <a href="{{url_for('admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
-      </li>
-    {% endif %}
-    <li class="{{'active' if tab=='voters' }}">
-      <a href="{{url_for('admin_voters', key=place.key)}}">Voters</a>
-    </li>
-    <li class="{{'active' if tab=='volunteers' }}">
-      <a href="{{url_for('admin_add_volunteer', key=place.key)}}">Add New Volunteer</a>
-    </li>
+{% extends "place.html" %}
+{% block page_content %}
+  <h2>Admin Center</h2>
+  <ul class="list-unstyled">
+    <li><a href="{{url_for('committees', key=place.key)}}">Committees</a></li>
+    <li><a href="{{url_for('committee_structures', key=place.key)}}">Committee Structures</a></li>
   </ul>
-{% endmacro %}
+{% endblock %}
