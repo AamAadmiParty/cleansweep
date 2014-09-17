@@ -62,6 +62,14 @@
         <li class="list-group-item {{'active' if tab=='add-new-volunteer' }}">
           <a href="{{url_for('admin_add_volunteer', key=place.key)}}">Add New Volunteer</a>
         </li>    
+        {% if place.type.short_name not in ["PB", "PX"] %} 
+          <li class="list-group-item {{'active' if tab=='committees' }}">
+            <a href="{{url_for('committees', key=place.key)}}">Committees</a>
+          </li>        
+          <li class="list-group-item {{'active' if tab=='committee-structures' }}">
+            <a href="{{url_for('committee_structures', key=place.key)}}">Committee Structures</a>
+          </li>        
+        {% endif %}
       </ul>
     {% endif %}
   </div>

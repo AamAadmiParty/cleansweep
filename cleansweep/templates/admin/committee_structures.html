@@ -1,4 +1,8 @@
 {% extends "admin/index.html" %}
+{% block subnav %}
+  {{ subnav(place, tab="committee-structures") }}
+{% endblock %}
+
 {% block page_content %}
   <h2>Committee Strutures</h2>
   {% set committee_types = place.committee_types.all() %}
