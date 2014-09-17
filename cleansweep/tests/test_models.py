@@ -1,15 +1,20 @@
 from flask.ext.testing import TestCase
-
-from ..app import app
+from ..main import app
 from ..models import db, Place, PlaceType, CommitteeType
 
 class DBTestCase(TestCase):
     setup_place_types = False
     setup_places = False
 
+    def setUp(self):
+        with app.app_context():
+            db.create_all()
+
+    def tearDown(self):
+        with app.app_context():
+            db.drop_all()
+
     def create_app(self):     
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'   
-        app.config['SQLALCHEMY_ECHO'] = True
         return app
 
     def add_place_types(self):
