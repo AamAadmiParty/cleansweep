@@ -8,9 +8,8 @@ SITE_TITLE = "Cleansweep"
 # Should be changed on production
 SECRET_KEY = "uXRlssdhCjiVyDZYiQlMFOYdmEvUoKHf"
 
-SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/cleansweep.db"
-#SQLALCHEMY_DATABASE_URI = "postgresql:///cleansweep"
-#SQLALCHEMY_ECHO = True
+SQLALCHEMY_DATABASE_URI = "postgresql:///cleansweep"
+SQLALCHEMY_ECHO = False
 
 # This picks the right database on Heroku
 if 'DATABASE_URL' in os.environ:
