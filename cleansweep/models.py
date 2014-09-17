@@ -50,6 +50,9 @@ class PlaceType(db.Model):
         t = PlaceType(name, short_name, level)
         db.sesson.add(t)
 
+# The place_parents table stores the parent-child relation
+# of places. For convenience, we also store a place as parent of it self.
+# That makes it easier to run queries over the subtree, including that place.
 place_parents = db.Table('place_parents',
     db.Column('parent_id', db.Integer, db.ForeignKey('place.id')),
     db.Column('child_id', db.Integer, db.ForeignKey('place.id'))
@@ -72,7 +75,7 @@ class Place(db.Model):
 
     # List of parents
     # Required to list immediate children on the place page
-    parents = db.relationship('Place', 
+    _parents = db.relationship('Place', 
         secondary=place_parents, 
         primaryjoin=(id==place_parents.c.child_id),
         secondaryjoin=(id==place_parents.c.parent_id),
@@ -111,8 +114,7 @@ class Place(db.Model):
         q1 = Member.query.filter(
             place_parents.c.child_id==Member.place_id,
             place_parents.c.parent_id==self.id)
-        q2 = Member.query.filter(Member.place_id==self.id)
-        return q1.union(q2)
+        return q1
 
     def get_member_count(self):
         return self.get_all_members_query().count()
@@ -122,18 +124,23 @@ class Place(db.Model):
         """
         return self.get_all_members_query().limit(limit).offset(offset).all()
 
+    @property
+    def parents(self):
+        # return all parents except self
+        return [p for p in self._parents if self.id != p.id]
+
     def get_parent(self, type):
         """Returns parent place of given type.
         """
         if isinstance(type, basestring):
             type = PlaceType.get(type)
         try:
-            return [p for p in self.parents if p.type == type][0]
+            return [p for p in self._parents if p.type == type][0]
         except IndexError:
             return None
 
     def has_parent(self, parent):
-        return parent in self.parents
+        return parent in self._parents
 
     def get_places(self, type=None):
         """Returns all places of given type below this place.
@@ -157,8 +164,8 @@ class Place(db.Model):
         """
         # The place is being added as an immediate child of this node.
         place.iparent = self
-        # so, it's parents will be self.parents and self
-        place.parents = self.parents + [self]
+        # so, it's parents will be self.parents and it self
+        place._parents = self._parents + [place]
         db.session.add(place)
 
     def get_siblings(self):
