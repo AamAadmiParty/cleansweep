@@ -6,27 +6,22 @@
 
 {% block page_content %}
   <h2><a href="{{url_for('admin_voters', key=place.key)}}">Voters</a> / {{voter.voterid}}</h2>
-  {% set voters = place.get_voters() %}
-  {% if not voters %}
-    <em>None found</em>
-  {% else %}
-    <table class="table">
-      <tr>
-        <td>Voter ID</td>
-        <td>{{voter.voterid}}</td>
-      </tr>
-      <tr>
-        <td>Name</td>
-        <td>{{voter.name or "-"}}</td>
-      </tr>
-      <tr>
-        <td>Address</td>
-        <td>{{voter.address or "-"}}</td>
-      </tr>
-    </table>
-    <div>
-      <button class="btn btn-primary">Make a Voluteer</button>
-      <button class="btn btn-primary">mark as Donor</button>
-    </div>
-  {% endif %}
+  <table class="table">
+    <tr>
+      <td>Voter ID</td>
+      <td>{{voter.voterid}}</td>
+    </tr>
+    <tr>
+      <td>Name</td>
+      <td>{{voter.name or "-"}}</td>
+    </tr>
+    <tr>
+      <td>Address</td>
+      <td>{{voter.address or "-"}}</td>
+    </tr>
+  </table>
+  <div>
+    <button class="btn btn-primary">Make a Voluteer</button>
+    <button class="btn btn-primary">mark as Donor</button>
+  </div>
 {% endblock %}
