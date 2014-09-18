@@ -1,7 +1,7 @@
 {% extends "admin/index.html" %}
 
 {% block subnav %}
-  {{ admin_nav(voter.place, tab="voters") }}
+  {{ subnav(voter.get_place(), tab="voters") }}
 {% endblock %}
 
 {% block page_content %}
@@ -17,11 +17,11 @@
       </tr>
       <tr>
         <td>Name</td>
-        <td>Y Aam Aadmi</td>
+        <td>{{voter.name or "-"}}</td>
       </tr>
       <tr>
         <td>Address</td>
-        <td>House No. 1234</td>
+        <td>{{voter.address or "-"}}</td>
       </tr>
     </table>
     <div>

@@ -3,6 +3,7 @@ from . import utils, view_helpers
 from .app import app
 from .models import db
 from . import notifications
+from .voterlib import voterdb
 
 def init_app(app):
     app.config.from_object('cleansweep.default_settings')
@@ -18,6 +19,8 @@ def init_app(app):
 
     # Setup the view helpers
     view_helpers.init_app(app)
+
+    voterdb.init_app(app)
 
     app.logger.info("Starting cleansweep app")
 

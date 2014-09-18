@@ -18,6 +18,8 @@ if 'DATABASE_URL' in os.environ:
 if 'CLEANSWEEP_SECRET_KEY' in os.environ:
     SECRET_KEY = os.environ['CLEANSWEEP_SECRET_KEY']
 
+VOTERDB_URL = None
+
 DEBUG = True
 
 # Facebook client id and secret for dev app

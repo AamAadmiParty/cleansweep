@@ -1,12 +1,13 @@
 """Volunteer signup process.
 """
-from ..models import db, Place, PendingMember, VoterInfo
+from ..models import db, Place, PendingMember
+from ..voterlib import voterdb
 
 def resolve_voterid(voterid):
     """Takes a voterid and returns a place object.
     """
-    voter_info = VoterInfo.find(voterid=voterid)
-    return voter_info and voter_info.get_booth()
+    voter_info = voterdb.get_voter(voterid=voterid)
+    return voter_info and voter_info.get_place()
 
 def signup(name, email, phone, voterid, place_key=None):
     place = resolve_voterid(voterid)

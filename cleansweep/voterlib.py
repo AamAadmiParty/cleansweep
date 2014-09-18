@@ -1,5 +1,90 @@
 import requests
 import re
+import sys
+from .models import Place, PlaceType
+
+
+# Regular expression for converting AC012 to 12
+RE_NOTNUM_PREFIX = re.compile("^[A-Z]*0*")
+
+
+class Voter(object):
+    def __init__(self, data):
+        self.data = data
+        self.voterid = self.data['voterid']
+        self.name = self.data['name']
+        self.address = self.data.get('address')
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def get_place_key(self):
+        return "{}/AC{:0>3}/PB{:0>4}".format(self['state'], self['ac'], self['pb'])
+
+    def get_place(self):
+        return Place.find(key=self.get_place_key())
+
+    def __repr__(self):
+        return "<voter:{}@{}/AC{:0>3}/PB{:0>4}>".format(
+            self['voterid'], self['state'], self['ac'], self['pb'])
+
+class VoterDB:
+    def __init__(self, base_url=None):
+        self.base_url = base_url
+
+    def init_app(self, app):
+        self.base_url = app.config['VOTERDB_URL']
+
+    def _get(self, path, **params):
+        if self.base_url is None:
+            return []
+        url = self.base_url.rstrip("/") + "/" + path
+        return requests.get(url, params=params).json()
+
+    def get_voter(self, voterid):
+        """Returns details of the voter with given voterid.
+        """
+        result = self._get("voters", voterid=voterid)
+        if result:
+            return Voter(result[0])
+
+    def tonum(self, value):
+        return RE_NOTNUM_PREFIX.sub("", value)
+
+    def get_voters(self, place, offset=0, limit=100):
+        """Returns details of all voters from the given place.
+        """
+        STATE = PlaceType.get("STATE")
+        AC = PlaceType.get("AC")
+        PB = PlaceType.get("PB")
+
+        if place.type > STATE:
+            places = place.get_places(type=STATE)
+            states = ",".join(p.code for p in places)
+            data = self._get("voters", state=states, offset=offset, limit=limit)
+        elif place.type == STATE:
+            data = self._get("voters/" + place.code)
+        elif place.type > AC:
+            state = place.get_parent(STATE).code
+            places = place.get_places(type=AC)
+            ac = ",".join(self.tonum(p.code) for p in places)
+            data = self._get("voters/" + state, ac=ac, offset=offset, limit=limit)
+        elif place.type == AC:
+            state = place.get_parent(STATE).code
+            data = self._get("voters/{}/{}".format(state, self.tonum(place.code)), offset=offset, limit=limit)
+        elif place.type > PB:
+            state = place.get_parent(STATE).code
+            ac = place.get_parent(AC).code
+            places = place.get_places(type=PB)
+            pb = ",".join(self.tonum(p.code) for p in places)
+            data = self._get("voters/{}/{}".format(state, ac), pb=pb, offset=offset, limit=limit)
+        else:
+            state = place.get_parent(STATE).code
+            ac = place.get_parent(AC).code
+            data = self._get("voters/{}/{}/{}".format(state, self.tonum(ac), self.tonum(place.code)), offset=offset, limit=limit)
+        return [Voter(d) for d in data]
+
+voterdb = VoterDB()
 
 BASE_URL = "http://electoralsearch.in/"
 

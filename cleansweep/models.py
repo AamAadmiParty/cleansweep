@@ -7,7 +7,19 @@ from .app import app
 
 db = SQLAlchemy(app)
 
-class PlaceType(db.Model):
+class ComparableMixin:
+  def __eq__(self, other):
+    return not self<other and not other<self
+  def __ne__(self, other):
+    return self<other or other<self
+  def __gt__(self, other):
+    return other<self
+  def __ge__(self, other):
+    return not self<other
+  def __le__(self, other):
+    return not other<self
+
+class PlaceType(db.Model, ComparableMixin):
     """There are different types of places in the hierarchy like
     country, state, region etc. This table captures that.
     """
@@ -50,6 +62,14 @@ class PlaceType(db.Model):
     def new(name, short_name, level):
         t = PlaceType(name, short_name, level)
         db.sesson.add(t)
+
+    def __lt__(self, other):
+        print "__lt__", self, other, self.level, other.level
+        if isinstance(other, PlaceType):
+            # Smaller level indicated higher in the hierarchy
+            return self.level > other.level
+        else:
+            return False
 
 # The place_parents table stores the parent-child relation
 # of places. For convenience, we also store a place as parent of it self.
@@ -101,6 +121,10 @@ class Place(db.Model):
         """Returns all places without any parent.
         """
         return Place.query.filter_by(iparent_id=None).all()
+
+    @property 
+    def code(self):
+        return self.key.split("/")[-1]
 
     def get_counts(self):
         q = (db.session.query(PlaceType.short_name, db.func.count(Place.id))
@@ -259,15 +283,6 @@ class Place(db.Model):
                 .limit(limit)
                 .offset(offset)
                 .all())
-
-    def get_voters(self, limit=100, offset=0):
-        if self.type.short_name == "PB":
-            q = VoterInfo.query.filter_by(place_id=self.id)
-        else:
-            q = (VoterInfo.query.filter(
-                    VoterInfo.place_id==place_parents.c.child_id,
-                    place_parents.c.parent_id==self.id))
-        return q.limit(limit).offset(offset).all()
 
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
@@ -551,19 +566,6 @@ class PendingMember(db.Model):
         self.status = 'approved'
         db.session.add(self)
         self.place.add_member(self.name, self.email, self.phone, self.voterid)
-
-class VoterInfo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), index=True)
-    voterid = db.Column(db.Text, nullable=False, index=True)
-    place = db.relationship('Place', foreign_keys=place_id)
-
-    @classmethod
-    def find(cls, **kw):
-        return cls.query.filter_by(**kw).first()
-
-    def get_booth(self):
-        return self.place
 
 class MVRequest(db.Model):
     __tablename__ = "mv_request"

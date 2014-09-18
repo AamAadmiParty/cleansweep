@@ -2,8 +2,10 @@
 """
 
 from flask import (render_template, abort, url_for, redirect, request, flash)
-from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, Place, MVRequest, VoterInfo
+from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, Place, MVRequest
 from .. import forms
+from ..app import app
+from ..voterlib import voterdb
 from ..view_helpers import place_view
 
 @place_view("/admin", permission="write")
@@ -117,7 +119,7 @@ def admin_voters(place):
 
 @place_view("/admin/voters/<voterid>", methods=['GET', 'POST'], permission="write")
 def admin_voter_view(place, voterid):
-    voter = VoterInfo.find(place_id=place.id, voterid=voterid)
+    voter = voterdb.get_voter(voterid)
     if not voter:
         return abort(404)
     return render_template("admin/voter.html", place=place, voter=voter)
@@ -129,8 +131,8 @@ def admin_add_volunteer(place):
     if request.method == "POST" and form.validate():
         if form.voterid.data:
             voterid = form.voterid.data
-            voter = VoterInfo.find(voterid=voterid)
-            p = voter.place
+            voter = voterdb.get_voter(voterid=voterid)
+            p = voter.get_place()
         else:
             p = Place.find(key=form.place.data)
         p.add_member(

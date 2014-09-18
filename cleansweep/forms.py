@@ -3,6 +3,7 @@ import wtforms
 from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField
 from wtforms import validators
 from . import models
+from .voterlib import voterdb
 
 class AddMemberForm(Form):
     name = StringField('Name', [validators.Required()])
@@ -60,7 +61,7 @@ class SignupForm(Form):
 
         if self.voterid.data:
             voterid = self.voterid.data
-            voterinfo = models.VoterInfo.find(voterid=voterid)
+            voterinfo = voterdb.get_voter(voterid=voterid)
             if not voterinfo:
                 raise validators.ValidationError("Invalid Voter ID")
 
@@ -80,8 +81,8 @@ class AddVolunteerForm(SignupForm):
         SignupForm.validate_voterid(self, field)
         if self.voterid.data:
             voterid = self.voterid.data
-            voterinfo = models.VoterInfo.find(voterid=voterid)
-            if voterinfo and not voterinfo.place.has_parent(self._place):
+            voterinfo = voterdb.get_voter(voterid=voterid)
+            if voterinfo and not voterinfo.get_place().has_parent(self._place):
                 raise validators.ValidationError("This voter ID doesn't belong to the current place.")
 
     def validate_locality(self, field):
