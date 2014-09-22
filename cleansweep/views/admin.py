@@ -8,7 +8,7 @@ from ..app import app
 from ..voterlib import voterdb
 from ..view_helpers import place_view
 from ..helpers import get_current_user
-from ..core import mailer
+from ..core import mailer, smslib
 
 @place_view("/admin", permission="write")
 def admin(place):
@@ -162,3 +162,18 @@ def admin_sendmail(place):
                 mailer.sendmail_async(p.email, subject, message)
         return render_template("admin/sendmail.html", place=place, form=form, sent=True)
     return render_template("admin/sendmail.html", place=place, form=form, sent=False)
+
+@place_view("/admin/sms", methods=['GET', 'POST'], permission="write")
+def admin_sms(place):
+    form = forms.SendSMSForm(request.form)
+    if request.method == "POST" and form.validate():
+        if form.people.data == 'self':
+            people = [get_current_user()]
+        elif form.people.data == 'volunteers':
+            people = place.get_all_members_iter()
+        message = form.message.data
+        phone_numbers = [p.phone for p in people]
+        smslib.send_sms_async(phone_numbers, message)
+        return render_template("admin/sms.html", place=place, form=form, sent=True)
+    return render_template("admin/sms.html", place=place, form=form, sent=False)
+

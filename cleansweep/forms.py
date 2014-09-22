@@ -102,3 +102,12 @@ class SendMailForm(Form):
                 ])
     subject = StringField('Subject', validators=[validators.Required()])
     message = TextAreaField("Message", validators=[validators.Required()])
+
+
+class SendSMSForm(Form):
+    people = SelectField('Send SMS to',
+                choices=[
+                    ('self', 'Just Me (for testing)'),
+                    ('volunteers', 'All Volunteers'),
+                ])
+    message = TextAreaField("Message", validators=[validators.Required()])
