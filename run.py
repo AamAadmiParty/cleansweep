@@ -28,6 +28,9 @@ if __name__ == "__main__":
         email = sys.argv[index+3]
         phone = sys.argv[index+4]
         add_member(place, name, email, phone)
+    elif "--worker" in sys.argv:
+        from cleansweep.core.mailer import run_worker
+        run_worker()
     else:
         try:
             port = int(sys.argv[1])

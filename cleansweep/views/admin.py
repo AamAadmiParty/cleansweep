@@ -7,6 +7,8 @@ from .. import forms
 from ..app import app
 from ..voterlib import voterdb
 from ..view_helpers import place_view
+from ..helpers import get_current_user
+from ..core import mailer
 
 @place_view("/admin", permission="write")
 def admin(place):
@@ -144,3 +146,19 @@ def admin_add_volunteer(place):
         flash(u"Added {} as volunteer to {}.".format(form.name.data, p.name))
         return redirect(url_for("admin", key=place.key))
     return render_template("admin/add_volunteer.html", place=place, form=form)
+
+@place_view("/admin/sendmail", methods=['GET', 'POST'], permission="write")
+def admin_sendmail(place):
+    form = forms.SendMailForm(request.form)
+    if request.method == "POST" and form.validate():
+        if form.people.data == 'self':
+            people = [get_current_user()]
+        elif form.people.data == 'volunteers':
+            people = place.get_all_members_iter()
+        subject = form.subject.data
+        message = form.message.data
+        for p in people:
+            if p.email:
+                mailer.sendmail_async(p.email, subject, message)
+        return render_template("admin/sendmail.html", place=place, form=form, sent=True)
+    return render_template("admin/sendmail.html", place=place, form=form, sent=False)

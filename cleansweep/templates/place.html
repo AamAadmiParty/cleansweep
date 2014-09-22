@@ -70,6 +70,9 @@
             <a href="{{url_for('committee_structures', key=place.key)}}">Committee Structures</a>
           </li>        
         {% endif %}
+        <li class="list-group-item {{'active' if tab=='sendmail' }}">
+          <a href="{{url_for('admin_sendmail', key=place.key)}}">Send E-mails</a>
+        </li>        
       </ul>
     {% endif %}
   </div>

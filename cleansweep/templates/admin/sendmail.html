@@ -1,0 +1,23 @@
+{% from "macros.html" import render_field %}
+{% extends "admin/index.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="sendmail") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Send E-mails</h2>
+
+  {% if sent %}
+    Done! The email with subject <strong>{{ form.subject.data }}</strong> will be sent to selected people shortly.
+  {% else %}
+    <form id="sendmail-form" role="form" method="POST">
+      {{ form.csrf_token }}
+      {{ render_field(form.people) }}
+      {{ render_field(form.subject) }}
+      {{ render_field(form.message) }}
+      <button type="submit" class="btn btn-default">Send</button>
+    </form>
+  {% endif %}
+
+{% endblock %}

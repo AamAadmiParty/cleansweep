@@ -150,6 +150,19 @@ class Place(db.Model):
         """
         return self.get_all_members_query().limit(limit).offset(offset).all()
 
+    def get_all_members_iter(self):
+        """Returns all members any this place as an iterator.
+        """
+        limit = 1000
+        offset = 0
+        size = limit
+        while size < limit:
+            members = get_all_members(limit=limit, offset=offset)
+            size = len(members)
+            offset = offset + size
+            for m in members:
+                yield m
+
     @property
     def parents(self):
         # return all parents except self

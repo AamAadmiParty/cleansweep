@@ -94,4 +94,11 @@ class AddVolunteerForm(SignupForm):
         if not p.has_parent(self._place):
             raise validators.ValidationError("Sorry, the specified location is not outside the current region.")
 
-
+class SendMailForm(Form):
+    people = SelectField('Send Email to',
+                choices=[
+                    ('self', 'Just Me (for testing)'),
+                    ('volunteers', 'All Volunteers'),
+                ])
+    subject = StringField('Subject', validators=[validators.Required()])
+    message = TextAreaField("Message", validators=[validators.Required()])
