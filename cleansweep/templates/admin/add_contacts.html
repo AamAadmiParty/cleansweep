@@ -1,0 +1,56 @@
+{% from "macros.html" import render_field %}
+{% extends "admin/index.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="contacts") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Add New Contacts</h2>
+
+  <div class="" style="margin: 20px 0px;">
+    <a href="#" class="btn btn-primary btn-add-contacts">Add</a>
+  </div>
+
+  <div id="example" style="width: 100%;">
+  </div>
+  <div class="" style="margin: 20px 0px;">
+    <a href="#" class="btn btn-primary btn-add-contacts">Add</a>
+  </div>
+  <form name="contacts" method="POST">
+    <input id="input-data" type="hidden" name="data"/>
+  </form>
+
+  <script type="text/javascript" src="{{url_for('static', filename='handsontable/jquery.handsontable.full.min.js')}}"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      var data = [ 
+        ["", "", "", ""]];
+
+      $('#example').handsontable({
+        data: data,
+        colHeaders: ["Name", "E-mail", "Phone", "Voter ID"],
+        colWidths: [150, 150, 100, 100],
+        minSpareRows: 10,
+        fixedRowsTop: 0
+      });
+
+      $(".btn-add-contacts").click(function(e) {
+        e.preventDefault();
+
+        var handsontable = $("#example").data("handsontable");
+        var data = JSON.stringify(handsontable.getData());
+        console.log(handsontable.getData());
+        $("#input-data").val(data);
+        document.forms.contacts.submit();
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.css') }}">
+    <style type="text/css">
+    </style>
+{% endblock %}

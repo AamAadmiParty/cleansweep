@@ -1,7 +1,7 @@
 """Views of the admin panel.
 """
 
-from flask import (render_template, abort, url_for, redirect, request, flash)
+from flask import (render_template, abort, url_for, redirect, request, flash, jsonify)
 from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, Place, MVRequest
 from .. import forms
 from ..app import app
@@ -9,6 +9,7 @@ from ..voterlib import voterdb
 from ..view_helpers import place_view
 from ..helpers import get_current_user
 from ..core import mailer, smslib
+import json
 
 @place_view("/admin", permission="write")
 def admin(place):
@@ -177,3 +178,18 @@ def admin_sms(place):
         return render_template("admin/sms.html", place=place, form=form, sent=True)
     return render_template("admin/sms.html", place=place, form=form, sent=False)
 
+@place_view("/admin/contacts", methods=['GET', 'POST'], permission="write")
+def admin_contacts(place):
+    return render_template("admin/contacts.html", place=place)
+
+@place_view("/admin/contacts/add", methods=['GET', 'POST'], permission="write")
+def admin_add_contacts(place):
+    if request.method == "POST":
+        jsontext = request.form['data']
+        data = json.loads(jsontext)
+        data = [row for row in data if row[0] and row[0].strip()]
+        contacts = place.add_contacts(data)
+        db.session.commit()
+        flash(u"Successfully imported {} contacts.".format(len(contacts)))
+        return redirect(url_for("admin_contacts", key=place.key))
+    return render_template("admin/add_contacts.html", place=place)

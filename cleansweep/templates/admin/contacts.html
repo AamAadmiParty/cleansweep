@@ -1,0 +1,40 @@
+{% from "macros.html" import render_field %}
+{% extends "admin/index.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="contacts") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Contacts</h2>
+  <div class="" style="margin: 20px 0px;">
+    <a href="{{url_for('admin_add_contacts', key=place.key)}}" class="btn btn-primary btn-add-contacts">Add New Contacts</a>
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>E-mail</td>
+        <td>Phone</td>
+        <td>Voter ID</td>
+      </tr>
+    </thead>
+    <tbody>
+    {% for c in place.get_contacts() %}
+      <tr>
+        <td>{{c.name}}</td>
+        <td>{{c.email}}</td>
+        <td>{{c.phone}}</td>
+        <td>{{c.voterid}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.css') }}">
+    <style type="text/css">
+    </style>
+{% endblock %}

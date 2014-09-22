@@ -297,6 +297,36 @@ class Place(db.Model):
                 .offset(offset)
                 .all())
 
+    def add_contacts(self, data):
+        phones = [row[2].strip() for row in data if row[2] and row[2].strip()]
+        emails = [row[1].strip() for row in data if row[1] and row[1].strip()]
+
+        dup_contacts = Contact.query.filter(Contact.phone.in_(phones))
+        dup_phones = set(c.phone for c in dup_contacts)
+
+        dup_contacts = Contact.query.filter(Contact.email.in_(emails))
+        dup_emails = set(c.email for c in dup_contacts)
+
+        contacts = [
+                Contact(self, name, email, phone, voterid)
+                for name, email, phone, voterid in data
+                if name and name.strip() 
+                    and email not in dup_emails
+                    and phone not in dup_phones]
+        db.session.add_all(contacts)
+        return contacts
+
+    def get_contacts(self, limit=100, offset=0):
+        return (Contact.query.filter(
+                    place_parents.c.child_id==Contact.place_id,
+                    place_parents.c.parent_id==self.id)
+                .limit(limit).offset(offset).all())
+
+    def get_contact_count(self):
+        return Contact.query.filter(
+                    place_parents.c.child_id==Contact.place_id,
+                    place_parents.c.parent_id==self.id).count()
+        
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
 
@@ -618,3 +648,20 @@ class MVRequest(db.Model):
     def approve(self):
         self.status = 'approved'
         db.session.add(self)
+
+class Contact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
+    place = db.relationship('Place', foreign_keys=place_id)
+    
+    name = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, index=True)
+    phone = db.Column(db.Text, index=True)
+    voterid = db.Column(db.Text, index=True)
+
+    def __init__(self, place, name, email, phone, voterid):
+        self.place = place
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.voterid = voterid
