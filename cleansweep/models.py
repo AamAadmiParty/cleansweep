@@ -156,8 +156,8 @@ class Place(db.Model):
         limit = 1000
         offset = 0
         size = limit
-        while size < limit:
-            members = get_all_members(limit=limit, offset=offset)
+        while size == limit:
+            members = self.get_all_members(limit=limit, offset=offset)
             size = len(members)
             offset = offset + size
             for m in members:

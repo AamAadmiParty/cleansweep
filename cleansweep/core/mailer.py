@@ -36,7 +36,6 @@ def get_queue():
     if not _q:
         host = app.config.get('REDIS_HOST')
         port = app.config.get('REDIS_PORT')
-        print (host, port)
         if host and port:
             redis_conn = Redis(host, port)
             _q = Queue(connection=redis_conn) 
