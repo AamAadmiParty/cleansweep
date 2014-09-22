@@ -99,6 +99,7 @@ class SendMailForm(Form):
                 choices=[
                     ('self', 'Just Me (for testing)'),
                     ('volunteers', 'All Volunteers'),
+                    ('contacts', 'All Contacts')                    
                 ])
     subject = StringField('Subject', validators=[validators.Required()])
     message = TextAreaField("Message", validators=[validators.Required()])
@@ -109,5 +110,6 @@ class SendSMSForm(Form):
                 choices=[
                     ('self', 'Just Me (for testing)'),
                     ('volunteers', 'All Volunteers'),
+                    ('contacts', 'All Contacts')
                 ])
     message = TextAreaField("Message", validators=[validators.Required()])

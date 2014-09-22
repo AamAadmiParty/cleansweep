@@ -326,7 +326,20 @@ class Place(db.Model):
         return Contact.query.filter(
                     place_parents.c.child_id==Contact.place_id,
                     place_parents.c.parent_id==self.id).count()
-        
+
+    def get_contacts_iter(self):
+        """Returns all members any this place as an iterator.
+        """
+        limit = 1000
+        offset = 0
+        size = limit
+        while size == limit:
+            contacts = self.get_contacts(limit=limit, offset=offset)
+            size = len(contacts)
+            offset = offset + size
+            for c in contacts:
+                yield c
+
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
 

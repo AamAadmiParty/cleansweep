@@ -156,6 +156,8 @@ def admin_sendmail(place):
             people = [get_current_user()]
         elif form.people.data == 'volunteers':
             people = place.get_all_members_iter()
+        elif form.people.data == 'contacts':
+            people = place.get_contacts_iter()          
         subject = form.subject.data
         message = form.message.data
         for p in people:
@@ -172,6 +174,8 @@ def admin_sms(place):
             people = [get_current_user()]
         elif form.people.data == 'volunteers':
             people = place.get_all_members_iter()
+        elif form.people.data == 'contacts':
+            people = place.get_contacts_iter()
         message = form.message.data
         phone_numbers = [p.phone for p in people]
         smslib.send_sms_async(phone_numbers, message)
