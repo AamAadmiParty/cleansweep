@@ -28,10 +28,10 @@
     <tbody>
     {% for c in place.get_contacts() %}
       <tr>
-        <td>{{c.name}}</td>
-        <td>{{c.email}}</td>
-        <td>{{c.phone}}</td>
-        <td>{{c.voterid}}</td>
+        <td>{{c.name or ""}}</td>
+        <td>{{c.email or ""}}</td>
+        <td>{{c.phone or ""}}</td>
+        <td>{{c.voterid or ""}}</td>
         <td><a href="/{{c.place.key}}">{{c.place.key}}</a></td>
       </tr>
     {% endfor %}
