@@ -161,5 +161,14 @@ def main(root_dir):
     loader = Loader(root_dir)
     loader.load()
 
+def main_loadfiles(filenames):
+    FORMAT = "%(asctime)-15s [%(levelname)s] %(message)s"
+    logging.basicConfig(level=logging.INFO, format=FORMAT)
+
+    db.create_all()
+    loader = Loader(None)
+    for f in filenames:
+        loader.load_file(f)
+
 if __name__ == '__main__':
     main(sys.argv[1])

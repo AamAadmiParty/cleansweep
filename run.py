@@ -20,6 +20,11 @@ if __name__ == "__main__":
         from cleansweep.loaddata import main
         root_dir = sys.argv[1+sys.argv.index("--load")]
         main(root_dir)
+    elif "--load-files" in sys.argv:
+        from cleansweep.loaddata import main_loadfiles
+        sys.argv.remove("--load-files")
+        filenames = sys.argv[1:]
+        main_loadfiles(filenames)
     elif "--add-member" in sys.argv:
         from cleansweep.loaddata import add_member
         index = sys.argv.index("--add-member")
