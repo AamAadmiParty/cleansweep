@@ -10,7 +10,12 @@
         {% endfor %}
       </ul>
       {% if "read" in permissions %}
-        <div style="border-top: 1px dotted gray; padding-top: 5px;"><strong>{{place.get_member_count()}}</strong> vols</div>
+        <ul class="list-unstyled" style="border-top: 1px dotted gray; padding-top: 5px;">
+          <li><strong>{{place.get_member_count()}}</strong> volunteers</li>
+          {% if "write" in permissions %}
+            <li><strong>{{place.get_contact_count()}}</strong> contacts</li>
+          {% endif %}
+        </ul>
       {% endif %}
     </div>
   </div>
