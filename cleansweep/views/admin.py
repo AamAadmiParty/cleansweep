@@ -9,7 +9,9 @@ from ..voterlib import voterdb
 from ..view_helpers import place_view
 from ..helpers import get_current_user
 from ..core import mailer, smslib
+from ..voterlib import voterdb
 import json
+from collections import defaultdict
 
 @place_view("/admin", permission="write")
 def admin(place):
@@ -191,9 +193,40 @@ def admin_add_contacts(place):
     if request.method == "POST":
         jsontext = request.form['data']
         data = json.loads(jsontext)
-        data = [row for row in data if row[0] and row[0].strip()]
-        contacts = place.add_contacts(data)
-        db.session.commit()
+        contacts = _load_contacts(place, data)
         flash(u"Successfully imported {} contacts.".format(len(contacts)))
         return redirect(url_for("admin_contacts", key=place.key))
     return render_template("admin/add_contacts.html", place=place)
+
+def _load_contacts(place, data):
+    # columns: name, email, phone, voterid, location    
+    data = [row for row in data if row[0] and row[0].strip()]
+    voterids = [row[3] for row in data if row[3] and row[3].strip() and not row[4]]
+    voters = voterdb.load_voters(voterids)
+    voterdict = dict((v.voterid, v.place) for v in voters)
+
+    placesdict = defaultdict(list)
+
+    # map from row as tuple to place
+    rowdict = {}
+
+    for name, email, phone, voterid, location in data:
+        p = None
+        if location:
+            p = Place.find(key=location)
+        if not p and voterid:
+            p = voterdict.get(voterid)
+        if not p:
+            p = place
+        rowdict[name, email, phone, voterid] = p
+
+    # mapping from place -> [rows]
+    placesdict = defaultdict(list)
+    for row, p in rowdict.items():
+        placesdict[p].append(row)
+
+    contacts = []
+    for p, prows in placesdict.items():
+        contacts += p.add_contacts(prows)
+    db.session.commit()
+    return contacts

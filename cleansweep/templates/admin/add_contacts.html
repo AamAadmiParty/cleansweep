@@ -5,6 +5,11 @@
   {{ subnav(place, tab="contacts") }}
 {% endblock %}
 
+{% block page_container %}
+  {{ self.two_column_layout() }}
+{% endblock %}
+
+
 {% block page_content %}
   <h2>Add New Contacts</h2>
 
@@ -26,12 +31,12 @@
   <script type="text/javascript">
     $(function() {
       var data = [ 
-        ["", "", "", ""]];
+        ["", "", "", "", ""]];
 
       $('#example').handsontable({
         data: data,
-        colHeaders: ["Name", "E-mail", "Phone", "Voter ID"],
-        colWidths: [150, 150, 100, 100],
+        colHeaders: ["Name", "E-mail", "Phone", "Voter ID", "Location"],
+        colWidths: [200, 200, 125, 125, 150],
         minSpareRows: 10,
         fixedRowsTop: 0
       });

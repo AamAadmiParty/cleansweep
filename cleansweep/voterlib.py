@@ -51,6 +51,19 @@ class VoterDB:
     def tonum(self, value):
         return RE_NOTNUM_PREFIX.sub("", value)
 
+    def group(self, values, chunk_size):
+        values = list(values)
+        while values:
+            yield values[:chunk_size]
+            values = values[chunk_size:]
+
+    def load_voters(self, voterids):
+        for chunk in self.group(voterids, 100):
+            v = ",".join(chunk)
+            result = self._get("voters", voterid=v)
+            for row in result:
+                yield Voter(row)
+
     def get_voters(self, place, offset=0, limit=100):
         """Returns details of all voters from the given place.
         """
@@ -94,6 +107,23 @@ def get_voter_info(voterid):
     Makes a search on http://electoralsearch.in/ with that voterid and
     results the response.
     """
+    data = _fetch_voter_info(voterid)
+    if data:
+        # return the first matching record
+        try:
+            return _process_voter_info(data['response']['docs'][0])
+        except (KeyError, IndexError):
+            pass
+
+def get_lat_lon(voterid):
+    """Returns latitude and longitude of the specified voter's polling booth.
+    """
+    d = _fetch_voter_info(voterid)
+    print >> sys.stderr, d
+    lat, lon = d['response']['docs'][0]['ps_lat_long'].split(",")
+    return lat, lon
+
+def _fetch_voter_info(voterid):
     # create a session so that the cookies are retained b/w requests
     s = requests.session()
 
@@ -120,13 +150,7 @@ def get_voter_info(voterid):
     r = s.get(BASE_URL + "Search", params=params, headers=headers)
 
     # and read json from it
-    data = r.json()
-    if data:
-        # return the first matching record
-        try:
-            return _process_voter_info(data['response']['docs'][0])
-        except (KeyError, IndexError):
-            pass
+    return r.json()
 
 re_voter_info_id = re.compile("^S(\d\d)(\d\d\d)(\d\d\d\d)\d\d(\d\d\d\d)$")
 def _process_voter_info(d):
@@ -154,6 +178,11 @@ def get_token(text):
 
 if __name__ == "__main__":
     import sys, json
-    d = get_voter_info(sys.argv[1])
-    print json.dumps(d, indent=True)
+    if "--latlon" in sys.argv:
+        sys.argv.remove("--latlon")
+        lat, lon = get_lat_lon(sys.argv[1])
+        print lat, lon
+    else:
+        d = get_voter_info(sys.argv[1])
+        print json.dumps(d, indent=True)
     

@@ -5,6 +5,10 @@
   {{ subnav(place, tab="contacts") }}
 {% endblock %}
 
+{% block page_container %}
+  {{ self.two_column_layout() }}
+{% endblock %}
+
 {% block page_content %}
   <h2>Contacts</h2>
   <div class="" style="margin: 20px 0px;">
@@ -18,6 +22,7 @@
         <td>E-mail</td>
         <td>Phone</td>
         <td>Voter ID</td>
+        <td>Location</td>
       </tr>
     </thead>
     <tbody>
@@ -27,6 +32,7 @@
         <td>{{c.email}}</td>
         <td>{{c.phone}}</td>
         <td>{{c.voterid}}</td>
+        <td><a href="/{{c.place.key}}">{{c.place.key}}</a></td>
       </tr>
     {% endfor %}
   </table>
