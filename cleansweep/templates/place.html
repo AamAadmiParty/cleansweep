@@ -23,6 +23,40 @@
 {% endblock %}
 
 {% block page_content %}
+  <h2>Committees at {{place.code}}</h2>
+  {% set committees = place.get_committees() %}
+  {% if not committees %}
+    <em>None found</em>
+  {% else %}
+    <div class="row">
+      {% for c in committees %}
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 style="margin: 0px;">{{c.type.name}}</h3>
+            </div>
+            <div class="panel-body">
+              <div class="committee-members">
+                {% for role, members in c.get_members() %}
+                  <div class="committee-role">
+                    <h4>{{role.role}}</h4>
+                    {% for member in members %}
+                      <div>
+                        <a href="#"><strong>{{member.name}}</strong></a>
+                        <div>{{member.email or ''}}</div>
+                        <div>{{member.phone}}</div>
+                      </div> 
+                    {% endfor %}              
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   {{ widget("PlaceList", place=place) }}
 {% endblock %}
 
