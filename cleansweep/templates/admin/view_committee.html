@@ -11,12 +11,12 @@
       {% for member in members %}
         <div class="member-card">
           <a href="#"><strong>{{member.name}}</strong></a>
-          <div>{{member.email}}</div>
+          <div>{{member.email or ''}}</div>
           <div>{{member.phone}}</div>
           <form method="POST">
             <input type="hidden" name="action" value="remove">
             <input type="hidden" name="role" value="{{role.id}}">
-            <input type="hidden" name="email" value="{{member.email}}">
+            <input type="hidden" name="email" value="{{member.email or ''}}">
             <a class="remove" href="#" title="Remove this member from this role."><span class="glyphicon glyphicon-remove"></span> Remove</a>
           </form>        
         </div> 

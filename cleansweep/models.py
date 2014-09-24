@@ -516,6 +516,9 @@ class CommitteeRole(db.Model):
         self.multiple = multiple
         self.permission = permission
 
+    def __repr__(self):
+        return "<Role:{}.{}>".format(self.committee_type.slug, self.role)
+
 class Committee(db.Model):
     """A real committee.
 
@@ -537,6 +540,9 @@ class Committee(db.Model):
     def __init__(self, place, type):
         self.place = place
         self.type = type
+
+    def __repr__(self):
+        return "<{}@{}>".format(self.type.slug, self.place.key)
 
     def get_members(self):
         """Returns an iterator over role, members for each role in this group.

@@ -7,9 +7,9 @@
       {% endif %}
       <div style="float: left; padding-left: 10px;">
 	      <strong>{{m.name}}</strong>
-	      <div>{{m.email}}</div>
+	      <div>{{m.email or ""}}</div>
 	      <div>{{m.phone}}</div>
-	    <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.name}}</a></div>
+	    <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.key}}</a></div>
 	   </div>
 	   <div class="clearfix"></div>
     </div>
