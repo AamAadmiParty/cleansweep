@@ -90,7 +90,7 @@ class VoterDB:
             ac = place.get_parent(AC).code
             places = place.get_places(type=PB)
             pb = ",".join(self.tonum(p.code) for p in places)
-            data = self._get("voters/{}/{}".format(state, ac), pb=pb, offset=offset, limit=limit)
+            data = self._get("voters/{}/{}".format(state, self.tonum(ac)), pb=pb, offset=offset, limit=limit)
         else:
             state = place.get_parent(STATE).code
             ac = place.get_parent(AC).code
