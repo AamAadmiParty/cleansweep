@@ -1,0 +1,45 @@
+{% extends "emails/base.html" %}
+
+{% block subject %}
+Welcome to Mission Vistaar
+{% endblock %}
+
+{% block content %}
+<p>Dear {{volunteer.name}},</p>
+
+<p>Thanks for volunteering to work as part of Mission Vistaar in AAM AADMI PARTY.</p>
+
+<p>You have been registered with the following details:</p>
+<div class="quote">
+	<table class="noborder">
+		<tr><th>Name</th><td>{{volunteer.name}}</td></tr>
+		<tr><th>Phone</th><td>{{volunteer.phone}}</td></tr>
+		<tr><th>E-mail</th><td>{{volunteer.email}}</td></tr>
+		<tr><th>Voter ID</th><td>{{volunteer.voterid or ""}}</td></tr>
+	</table>
+</div>
+
+<p>Accordingly, your native booth has been identified as:<br/>
+<div class="quote">
+{{render_place(volunteer.place)}}
+{% for p in volunteer.place.parents[::-1] %}
+	{{render_place(p)}}
+{% endfor %}
+</div>
+<p>
+
+<p>You can now start Mission Vistaar work by clicking on the "<b>Request to work here</b>" button at your polling center. Once you have finished working at this polling center and recruited new volunteers, you can then take on any next polling center of your choice.</p>
+
+<p>Together let us build a strong AAM AADMI PARTY that can deliver clean politics and good governance in the country.</p>
+
+<p>
+Jai Hind!<br/>
+AAM AADMI PARTY.
+</p>
+{% endblock %}
+
+{% macro render_place(place) %}
+	{% if place.type.short_name not in ['COUNTRY', 'REGION'] %}
+		{{place.name}} <span class="small">{{place.type.name}}</span><br/>
+	{% endif %}
+{% endmacro %}

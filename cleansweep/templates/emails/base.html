@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>{% block title %}{{ get_config("SITE_TITLE") }}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <style type="text/css">
+      body {
+        padding: 0px; 
+        margin: 0px; 
+        font-family: Arial,sans-serif;
+      }
+      .body-wrapper {
+        background: #ccc; 
+        border-top: 5px solid #aaa;
+        padding: 20px 0px;
+      }
+      .wrapper {
+        margin: 10px auto; 
+        width: 600px; 
+        background: white; 
+        border: 2px solid #aaa;
+      }
+      /* for clients that respect style in head */
+      @media (max-width: 600px)  {
+        .wrapper {
+          margin: 0px;
+          width: 100%;
+        }
+      }
+      .heading {
+        padding: 20px;
+        background: #222;
+      }
+      .heading h1 {
+        margin: 0px; 
+        padding: 0px; 
+        font-size: 1.5em;
+        color: #ddd;
+      }
+      a, a:visited {
+        color: #428bca;
+      }
+      .container {
+        padding: 20px;
+        line-height: 1.5em;
+      }
+      .footer {
+        padding: 10px 20px;
+        line-height: 1.0em;
+        font-size: 0.8em;
+        border-top: 1px solid #ddd;
+        background: #eee;
+      }
+      .quote {
+        padding: 5px 10px;
+      }
+      .key {
+        width: 100px;
+        font-weight: bold;
+      }
+      .small {
+        font-size: 0.9em;
+        font-style: italic;
+      }
+      table.noborder {
+        border-collapse: collapse;
+        border-spacing: 0;        
+      }
+      table.noborder tr {
+        display: table-row;
+        border-color: inherit;
+      }      
+      table.noborder th {
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="body-wrapper">
+      <div class="wrapper">
+        <div class="heading">
+          <h1 style="">{{ get_config("SITE_TITLE") }}</h1>
+        </div>
+        <div class="container">
+          {% block content %}
+          {% endblock %}
+        </div>
+        <div class="footer">
+          <p>You have received this email because you have expressed interest in volunteering for AAM AADMI PARTY in the past. 
+          <p><a href="#">unsubscribe</a></p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+{% block subject %}{% endblock %}
+{{ message and message.set_subject(self.subject().strip() or get_config("SITE_TITLE")) }}
