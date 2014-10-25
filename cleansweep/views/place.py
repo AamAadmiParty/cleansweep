@@ -17,7 +17,7 @@ def home():
 def place(place):
     return render_template("place.html", place=place)
 
-@place_view("/volunteers", permission="read")
+@place_view("/volunteers", permission="view-volunteers")
 def volunteers(place):
     return render_template("members.html", place=place)
 

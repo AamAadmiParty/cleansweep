@@ -390,7 +390,10 @@ class Member(db.Model):
         permission that he gets by becoming member of one or more committees.
         """
         perms = set()
-        if self.place == place or self.place.has_parent(place):
+        if self.place == place:
+            perms.add("read")
+            perms.add("view-volunteers")
+        elif self.place.has_parent(place):
             perms.add("read")
 
         for cm in self.committees.all():
@@ -400,7 +403,7 @@ class Member(db.Model):
 
         status = MVRequest.get_request_status(self, place)
         if status == 'approved':
-            perms.update(["read", "write"])
+            perms.update(["read", "write", "view-volunteers"])
 
         return perms
 

@@ -72,7 +72,7 @@
       <li class="list-group-item {{'active' if tab=='home' }}">
         <a href="{{url_for('place', key=place.key)}}">Home</a>
       </li>
-      {% if "read" in permissions %}
+      {% if "view-volunteers" in permissions %}
         <li class="list-group-item {{'active' if tab=='volunteers' }}">
           <a href="{{url_for('volunteers', key=place.key)}}">Volunteers <span class="badge pull-right">{{place.get_member_count()}}</span></a>
         </li>
