@@ -61,7 +61,7 @@
       }
       .small {
         font-size: 0.9em;
-        font-style: italic;
+        color: #666;
       }
       table.noborder {
         border-collapse: collapse;
@@ -94,5 +94,5 @@
     </div>
   </body>
 </html>
-{% block subject %}{% endblock %}
+<!-- {% block subject %}{% endblock %} -->
 {{ message and message.set_subject(self.subject().strip() or get_config("SITE_TITLE")) }}
