@@ -101,7 +101,7 @@ class Place(db.Model):
         primaryjoin=(id==place_parents.c.child_id),
         secondaryjoin=(id==place_parents.c.parent_id),
         backref=db.backref('places', lazy='dynamic', order_by='Place.key'),
-        order_by='Place.place_type_id')
+        order_by='Place.type_id')
 
     def __init__(self, key, name, type):
         self.key = key
