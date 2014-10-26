@@ -113,3 +113,6 @@ class SendSMSForm(Form):
                     ('contacts', 'All Contacts')
                 ])
     message = TextAreaField("Message", validators=[validators.Required()])
+
+class UnsubscribeForm(Form):
+    email = StringField('Email Address', [validators.Email()])

@@ -687,3 +687,25 @@ class Contact(db.Model):
         self.email = email
         self.phone = phone
         self.voterid = voterid
+
+class Unsubscribe(db.Model):
+    """List of people unsubscribes from receiving emails.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.Text, unique=True)
+
+    def __init__(self, email):
+        self.email = email
+
+    @staticmethod
+    def contains(email):
+        row = Unsubscribe.query.filter_by(email=email).first()
+        return bool(row)
+
+    @classmethod
+    def unsubscribe(cls, email):
+        if cls.contains(email):
+            return
+        u = Unsubscribe(email)
+        db.session.add(u)
+        db.session.commit()

@@ -3,6 +3,9 @@ from envelopes import Envelope
 from rq import Queue
 from redis import Redis
 import pynliner
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Message:
     def __init__(self, to_addr=None, subject=None, reply_to=None):
@@ -39,6 +42,10 @@ def sendmail(to_address, subject, message, message_html=None, reply_to=None, cc=
 
     if message_html:
         message_html = pynliner.fromString(message_html)
+
+    if Unsubscribe.contacts(to_address):
+        logger.warn("%s is in the unsubscribed list. Not sending email.", to_address)
+        return
 
     envelope = Envelope(
         from_addr=app.config['FROM_ADDRESS'],
