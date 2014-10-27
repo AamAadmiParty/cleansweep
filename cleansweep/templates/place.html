@@ -112,7 +112,14 @@
         </li>        
         <li class="list-group-item {{'active' if tab=='sms' }}">
           <a href="{{url_for('admin_sms', key=place.key)}}">Send SMS</a>
-        </li>        
+        </li>
+        {% for e in sidebar_entries %}
+          {% if e['permission'] in permissions %}
+            <li class="list-group-item {{'active' if tab==e['tab'] }}">
+              <a href="{{url_for(e['entrypoint'], key=place.key)}}">{{e['title']}}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
       </ul>
     {% endif %}
   </div>

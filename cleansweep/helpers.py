@@ -10,6 +10,8 @@ from .models import Member, Place, MVRequest
 from . import oauth
 from .voterlib import VoterDB
 
+sidebar_entries = []
+
 @app.template_filter('pluralize')
 def pluralize(name):
     """Returns plural form of name.
@@ -45,4 +47,5 @@ def helpers():
         "permissions": getattr(g, "permissions", []),
         "get_mv_request_status": MVRequest.get_request_status,
         "voterdb": VoterDB(app.config["VOTERDB_URL"]),
+        "sidebar_entries": sidebar_entries,
     }

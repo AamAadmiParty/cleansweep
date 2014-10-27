@@ -4,6 +4,7 @@ from flask import (abort, render_template, session, g)
 from werkzeug.routing import BaseConverter
 
 from .models import Place, Member
+import helpers as h
 
 app = None
 
@@ -17,9 +18,6 @@ def init_app(_app):
     app = _app
     app.url_map.converters['place'] = PlaceConverter
 
-def _get_current_user():
-    if session.get('user'):
-        return Member.find(email=session['user'])
 
 def get_permissions(user, place):
     """Returns the list of permissions the user has at the given place.
@@ -30,7 +28,8 @@ def get_permissions(user, place):
     else:
         return user.get_permissions(place)
 
-def place_view(path, func=None, permission=None, *args, **kwargs):
+
+def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=None, *args, **kwargs):
     """Decorator to simplify all views that work on places.
 
     Takes care of loading a place, permissions and 404 error if place is not found.
@@ -38,20 +37,29 @@ def place_view(path, func=None, permission=None, *args, **kwargs):
     The path parameter specifies the suffix after the place key.
     """
     if func is None:
-        return functools.partial(place_view, path, permission=permission, *args, **kwargs)
+        return functools.partial(place_view, path, permission=permission, blueprint=blueprint, sidebar_entry=sidebar_entry, *args, **kwargs)
+
+    _app = blueprint or app
 
     # Handle the case of multiple view decorators
     if hasattr(func, "_place_view"):
-        app.route("/<place:key>" + path, *args, **kwargs)(func)
+        _app.route("/<place:key>" + path, *args, **kwargs)(func)
         return func
 
-    @app.route("/<place:key>" + path, *args, **kwargs)
+    if sidebar_entry:
+        if blueprint:
+            entrypoint = blueprint.name + "." + func.__name__
+        else:
+            entrypoint = func.__name__
+        h.sidebar_entries.append(dict(entrypoint=entrypoint, permission=permission, title=sidebar_entry, tab=func.__name__))
+
+    @_app.route("/<place:key>" + path, *args, **kwargs)
     @functools.wraps(func)
     def f(key, *a, **kw):
         place = Place.find(key)
         if not place:
             abort(404)
-        user = _get_current_user()
+        user = h.get_current_user()
         if not user:
             return render_template("permission_denied.html")
 

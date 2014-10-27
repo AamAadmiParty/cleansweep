@@ -1,6 +1,18 @@
 from . import models
 from . import audit
+from ..plugin import Plugin
+from flask import (request, render_template)
+
+# define the plugin
+plugin = Plugin('audit', __name__, template_folder='templates')
 
 def init_app(app):
 	app.logger.info("initializing audit")
-	pass
+
+	# attach the plugin
+	app.register_blueprint(plugin)
+
+
+@plugin.place_view("/audit", methods=['GET'], permission='admin', sidebar_entry='Audit Trail')
+def audit_trail(place):
+	return render_template("audit.html", place=place)
