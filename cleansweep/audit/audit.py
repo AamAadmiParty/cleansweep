@@ -29,8 +29,8 @@ def on_volunteer_signup(pending_volunteer):
         timestamp=pending_volunteer.timestamp,
         place=pending_volunteer.place,
         data=dict(
+            name=pending_volunteer.name,
             email=pending_volunteer.email,
             phone=pending_volunteer.phone,
             voterid=pending_volunteer.voterid
-            )
-    )
+            ))

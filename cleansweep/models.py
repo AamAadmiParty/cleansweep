@@ -7,6 +7,16 @@ from .app import app
 
 db = SQLAlchemy(app)
 
+class Mixable(object):
+    """Magic class to allow adding mixins to the class at run-time.
+    """
+    @classmethod
+    def mixin(cls, mixin):
+        """Decorator to add a mixin to the class runtime.
+        """
+        cls.__bases__ = cls.__bases__ + (mixin,)
+
+
 class ComparableMixin:
   def __eq__(self, other):
     return not self<other and not other<self
@@ -79,7 +89,7 @@ place_parents = db.Table('place_parents',
     db.Column('child_id', db.Integer, db.ForeignKey('place.id'))
 )
 
-class Place(db.Model):
+class Place(db.Model, Mixable):
     __tablename__ = "place"
 
     id = db.Column(db.Integer, primary_key=True)

@@ -1,6 +1,6 @@
 """Models to support audit trail.
 """
-from ..models import db
+from ..models import db, Place, place_parents
 from sqlalchemy.dialects.postgresql import JSON
 import datetime
 
@@ -26,6 +26,9 @@ class Audit(db.Model):
     url = db.Column(db.Text)
     data = db.Column(JSON)
 
+    place = db.relationship('Place', backref=db.backref('audit_records', lazy='dynamic'), foreign_keys=[place_id])
+    user = db.relationship('Member', backref=db.backref('activity', lazy='dynamic'), foreign_keys=[user_id])
+
     def __init__(self, action, user, place, person, timestamp, url, data):
         self.action = action
         self.user = user
@@ -34,3 +37,10 @@ class Audit(db.Model):
         self.timestamp = timestamp
         self.url = url
         self.data = data
+
+@Place.mixin
+class AuditPlaceMixin(object):
+    def get_audit_records(self, limit=100, offset=0):
+        return Audit.query.filter(
+                place_parents.c.child_id==Audit.place_id,
+                place_parents.c.parent_id==self.id).limit(limit).offset(offset).all()
