@@ -10,6 +10,7 @@
     <p><strong>{{form.email.data}}</strong> has been unsubscribed successfully.</p>
     <p>We'll not send any more emails to that email address.</p>
   {% else %}
+    <p>Please enter your email address in the form below to stop receiving emails from us.</p> 
     <form method="POST">
       {{ form.csrf_token }}
       {{ render_field(form.email) }}

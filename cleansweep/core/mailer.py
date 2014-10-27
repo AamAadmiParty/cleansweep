@@ -4,6 +4,7 @@ from rq import Queue
 from redis import Redis
 import pynliner
 import logging
+from ..models import Unsubscribe
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ class Message:
 
     def send(self):
         sendmail(
-            to_address=self.to_addr,
+            to_address=self.to_addr, 
             subject=self.subject,
             message=self.text_body,
             message_html=self.html_body,
@@ -29,7 +30,7 @@ class Message:
 
     def send_async(self):
         sendmail_async(
-            to_address=self.to_addr,
+            to_address=self.to_addr, 
             subject=self.subject,
             message=self.text_body,
             message_html=self.html_body,
@@ -43,7 +44,7 @@ def sendmail(to_address, subject, message, message_html=None, reply_to=None, cc=
     if message_html:
         message_html = pynliner.fromString(message_html)
 
-    if Unsubscribe.contacts(to_address):
+    if Unsubscribe.contains(to_address):
         logger.warn("%s is in the unsubscribed list. Not sending email.", to_address)
         return
 
