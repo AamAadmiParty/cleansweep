@@ -366,6 +366,7 @@ class Member(db.Model):
     phone = db.Column(db.Text, nullable=False, unique=True)
     voterid = db.Column(db.Text)
     details = db.Column(JSON)
+    created = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, place, name, email, phone, voterid):
         self.name = name
@@ -640,7 +641,7 @@ class PendingMember(db.Model):
     def approve(self):
         self.status = 'approved'
         db.session.add(self)
-        self.place.add_member(self.name, self.email, self.phone, self.voterid)
+        return self.place.add_member(self.name, self.email, self.phone, self.voterid)
 
 class MVRequest(db.Model):
     __tablename__ = "mv_request"

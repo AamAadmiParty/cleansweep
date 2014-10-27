@@ -7,10 +7,7 @@ from flask import (request, render_template)
 plugin = Plugin('audit', __name__, template_folder='templates')
 
 def init_app(app):
-	app.logger.info("initializing audit")
-
-	# attach the plugin
-	app.register_blueprint(plugin)
+	plugin.init_app(app)
 
 
 @plugin.place_view("/audit", methods=['GET'], permission='admin', sidebar_entry='Audit Trail')

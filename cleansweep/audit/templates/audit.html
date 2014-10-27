@@ -8,20 +8,20 @@
   <h2>Audit Trail</h2>
 
   <table class="table">
-	<tr>
-		<th>When</th>
-		<th>Where</th>
-		<th>Who</th>
-		<th>What</th>
-	</tr>
-	{% for record in place.get_audit_records() %}
-		<tr>
-			<td>{{ record.timestamp | naturaltime }}</td>
-			<td><a href="{{url_for('place', key=record.place.key)}}">{{record.place.key}}</a></td>
-			<td></td>
-			<td>{{render_audit_record(record)}}</td>
-		</tr>
-	{% endfor %}
+    <tr>
+      <th>When</th>
+      <th>Where</th>
+      <th>Who</th>
+      <th>What</th>
+    </tr>
+    {% for record in place.get_audit_records() %}
+      <tr>
+        <td>{{ record.timestamp | naturaltime }}</td>
+        <td><a href="{{url_for('place', key=record.place.key)}}">{{record.place.key}}</a></td>
+        <td></td>
+        <td>{{render_audit_record(record)}}</td>
+      </tr>
+    {% endfor %}
   </table>
 {% endblock %}
 
@@ -31,9 +31,9 @@
 
 
 {% macro render_audit_record(record) %}
-	{% if record.action == 'volunteer-signup' %}
-		<strong>{{record.data['email']}}</strong> signed up as volunteer.
-	{% else %}
-		{{ record.action }}
-	{% endif %}
+  {% if record.action == 'volunteer-signup' %}
+    <strong>{{record.data['email']}}</strong> signed up as volunteer.
+  {% else %}
+    {{ record.action }}
+  {% endif %}
 {% endmacro %}

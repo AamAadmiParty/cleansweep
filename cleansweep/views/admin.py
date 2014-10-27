@@ -69,30 +69,6 @@ def view_committee_structure(place, slug):
     committee_type = CommitteeType.find(place, slug)
     return render_template("admin/view_committee_structure.html", place=place, committee_type=committee_type)
 
-@place_view("/admin/signups/<status>", methods=['GET', 'POST'], permission="write")
-@place_view("/admin/signups", methods=['GET', 'POST'], permission="write")
-def admin_signups(place, status=None):
-    if status not in [None, 'approved', 'rejected']:
-        return redirect(url_for("admin_signups", key=place.key))
-    if status is None:
-        status = 'pending'
-
-    if request.method == 'POST':
-        member = PendingMember.find(id=request.form.get('member_id'))
-        action = request.form.get('action')
-        if member and (member.place == place or member.place.has_parent(place)):
-            if action == 'approve-member':
-                member.approve()
-                db.session.commit()
-                flash('Successfully approved {} as a volunteer.'.format(member.name))
-                return redirect(url_for("admin_signups", key=place.key))
-            elif action == 'reject-member':
-                member.reject()
-                db.session.commit()
-                flash('Successfully rejected {}.'.format(member.name))
-                return redirect(url_for("admin_signups", key=place.key))
-    return render_template("admin/signups.html", place=place, status=status)
-
 @place_view("/admin/mv-requests/<status>", methods=['GET', 'POST'], permission="write")
 @place_view("/admin/mv-requests", methods=['GET', 'POST'], permission="write")
 def admin_mv_requests(place, status=None):

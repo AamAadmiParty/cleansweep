@@ -13,3 +13,7 @@ class Plugin(Blueprint):
             sidebar_entry=sidebar_entry,
             *args,
             **kwargs)
+
+    def init_app(self, app):
+        app.logger.info("loading pluging %s ...", self.name)
+        app.register_blueprint(self)

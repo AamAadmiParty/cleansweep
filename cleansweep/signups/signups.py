@@ -1,6 +1,7 @@
 """Volunteer signup process.
 """
-from ..models import db, Place, PendingMember
+from ..models import db, Place
+from .models import PendingMember
 from ..voterlib import voterdb
 
 def resolve_voterid(voterid):
@@ -20,5 +21,4 @@ def signup(name, email, phone, voterid, place_key=None):
         phone=phone,
         voterid=voterid)
     db.session.add(pending_member)
-    db.session.commit()
     return pending_member

@@ -13,11 +13,3 @@ def on_login_update_ids(user, userdata):
 		user.add_details('facebook_id', userdata['facebook_id'])
 		db.session.commit()
 
-@signals.volunteer_signup.connect
-def on_volunteer_signup(volunteer):
-	if not volunteer.email:
-		return
-
-	message = mailer.Message(to_addr=volunteer.email)
-	message.html_body = render_template("emails/volunteer_signup.html", volunteer=volunteer, message=message)
-	message.send()
