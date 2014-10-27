@@ -59,6 +59,7 @@ def signup():
             phone=form.phone.data,
             voterid=form.voterid.data,
             place_key=form.place.data)
+        signals.volunteer_signup.send(person)
         return render_template("signup_complete.html", person=person)
     return render_template("signup.html", userdata=userdata, form=form)
 
