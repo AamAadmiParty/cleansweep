@@ -10,7 +10,7 @@ def resolve_voterid(voterid):
     return voter_info and voter_info.get_place()
 
 def signup(name, email, phone, voterid, place_key=None):
-    place = resolve_voterid(voterid)
+    place = voterid and resolve_voterid(voterid)
     if not place:
         place = Place.find(place_key)
     pending_member = PendingMember(
