@@ -1,16 +1,15 @@
-from ..plugin import plugin
-from ..models import Member, PendingMember
-from flask import request, session, render_template
-from .. import signals
+from ..plugin import Plugin
+from ..models import db, Member, PendingMember
+from flask import (flash, request, session, render_template, redirect, url_for)
+from ..core import signals
+
+from . import signals, notifications, audits
 
 plugin = Plugin("signups", __name__, template_folder="templates")
 
-signal_volunteer_signup = signals.make_signal('volunteer-signup')
-signal_volunteer_signup_approved = signals.make_signal('volunteer-signup-approved')
-signal_volunteer_signup_rejected = signals.make_signal('volunteer-signup-rejected')
 
 def init_app(app):
-	plugin.init_app(app)
+    plugin.init_app(app)
 
 @plugin.route("/account/signup", methods=["GET", "POST"])
 def signup():
@@ -43,16 +42,16 @@ def signup():
             voterid=form.voterid.data,
             place_key=form.place.data)
         db.session.commit()
-        signal_volunteer_signup.send(person)
+        signals.volunteer_signup.send(person)
         return render_template("signup_complete.html", person=person)
     return render_template("signup.html", userdata=userdata, form=form)
 
 
-@place_view("/signups/<status>", methods=['GET', 'POST'], permission="write")
-@place_view("/signups", methods=['GET', 'POST'], permission="write")
+@plugin.place_view("/signups/<status>", methods=['GET', 'POST'], permission="write")
+@plugin.place_view("/signups", methods=['GET', 'POST'], permission="write", sidebar_entry="Signups")
 def signups(place, status=None):
     if status not in [None, 'approved', 'rejected']:
-        return redirect(url_for("admin_signups", key=place.key))
+        return redirect(url_for(".signups", key=place.key))
     if status is None:
         status = 'pending'
 
@@ -63,15 +62,13 @@ def signups(place, status=None):
             if action == 'approve-member':
                 m = pmember.approve()
                 db.session.commit()
-        		signal_volunteer_signup_approved.send(pmember, member=m) 
+                signals.volunteer_signup_approved.send(pmember, member=m)
                 flash('Successfully approved {} as a volunteer.'.format(pmember.name))
-                return redirect(url_for("admin_signups", key=place.key))
+                return redirect(url_for(".signups", key=place.key))
             elif action == 'reject-member':
                 pmember.reject()
                 db.session.commit()
-				signal_volunteer_signup_rejected.send(pmember)
+                signals.volunteer_signup_rejected.send(pmember)
                 flash('Successfully rejected {}.'.format(pmember.name))
-                return redirect(url_for("admin_signups", key=place.key))
-    return render_template("admin/signups.html", place=place, status=status)
-
-
+                return redirect(url_for(".signups", key=place.key))
+    return render_template("signups.html", place=place, status=status)

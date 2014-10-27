@@ -1,5 +1,6 @@
 from ..core import mailer
 from flask import render_template
+from . import signals
 
 @signals.volunteer_signup.connect
 def on_volunteer_signup(volunteer):
@@ -11,7 +12,7 @@ def on_volunteer_signup(volunteer):
 	message.send()
 
 @signals.volunteer_signup_approved.connect
-def on_volunteer_signup(volunteer):
+def on_volunteer_signup_approved(volunteer, *a, **kw):
 	if not volunteer.email:
 		return
 

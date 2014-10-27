@@ -18,7 +18,11 @@
       <tr>
         <td>{{ record.timestamp | naturaltime }}</td>
         <td><a href="{{url_for('place', key=record.place.key)}}">{{record.place.key}}</a></td>
-        <td></td>
+        <td>
+          {% if record.user %}
+            <strong>{{record.user.name}}</strong>
+          {% endif %}
+        </td>
         <td>{{render_audit_record(record)}}</td>
       </tr>
     {% endfor %}
@@ -29,10 +33,11 @@
   {{ self.two_column_layout() }}
 {% endblock %}
 
-
 {% macro render_audit_record(record) %}
   {% if record.action == 'volunteer-signup' %}
     <strong>{{record.data['email']}}</strong> signed up as volunteer.
+  {% elif record.action == 'volunteer-signup-approved' %}
+    Approved signup of <strong>{{record.data['email']}}</strong>.
   {% else %}
     {{ record.action }}
   {% endif %}

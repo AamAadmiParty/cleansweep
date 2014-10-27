@@ -82,9 +82,6 @@
     {% if "write" in permissions %}
       <h4>Admin</h4>
       <ul class="list-group">
-        <li class="list-group-item {{'active' if tab=='signups' }}">
-          <a href="{{url_for('signups', key=place.key)}}">Signups</a>
-        </li>
         {% if place.type.short_name != "PB" %}
           <li class="list-group-item {{'active' if tab=='mv-requests' }}">
             <a href="{{url_for('admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
