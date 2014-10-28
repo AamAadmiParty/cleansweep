@@ -96,3 +96,16 @@
 </html>
 <!-- {% block subject %}{% endblock %} -->
 {{ message and message.set_subject(self.subject().strip() or get_config("SITE_TITLE")) }}
+
+{% macro render_person(person, show_voterid=False) %}
+  <div class="quote">
+    <table class="noborder">
+      <tr><th>Name</th><td>{{volunteer.name}}</td></tr>
+      <tr><th>Phone</th><td>{{volunteer.phone}}</td></tr>
+      <tr><th>E-mail</th><td>{{volunteer.email}}</td></tr>
+      {% if show_voterid %}
+        <tr><th>Voter ID</th><td>{{volunteer.voterid or ""}}</td></tr>
+      {% endif %}
+    </table>
+  </div>
+{% endmacro %}

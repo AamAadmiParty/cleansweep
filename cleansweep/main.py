@@ -5,7 +5,7 @@ from .models import db
 from . import notifications
 from .voterlib import voterdb
 
-from . import audit, signups
+from . import audit, signups, committees
 
 def init_app(app):
     app.config.from_object('cleansweep.default_settings')
@@ -23,6 +23,7 @@ def init_app(app):
     view_helpers.init_app(app)
 
     signups.init_app(app)
+    committees.init_app(app)
     voterdb.init_app(app)
     audit.init_app(app)
 

@@ -381,6 +381,15 @@ class Member(db.Model):
             kw['email'] = email
         return Member.query.filter_by(**kw).first()
 
+    def dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "phone": self.phone,
+            "voterid": self.voterid
+        }
+
     def add_details(self, name, value):
         """Adds/updates a new name-value pair to member details.
         """
@@ -530,6 +539,12 @@ class CommitteeRole(db.Model):
         self.multiple = multiple
         self.permission = permission
 
+    def dict(self):
+        return {
+            "id": self.id,
+            "role": self.role,
+        }
+
     def __repr__(self):
         return "<Role:{}.{}>".format(self.committee_type.slug, self.role)
 
@@ -585,6 +600,14 @@ class Committee(db.Model):
         m = CommitteeMember.query.filter_by(committee_id=self.id, role_id=role.id, member_id=member.id).first()
         if m:
             db.session.delete(m)
+
+    def dict(self):
+        return {
+            "id": self.id,
+            "name": self.type.name,
+            "place_key": self.place.key,
+            "place_name": self.place.name,
+        }
 
 class CommitteeMember(db.Model):
     """The members of a committee.

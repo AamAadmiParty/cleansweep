@@ -17,58 +17,6 @@ from collections import defaultdict
 def admin(place):
     return render_template("admin/index.html", place=place)
 
-@place_view("/admin/committees", permission="write")
-def committees(place):
-    return render_template("admin/committees.html", place=place)
-
-@place_view("/admin/committees/<slug>", methods=["GET", "POST"], permission="write")
-def view_committee(place, slug):
-    committee = place.get_committee(slug)
-    if not committee:
-        abort(404)
-
-    if request.method == "POST":
-        action = request.form.get('action')
-        if action == "add":
-            role_id = request.form['role']
-            email = request.form['email']
-            role = CommitteeRole.query.filter_by(id=role_id).first()
-            member = Member.find(email=email)
-            committee.add_member(role, member)
-            db.session.commit()
-            flash("{} has been added as {}".format(email, role.role))
-        elif action == 'remove':
-            role_id = request.form['role']
-            email = request.form['email']
-            role = CommitteeRole.query.filter_by(id=role_id).first()
-            member = Member.find(email=email)
-            committee.remove_member(role, member)
-            db.session.commit()
-            flash("{} has been removed as {}".format(email, role.role))
-
-    return render_template("admin/view_committee.html", place=place, committee=committee)
-
-@place_view("/admin/committee-structures/new", methods=['GET', 'POST'], permission="write")
-def new_committee_structure(place):
-    form = forms.NewCommitteeForm(place)
-    if request.method == "POST" and form.validate():
-        committee_type = CommitteeType.new_from_formdata(place, form)
-        db.session.commit()
-
-        flash("Successfully defined new committee {}.".format(form.slug.data), category="success")
-        return redirect(url_for("view_committee_structure", key=place.key, slug=committee_type.slug))
-    else:
-        return render_template("admin/new_committee_structure.html", place=place, form=form)
-
-@place_view("/admin/committee-structures", permission="write")
-def committee_structures(place):
-    return render_template("admin/committee_structures.html", place=place)
-
-@place_view("/admin/committee-structures/<slug>", permission="write")
-def view_committee_structure(place, slug):
-    committee_type = CommitteeType.find(place, slug)
-    return render_template("admin/view_committee_structure.html", place=place, committee_type=committee_type)
-
 @place_view("/admin/mv-requests/<status>", methods=['GET', 'POST'], permission="write")
 @place_view("/admin/mv-requests", methods=['GET', 'POST'], permission="write")
 def admin_mv_requests(place, status=None):
