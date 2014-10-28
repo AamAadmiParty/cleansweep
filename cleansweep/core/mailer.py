@@ -40,6 +40,8 @@ def sendmail(to_address, subject, message, message_html=None, reply_to=None, cc=
     if 'SMTP_SERVER' not in app.config:
         app.logger.warn("SMTP_SERVER config is not set, ignoring sendmail...")
         return
+
+    app.logger.info("sending mail to %s with subject %r", to_address, subject)
  
     headers = {}
     if reply_to:
