@@ -37,6 +37,10 @@ class Message:
             reply_to=self.reply_to)
 
 def sendmail(to_address, subject, message, message_html=None, reply_to=None, cc=None, bcc=None):
+    if 'SMTP_SERVER' not in app.config:
+        app.logger.warn("SMTP_SERVER config is not set, ignoring sendmail...")
+        return
+ 
     headers = {}
     if reply_to:
         headers['Reply-To'] = reply_to
