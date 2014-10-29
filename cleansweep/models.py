@@ -294,19 +294,6 @@ class Place(db.Model, Mixable):
                 .offset(offset)
                 .all())
 
-    def get_mv_requests(self, status='pending', limit=100, offset=0):
-        """Returns all the pending MV requests below this place.
-        """
-        return (MVRequest
-                .query
-                .filter_by(status=status)
-                .filter(
-                    MVRequest.place_id==place_parents.c.child_id,
-                    place_parents.c.parent_id==self.id)
-                .limit(limit)
-                .offset(offset)
-                .all())
-
     def add_contacts(self, data):
         phones = [row[2].strip() for row in data if row[2] and row[2].strip()]
         emails = [row[1].strip() for row in data if row[1] and row[1].strip()]
@@ -665,45 +652,6 @@ class PendingMember(db.Model):
         self.status = 'approved'
         db.session.add(self)
         return self.place.add_member(self.name, self.email, self.phone, self.voterid)
-
-class MVRequest(db.Model):
-    __tablename__ = "mv_request"
-
-    id = db.Column(db.Integer, primary_key=True)
-    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
-    place = db.relationship('Place', foreign_keys=place_id)
-
-    member_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable=False, index=True)
-    member = db.relationship('Member', foreign_keys=member_id)
-
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-    status = db.Column(
-        db.Enum("pending", "approved", "rejected", name="mv_request_status"),
-        default="pending")
-
-    __table_args__ = (db.UniqueConstraint('place_id', 'member_id'), {})
-
-    def __init__(self, user, place):
-        self.member = user
-        self.place = place
-
-    @classmethod
-    def find(cls, **kw):
-        return cls.query.filter_by(**kw).first()
-
-    @classmethod
-    def get_request_status(cls, user, place):
-        request = cls.find(member_id=user.id, place_id=place.id)
-        if request:
-            return request.status
-
-    def reject(self):
-        self.status = 'rejected'
-        db.session.add(self)
-
-    def approve(self):
-        self.status = 'approved'
-        db.session.add(self)
 
 class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)

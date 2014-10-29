@@ -2,7 +2,7 @@
 """
 
 from flask import (render_template, abort, url_for, redirect, request, flash, jsonify)
-from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, Place, MVRequest
+from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
 from ..voterlib import voterdb
@@ -16,30 +16,6 @@ from collections import defaultdict
 @place_view("/admin", permission="write")
 def admin(place):
     return render_template("admin/index.html", place=place)
-
-@place_view("/admin/mv-requests/<status>", methods=['GET', 'POST'], permission="write")
-@place_view("/admin/mv-requests", methods=['GET', 'POST'], permission="write")
-def admin_mv_requests(place, status=None):
-    if status not in [None, 'approved', 'rejected']:
-        return redirect(url_for("admin_mv_requests", key=place.key))
-    if status is None:
-        status = 'pending'
-
-    if request.method == 'POST':
-        mv_req = MVRequest.find(id=request.form.get('request_id'))
-        action = request.form.get('action')
-        if mv_req and (mv_req.place == place or mv_req.place.has_parent(place)):
-            if action == 'approve-request':
-                mv_req.approve()
-                db.session.commit()
-                flash('Successfully approved {} to work at {}.'.format(mv_req.member.name, mv_req.place.name))
-                return redirect(url_for("admin_mv_requests", key=place.key))
-            elif action == 'reject-request':
-                mv_req.reject()
-                db.session.commit()
-                flash('Successfully rejected {}.'.format(mv_req.name))
-                return redirect(url_for("admin_mv_requests", key=place.key))
-    return render_template("admin/mv_requests.html", place=place, status=status)
 
 @place_view("/admin/voters", methods=['GET', 'POST'], permission="write")
 def admin_voters(place):

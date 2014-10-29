@@ -84,7 +84,7 @@
       <ul class="list-group">
         {% if place.type.short_name != "PB" %}
           <li class="list-group-item {{'active' if tab=='mv-requests' }}">
-            <a href="{{url_for('admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
+            <a href="{{url_for('vistaar.admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
           </li>
         {% endif %}
         <li class="list-group-item {{'active' if tab=='voters' }}">

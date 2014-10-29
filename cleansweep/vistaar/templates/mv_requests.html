@@ -8,9 +8,9 @@
 {% block page_content %}
   <h2>Mission Vistaar Requests</h2>
   <ul class="nav nav-pills nav-status">
-    {{ render_pill("Pending", url_for('admin_mv_requests', key=place.key), request_path)}}
-    {{ render_pill("Approved", url_for('admin_mv_requests', key=place.key, status='approved'), request_path)}}
-    {{ render_pill("Rejected", url_for('admin_mv_requests', key=place.key, status='rejected'), request_path)}}
+    {{ render_pill("Pending", url_for('.admin_mv_requests', key=place.key), request_path)}}
+    {{ render_pill("Approved", url_for('.admin_mv_requests', key=place.key, status='approved'), request_path)}}
+    {{ render_pill("Rejected", url_for('.admin_mv_requests', key=place.key, status='rejected'), request_path)}}
   </ul>
   {% set requests = place.get_mv_requests(status=status) %}
   {% if not requests %}

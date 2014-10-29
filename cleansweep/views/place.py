@@ -1,7 +1,7 @@
 from flask import (render_template, session, url_for, redirect, request, flash)
 
 from ..app import app
-from ..models import db, MVRequest
+from ..models import db
 from .. import forms
 from ..view_helpers import place_view
 from .. import helpers
@@ -33,26 +33,3 @@ def addmember(place):
     else:
         return render_template("members/add.html", place=place, form=form)
 
-
-@place_view("/mv-request", methods=["POST"])
-def mv_request(place):
-    user = helpers.get_current_user()
-    status = MVRequest.get_request_status(user, place)
-
-    if status is None:
-        mv = MVRequest(user, place)
-        db.session.add(mv)
-        db.session.commit()
-        flash(
-            "Thank you for showing interest to work at this place." +
-            " Someone will review your request shortly.",
-            category="success")
-        return redirect(request.referrer)
-    elif status == "pending":
-        flash(
-            "You've already requested to work at this place." +
-            " Someone will review your request shortly.",
-            category="warning")
-        return redirect(request.referrer)
-    else:
-        return redirect(request.referrer)

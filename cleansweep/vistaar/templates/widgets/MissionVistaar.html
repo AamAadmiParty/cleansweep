@@ -5,7 +5,7 @@
         <strong>Mission Vistaar</strong>
       </div>
       <div class="panel-body">
-        {% set status  = get_mv_request_status(user, place) %}
+        {% set status  = place.get_mv_request_status(user) %}
         {% if status == "approved" %}
           <p>You are currently working at this polling center.</p>
         {% elif status == "pending" %}
