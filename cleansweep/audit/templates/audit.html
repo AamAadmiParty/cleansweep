@@ -38,6 +38,10 @@
     <strong>{{record.data['email']}}</strong> signed up as volunteer.
   {% elif record.action == 'volunteer-signup-approved' %}
     Approved signup of <strong>{{record.data['email']}}</strong>.
+  {% elif record.action == 'committee.add-member' %}
+    Added <strong>{{record.data['member']['name']}}</strong> as <strong>{{record.data['role']['role']}}</strong> to <strong>{{record.data['committee']['name']}}</strong>.
+  {% elif record.action == 'committee.remove-member' %}
+    Removed <strong>{{record.data['member']['name']}}</strong> as <strong>{{record.data['role']['role']}}</strong> from <strong>{{record.data['committee']['name']}}</strong>.
   {% else %}
     {{ record.action }}
   {% endif %}
