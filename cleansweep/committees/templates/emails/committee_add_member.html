@@ -8,7 +8,7 @@ You've been added to {{committee.type.name}}
 <p>Dear {{member.name}},</p>
 
 <p>This is to inform you that you have been added as <strong>{{role.role}}</strong> to the 
-<strong>{{committee.type.name}}</strong> at <a href="{{url_for('place', key=committee.place.key)}}">{{committee.place.name}}</a> unit.</p>
+<strong>{{committee.type.name}}</strong> at <a href="{{url_for('place', key=committee.place.key, _external=True)}}">{{committee.place.name}}</a> unit.</p>
 
 <p>Please feel free to contact your administrator in case you have any queries:</p>
 
@@ -17,7 +17,6 @@ You've been added to {{committee.type.name}}
 		<tr><th>Name</th><td>{{user.name}}</td></tr>
 		<tr><th>Phone</th><td>{{user.phone}}</td></tr>
 		<tr><th>E-mail</th><td>{{user.email}}</td></tr>
-		<tr><th>Voter ID</th><td>{{user.voterid or ""}}</td></tr>
 	</table>
 </div>
 

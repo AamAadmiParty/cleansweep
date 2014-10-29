@@ -51,7 +51,7 @@ def sendmail(to_address, subject, message, message_html=None, reply_to=None, cc=
         message_html = pynliner.fromString(message_html)
 
     if Unsubscribe.contains(to_address):
-        logger.warn("%s is in the unsubscribed list. Not sending email.", to_address)
+        app.logger.warn("%s is in the unsubscribed list. Not sending email.", to_address)
         return
 
     envelope = Envelope(

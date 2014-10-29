@@ -8,7 +8,11 @@ def on_committee_add_member(committee, member, role):
         return
 
     message = mailer.Message(to_addr=member.email)
-    message.html_body = render_template("emails/committee_add_member.html", committee=committee, member=member, role=role)
+    message.html_body = render_template("emails/committee_add_member.html", 
+        committee=committee, 
+        member=member,
+        role=role,
+        message=message)
     message.send()
 
 # @signals.committee_remove_member.connect
