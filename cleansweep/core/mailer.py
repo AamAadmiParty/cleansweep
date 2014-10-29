@@ -76,6 +76,7 @@ def sendmail(to_address, subject, message, message_html=None, reply_to=None, cc=
             login=username,
             password=password,
             tls=tls)
+    app.logger.info("mail sent to %s with subject %r", to_address, subject)
 
 _q = None
 def get_queue():
