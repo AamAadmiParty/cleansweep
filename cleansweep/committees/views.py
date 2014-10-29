@@ -45,7 +45,7 @@ def edit_committee(place, slug):
 
     return render_template("edit_committee.html", place=place, committee=committee)
 
-@plugin.place_view("/admin/committee-structures/new", methods=['GET', 'POST'], permission="write")
+@plugin.place_view("/committee-structures/new", methods=['GET', 'POST'], permission="write")
 def new_committee_structure(place):
     form = forms.NewCommitteeForm(place)
     if request.method == "POST" and form.validate():
@@ -53,16 +53,16 @@ def new_committee_structure(place):
         db.session.commit()
 
         flash("Successfully defined new committee {}.".format(form.slug.data), category="success")
-        return redirect(url_for("view_committee_structure", key=place.key, slug=committee_type.slug))
+        return redirect(url_for(".view_committee_structure", key=place.key, slug=committee_type.slug))
     else:
-        return render_template("admin/new_committee_structure.html", place=place, form=form)
+        return render_template("new_committee_structure.html", place=place, form=form)
 
-@plugin.place_view("/admin/committee-structures", permission="write")
+@plugin.place_view("/committee-structures", permission="write")
 def committee_structures(place):
-    return render_template("admin/committee_structures.html", place=place)
+    return render_template("committee_structures.html", place=place)
 
-@plugin.place_view("/admin/committee-structures/<slug>", permission="write")
+@plugin.place_view("/committee-structures/<slug>", permission="write")
 def view_committee_structure(place, slug):
     committee_type = CommitteeType.find(place, slug)
-    return render_template("admin/view_committee_structure.html", place=place, committee_type=committee_type)
+    return render_template("view_committee_structure.html", place=place, committee_type=committee_type)
 

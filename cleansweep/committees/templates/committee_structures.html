@@ -1,4 +1,4 @@
-{% extends "admin/index.html" %}
+{% extends "place.html" %}
 {% block subnav %}
   {{ subnav(place, tab="committee-structures") }}
 {% endblock %}
@@ -9,14 +9,14 @@
   {% if committee_types %}
     <ul class="list-unstyled committees">
       {% for c in place.committee_types.all() %}
-        <li><a href="{{ url_for('view_committee_structure', key=place.key, slug=c.slug) }}">{{c.name}}</a></li>
+        <li><a href="{{ url_for('.view_committee_structure', key=place.key, slug=c.slug) }}">{{c.name}}</a></li>
       {% endfor %}
     </ul>
     {% else %}
       <em>No committee structures are defined here.</em>
     {% endif %}
     <div style="margin-top: 20px;">
-      <a class="btn btn-primary" href="{{ url_for('new_committee_structure', key=place.key) }}">Add new committee structure</a></li>
+      <a class="btn btn-primary" href="{{ url_for('.new_committee_structure', key=place.key) }}">Add new committee structure</a></li>
     </div>
 
 {% endblock %}
