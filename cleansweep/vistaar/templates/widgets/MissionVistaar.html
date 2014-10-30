@@ -17,7 +17,7 @@
           <p>Sorry! Your request to work at this place has been rejected.</p>
         {% else %}
           <p>Interested to work at this polling center?</p>
-          <form method="POST" action="{{url_for('mv_request', key=place.key)}}">
+          <form method="POST" action="{{url_for('vistaar.mv_request', key=place.key)}}">
             <button class="btn btn-primary">Request to work here</button>
           </form>
         {% endif %}
