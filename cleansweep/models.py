@@ -408,6 +408,7 @@ class Member(db.Model):
             if committee_place == place or place.has_parent(committee_place):
                 perms.update(cm.role.permission.split(","))
 
+        from cleansweep.vistaar.models import MVRequest
         status = MVRequest.get_request_status(self, place)
         if status == 'approved':
             perms.update(["read", "write", "view-volunteers"])
