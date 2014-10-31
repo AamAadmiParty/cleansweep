@@ -27,6 +27,9 @@ def admin_voter_view(place, voterid):
     voter = voterdb.get_voter(voterid)
     if not voter:
         return abort(404)
+
+    if request.method == 'POST':
+        flash('This is still work in progress, please try again after couple of days.', category='warning')
     return render_template("admin/voter.html", place=place, voter=voter)
 
 
