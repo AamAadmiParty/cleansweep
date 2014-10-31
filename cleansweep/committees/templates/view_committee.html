@@ -1,0 +1,72 @@
+{% extends "admin/index.html" %}
+{% block subnav %}
+  {{ subnav(place, tab="committees") }}
+{% endblock %}
+
+{% block page_content %}
+
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.committees', key=place.key)}}">Committees</a></li>
+    <li></li>
+  </ul>  
+  <h2>{{committee.type.name}}
+      <a class="small" href="{{url_for('.edit_committee', key=place.key, slug=committee.type.slug)}}">Edit</a>
+  </h2>
+  <div>{{committee.type.description}}</div>
+
+  <h3>Committee Members</h3>
+  <div class="committee-members">
+    {% for role, members in committee.get_members() %}
+      {% if members %}
+        <div class="committee-role">
+          <h4>{{role.role}}</h4>
+          {% for member in members %}
+            <div class="member-card">
+              <a href="#"><strong>{{member.name}}</strong></a>
+              <div>{{member.email or ''}}</div>
+              <div>{{member.phone}}</div>
+            </div> 
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <style type="text/css">
+    .member-card2 {
+      margin: 20px 0px;
+    }
+    .member-card {
+      margin: 20px 0px;
+      padding: 0px;
+      background: inherit;
+      border: none;
+    }
+    a.remove, a.remove:hover {
+      color: #f00;
+    }
+
+    .committee-role {
+      margin: 20px 0px; 
+      padding: 20px; 
+      background: #eee;
+    }
+
+    .committee-role .member-card:last-child {
+      margin-bottom: 0px;
+    }
+    .committee-role h4 {
+      margin: 0px;
+    }
+
+    .new-member {
+      margin-top: 20px;
+    }
+  </style>
+  <script type="text/javascript">
+    $(function() {
+      $(".remove").click(function() {
+        $(this).closest("form").submit();
+      });
+    });
+  </script>
+{% endblock %}

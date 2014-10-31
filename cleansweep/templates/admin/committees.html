@@ -10,7 +10,7 @@
   {% if committees %}
     <ul class="list-unstyled committees">
       {% for c in place.get_committees() %}
-        <li><a href="{{ url_for('committees.edit_committee', key=place.key, slug=c.type.slug) }}">{{c.type.name}}</a></li>
+        <li><a href="{{ url_for('committees.view_committee', key=place.key, slug=c.type.slug) }}">{{c.type.name}}</a></li>
       {% endfor %}
     </ul>
   {% else %}

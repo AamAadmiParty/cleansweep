@@ -1,6 +1,10 @@
 {% extends "admin/index.html" %}
 {% block page_content %}
-  <h2>{{committee.type.name}}</h2>
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.committees', key=place.key)}}">Committees</a></li>
+    <li></li>
+  </ul>  
+  <h2>Edit <a href="{{url_for('.view_committee', key=place.key, slug=committee.type.slug)}}">{{committee.type.name}}</a></h2>
   <div>{{committee.type.description}}</div>
 
   <h3>Committee Members</h3>

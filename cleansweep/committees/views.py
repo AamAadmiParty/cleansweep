@@ -12,9 +12,18 @@ def init_app(app):
     plugin.init_app(app)
 
 
-@plugin.place_view("/admin/committees", permission="write")
+@plugin.place_view("/committees", permission="read")
 def committees(place):
     return render_template("admin/committees.html", place=place)
+
+
+@plugin.place_view("/committees/<slug>", methods=["GET"], permission="read")
+def view_committee(place, slug):
+    committee = place.get_committee(slug)
+    if not committee:
+        abort(404)
+    return render_template("view_committee.html", place=place, committee=committee)
+
 
 @plugin.place_view("/committees/<slug>/edit", methods=["GET", "POST"], permission="write")
 def edit_committee(place, slug):
