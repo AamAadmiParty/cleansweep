@@ -1,4 +1,6 @@
-{% for m in place.get_all_members() %}
+{% set members = place.get_all_members() %}
+{% if members %}
+  {% for m in place.get_all_members() %}
     <div class="member-card">
       {% if m.get_detail("facebook_id") %}
       	<div style="float: left;"><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
@@ -13,4 +15,7 @@
 	   </div>
 	   <div class="clearfix"></div>
     </div>
-{% endfor %}
+  {% endfor %}
+{% else %}
+  <em>None found.</em>
+{% endif %}
