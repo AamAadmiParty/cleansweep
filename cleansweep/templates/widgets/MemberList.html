@@ -1,21 +1,25 @@
 {% set members = place.get_all_members() %}
 {% if members %}
+<div class="row">
   {% for m in place.get_all_members() %}
-    <div class="member-card">
-      {% if m.get_detail("facebook_id") %}
-      	<div style="float: left;"><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
-      {% else %}
-      	<div style="float: left;"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded"/></div>
-      {% endif %}
-      <div style="float: left; padding-left: 10px;">
-	      <strong>{{m.name}}</strong>
-	      <div>{{m.email or ""}}</div>
-	      <div>{{m.phone}}</div>
-	    <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.key}}</a></div>
-	   </div>
-	   <div class="clearfix"></div>
+    <div class="col-md-6">
+      <div class="member-card">
+        {% if m.get_detail("facebook_id") %}
+          <div style="float: left;"><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
+        {% else %}
+          <div style="float: left;"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded"/></div>
+        {% endif %}
+        <div style="float: left; padding-left: 10px;">
+          <strong>{{m.name}}</strong>
+          <div>{{m.email or ""}}</div>
+          <div>{{m.phone}}</div>
+          <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.key}}</a></div>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
     </div>
   {% endfor %}
+</div>
 {% else %}
   <em>None found.</em>
 {% endif %}
