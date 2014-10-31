@@ -5,9 +5,9 @@
     <div class="col-md-6">
       <div class="member-card">
         {% if m.get_detail("facebook_id") %}
-          <div><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
+          <div style="width: 75px; height: 75px;"><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
         {% else %}
-          <div><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></div>
+          <div style="width: 75px; height: 75px;"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></div>
         {% endif %}
         <div style="margin-top: -75px; margin-left: 75px; padding-left: 10px;">
           <strong>{{m.name}}</strong>

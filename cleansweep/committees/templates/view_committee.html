@@ -20,12 +20,20 @@
       {% if members %}
         <div class="committee-role">
           <h4>{{role.role}}</h4>
-          {% for member in members %}
+          {% for m in members %}
             <div class="member-card">
-              <strong>{{member.name}}</strong>
-              <div>{{member.email or ''}}</div>
-              <div>{{member.phone}}</div>
-            </div> 
+              {% if m.get_detail("facebook_id") %}
+                <div style="width: 75px; height: 75px;"><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
+              {% else %}
+                <div style="width: 75px; height: 75px;"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></div>
+              {% endif %}
+              <div style="margin-top: -75px; margin-left: 75px; padding-left: 10px;">
+                <strong>{{m.name}}</strong>
+                <div>{{m.email or ""}}</div>
+                <div>{{m.phone}}</div>
+                <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.key}}</a></div>
+              </div>
+            </div>
           {% endfor %}
         </div>
       {% endif %}
