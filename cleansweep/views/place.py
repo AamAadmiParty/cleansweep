@@ -17,10 +17,6 @@ def home():
 def place(place):
     return render_template("place.html", place=place)
 
-@place_view("/volunteers", permission="view-volunteers")
-def volunteers(place):
-    return render_template("members.html", place=place)
-
 @place_view("/members/add", methods=["GET", "POST"], permission="write")
 def addmember(place):
     form = forms.AddMemberForm(request.form)

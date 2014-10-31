@@ -6,5 +6,12 @@
 
 {% block page_content %}
   <h2>Volunteers</h2>
+
+  {% if "write" in permissions %}
+	  <div class="controls">
+		<a href="{{url_for('.add_volunteer', key=place.key)}}" class="btn btn-primary">Add New Volunteer</a>
+	  </div>
+  {% endif %}
+
   {{ widget("MemberList", place=place) }}
 {% endblock %}

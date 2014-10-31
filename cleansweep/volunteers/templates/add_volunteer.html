@@ -6,10 +6,14 @@
 {% endblock %}
 
 {% block subnav %}
-  {{ subnav(place, tab="add-new-volunteer") }}
+    {{ subnav(place, tab="volunteers") }}
 {% endblock %}
 
 {% block page_content %}
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.volunteers', key=place.key)}}">Volunteers</a></li>
+    <li></li>
+  </ul>
   <h2>Add New Volunteer</h2>
   <div class="row">
     <div class="col-md-4">

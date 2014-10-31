@@ -45,7 +45,7 @@
       {% endif %}
       {% if "view-volunteers" in permissions %}
         <li class="list-group-item {{'active' if tab=='volunteers' }}">
-          <a href="{{url_for('volunteers', key=place.key)}}">Volunteers <span class="badge pull-right">{{place.get_member_count()}}</span></a>
+          <a href="{{url_for('volunteers.volunteers', key=place.key)}}">Volunteers <span class="badge pull-right">{{place.get_member_count()}}</span></a>
         </li>
       {% endif %}
     </ul>
@@ -61,9 +61,6 @@
         <li class="list-group-item {{'active' if tab=='voters' }}">
           <a href="{{url_for('admin_voters', key=place.key)}}">Voters</a>
         </li>
-        <li class="list-group-item {{'active' if tab=='add-new-volunteer' }}">
-          <a href="{{url_for('admin_add_volunteer', key=place.key)}}">Add New Volunteer</a>
-        </li>    
         {% if place.type.short_name not in ["PB", "PX"] %} 
           <li class="list-group-item {{'active' if tab=='committee-structures' }}">
             <a href="{{url_for('committees.committee_structures', key=place.key)}}">Committee Structures</a>

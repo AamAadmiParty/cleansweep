@@ -33,26 +33,6 @@ def admin_voter_view(place, voterid):
     return render_template("admin/voter.html", place=place, voter=voter)
 
 
-@place_view("/admin/add-volunteer", methods=['GET', 'POST'], permission="write")
-def admin_add_volunteer(place):
-    form = forms.AddVolunteerForm(place, request.form)
-    if request.method == "POST" and form.validate():
-        if form.voterid.data:
-            voterid = form.voterid.data
-            voter = voterdb.get_voter(voterid=voterid)
-            p = voter.get_place()
-        else:
-            p = Place.find(key=form.place.data)
-        p.add_member(
-            name=form.name.data, 
-            email=form.email.data,
-            phone=form.phone.data,
-            voterid=form.voterid.data)
-        db.session.commit()
-        flash(u"Added {} as volunteer to {}.".format(form.name.data, p.name))
-        return redirect(url_for("admin", key=place.key))
-    return render_template("admin/add_volunteer.html", place=place, form=form)
-
 @place_view("/admin/sendmail", methods=['GET', 'POST'], permission="write")
 def admin_sendmail(place):
     form = forms.SendMailForm(request.form)

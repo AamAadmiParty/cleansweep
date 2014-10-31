@@ -42,6 +42,8 @@
     Added <strong>{{record.data['member']['name']}}</strong> as <strong>{{record.data['role']['role']}}</strong> to <strong>{{record.data['committee']['name']}}</strong>.
   {% elif record.action == 'committee.remove-member' %}
     Removed <strong>{{record.data['member']['name']}}</strong> as <strong>{{record.data['role']['role']}}</strong> from <strong>{{record.data['committee']['name']}}</strong>.
+  {% elif record.action == 'volunteer.added' %}
+    Added <strong>{{record.data['name']}}</strong> as volunteer.
   {% else %}
     {{ record.action }}
   {% endif %}
