@@ -453,6 +453,15 @@ class CommitteeType(db.Model):
         self.description = description
         self.slug = slug
 
+    def dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "slug": self.slug,
+            "description": self.description,
+            "place_key": self.place.key
+        }
+
     def __repr__(self):
         return "<CommitteeType#{} - {} - {}>".format(self.id, self.place.key, self.name)
 
@@ -506,7 +515,7 @@ class CommitteeType(db.Model):
             slug=form.slug.data)
         db.session.add(c)
         for roledata in form.data['roles']:
-            if roledata['name'].strip():
+            if roledata.get('name') and roledata['name'].strip():
                 c.add_role(
                     roledata['name'],
                     roledata['multiple'] == 'yes',

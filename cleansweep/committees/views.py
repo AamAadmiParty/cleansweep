@@ -60,6 +60,7 @@ def new_committee_structure(place):
     if request.method == "POST" and form.validate():
         committee_type = CommitteeType.new_from_formdata(place, form)
         db.session.commit()
+        signals.new_committee_structure.send(committee_type)
 
         flash("Successfully defined new committee {}.".format(form.slug.data), category="success")
         return redirect(url_for(".view_committee_structure", key=place.key, slug=committee_type.slug))

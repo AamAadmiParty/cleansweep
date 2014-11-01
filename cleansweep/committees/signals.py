@@ -4,3 +4,4 @@ namespace = Namespace()
 
 committee_add_member = namespace.signal("committee.add-member")
 committee_remove_member = namespace.signal("committee.remove-member")
+new_committee_structure = namespace.signal("committee-structure.new")

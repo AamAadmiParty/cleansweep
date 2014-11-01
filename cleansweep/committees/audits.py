@@ -24,3 +24,12 @@ def on_committee_remove_member(committee, member, role):
             committee=committee.dict(),
             member=member.dict(),
             role=role.dict()))
+
+@signals.new_committee_structure.connect
+def on_new_committee_structure(committee_type):
+    record_audit(
+        action="committee-structure.new",
+        timestamp=None,
+        place=committee_type.place,
+        person=None,
+        data=dict(committee_type=committee_type.dict()))
