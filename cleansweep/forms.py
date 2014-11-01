@@ -19,8 +19,8 @@ class RoleForm(wtforms.Form):
     # Source: http://stackoverflow.com/a/15651474/189776
 
     name = StringField('Name')
-    multiple = SelectField('Multiple?', choices=[("no", "One Member"), ("yes", "Multiple Members")])
-    permission = SelectField('Permissions', choices=[("read", "Read"), ("read,write", "Read and Write")])
+    multiple = SelectField('Multiple?', choices=[("no", "One Member"), ("yes", "Multiple Members")], default='no')
+    permission = SelectField('Permissions', choices=[("read", "Read"), ("read,write", "Read and Write")], default='read')
 
 class NewCommitteeForm(Form):
     name = StringField('Name', [validators.Required()])
