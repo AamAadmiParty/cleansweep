@@ -413,6 +413,10 @@ class Member(db.Model):
         if status == 'approved':
             perms.update(["read", "write", "view-volunteers"])
 
+        # quick hack to allow committee members to see all the volunteers
+        if 'write' in perms:
+            perms.add('view-volunteers')
+
         return perms
 
 class CommitteeType(db.Model):
