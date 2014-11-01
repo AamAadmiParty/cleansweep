@@ -33,7 +33,7 @@ def mv_request(place):
         return redirect(request.referrer)
 
 @plugin.place_view("/mv-requests/<status>", methods=['GET', 'POST'], permission="write")
-@plugin.place_view("/mv-requests", methods=['GET', 'POST'], permission="write", sidebar_entry="Mission Vistaar Requests")
+@plugin.place_view("/mv-requests", methods=['GET', 'POST'], permission="write")
 def admin_mv_requests(place, status=None):
     if status not in [None, 'approved', 'rejected']:
         return redirect(url_for(".admin_mv_requests", key=place.key))
