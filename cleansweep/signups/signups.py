@@ -1,7 +1,6 @@
 """Volunteer signup process.
 """
-from ..models import db, Place
-from .models import PendingMember
+from ..models import db, Place, PendingMember
 from ..voterlib import voterdb
 
 def resolve_voterid(voterid):

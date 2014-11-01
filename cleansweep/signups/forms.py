@@ -3,8 +3,7 @@ import wtforms
 from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField
 from wtforms import validators
 
-from .models import PendingMember
-from ..models import Member
+from .. import models
 from ..voterlib import voterdb
 
 class SignupForm(Form):

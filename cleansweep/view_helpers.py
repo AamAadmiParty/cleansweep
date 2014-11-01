@@ -47,10 +47,11 @@ def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=N
         return func
 
     if sidebar_entry:
+        endpoint = kwargs.get('endpoint', func.__name__)
         if blueprint:
-            entrypoint = blueprint.name + "." + func.__name__
+            entrypoint = blueprint.name + "." + endpoint
         else:
-            entrypoint = func.__name__
+            entrypoint = endpoint
         h.sidebar_entries.append(dict(entrypoint=entrypoint, permission=permission, title=sidebar_entry, tab=func.__name__))
 
     @_app.route("/<place:key>" + path, *args, **kwargs)

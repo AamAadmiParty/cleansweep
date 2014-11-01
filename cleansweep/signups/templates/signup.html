@@ -56,7 +56,7 @@
     <p>Please authenticate yourself using the following services to continue with the sign up process.</p>
     <p>
       {% for provider in get_oauth_providers() %}      
-        <a href="{{ url_for('oauth_redirect', view='signup', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
+        <a href="{{ url_for('oauth_redirect', view='signups.signup', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
       {% endfor %}
     </p>
   {% endif %}

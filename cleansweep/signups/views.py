@@ -3,7 +3,7 @@ from ..models import db, Member, PendingMember
 from flask import (flash, request, session, render_template, redirect, url_for)
 from ..core import signals
 
-from . import signals, notifications, audits
+from . import signals, notifications, audits, forms, signups
 
 plugin = Plugin("signups", __name__, template_folder="templates")
 
@@ -48,8 +48,8 @@ def signup():
 
 
 @plugin.place_view("/signups/<status>", methods=['GET', 'POST'], permission="write")
-@plugin.place_view("/signups", methods=['GET', 'POST'], permission="write", sidebar_entry="Signups")
-def signups(place, status=None):
+@plugin.place_view("/signups", methods=['GET', 'POST'], permission="write", sidebar_entry="Signups", endpoint="signups")
+def _signups(place, status=None):
     if status not in [None, 'approved', 'rejected']:
         return redirect(url_for(".signups", key=place.key))
     if status is None:
