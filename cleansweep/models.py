@@ -4,6 +4,7 @@ from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON
 from .app import app
+import md5
 
 db = SQLAlchemy(app)
 
@@ -389,6 +390,10 @@ class Member(db.Model):
     def get_detail(self, name):
         if self.details:
             return self.details.get(name)
+
+    def get_hash(self):
+        key = str(id) + app.config['SECRET_KEY']
+        return md5.md5(key).hexdigest()[:7]
 
     def get_permissions(self, place):
         """Finds the permissions the user has at given place.

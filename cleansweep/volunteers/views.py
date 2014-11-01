@@ -1,6 +1,6 @@
 from ..plugin import Plugin
 from flask import (flash, request, render_template, redirect, url_for, abort)
-from ..models import db, Place
+from ..models import db, Place, Member
 from .. import forms
 from ..voterlib import voterdb
 from . import signals, notifications, audits
@@ -37,3 +37,10 @@ def add_volunteer(place):
         return redirect(url_for(".volunteers", key=place.key))
     return render_template("add_volunteer.html", place=place, form=form)
 
+
+@plugin.route("/people/<id>-<hash>")
+def profile(id, hash):
+    m = Member.find(id=id)
+    if not m or m.get_hash() != hash:
+        abort(404)
+    return render_template("profile.html", person=m)
