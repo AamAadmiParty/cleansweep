@@ -21,19 +21,7 @@
         <div class="committee-role">
           <h4>{{role.role}}</h4>
           {% for m in members %}
-            <div class="member-card">
-              {% if m.get_detail("facebook_id") %}
-                <div style="width: 75px; height: 75px;"><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
-              {% else %}
-                <div style="width: 75px; height: 75px;"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></div>
-              {% endif %}
-              <div style="margin-top: -75px; margin-left: 75px; padding-left: 10px;">
-                <a href="{{url_for('volunteers.profile', id=m.id, hash=m.get_hash())}}"<strong>{{m.name}}</strong></a>
-                <div>{{m.email or ""}}</div>
-                <div>{{m.phone}}</div>
-                <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.key}}</a></div>
-              </div>
-            </div>
+            {{widget("VolunteerCard", volunteer=m)}}
           {% endfor %}
         </div>
       {% endif %}
