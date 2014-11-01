@@ -20,7 +20,7 @@ You've been added as volunteer
 
 <p>Accordingly, your native booth has been identified as:<br/>
 <div class="quote">
-<a href="{{url_for('place', key=volunteer.place.key, _external=True)}}">{{volunteer.place.name}}</a>
+{{render_place(volunteer.place)}}
 {% for p in volunteer.place.parents[::-1] %}
 	{{render_place(p)}}
 {% endfor %}
