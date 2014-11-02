@@ -459,7 +459,8 @@ class CommitteeType(db.Model):
             "name": self.name,
             "slug": self.slug,
             "description": self.description,
-            "place_key": self.place.key
+            "place_key": self.place.key,
+            "roles": [role.dict() for role in self.roles]
         }
 
     def __repr__(self):
@@ -549,6 +550,14 @@ class CommitteeRole(db.Model):
         return {
             "id": self.id,
             "role": self.role,
+        }
+
+    def dict(self):
+        return {
+            'id': self.id,
+            'role': self.role,
+            'multiple': self.multiple,
+            'permission': self.permission
         }
 
     def __repr__(self):

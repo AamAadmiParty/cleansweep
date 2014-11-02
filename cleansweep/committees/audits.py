@@ -33,3 +33,15 @@ def on_new_committee_structure(committee_type):
         place=committee_type.place,
         person=None,
         data=dict(committee_type=committee_type.dict()))
+
+@signals.committee_structure_modified.connect
+def on_committee_structure_modified(committee_type, old):
+    record_audit(
+        action="committee-structure.edit",
+        timestamp=None,
+        place=committee_type.place,
+        person=None,
+        data=dict(
+            committee_type=committee_type.dict(),
+            old=old
+            ))

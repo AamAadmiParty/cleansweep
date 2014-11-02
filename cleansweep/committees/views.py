@@ -81,9 +81,11 @@ def edit_committee_structure(place, slug):
     form = forms.NewCommitteeForm(place)
     committee_type = CommitteeType.find(place, slug)
     if request.method == "POST" and form.validate():
+        d1 = committee_type.dict()
         form.save(committee_type)
         db.session.commit()
         flash("Successfully updated {}.".format(committee_type.name), category="success")
+        signals.committee_structure_modified.send(committee_type, old=d1)
         return redirect(url_for(".view_committee_structure", key=place.key, slug=committee_type.slug))
     else:
         if request.method != 'POST':
