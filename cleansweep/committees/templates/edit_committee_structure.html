@@ -1,0 +1,58 @@
+{% from "macros.html" import render_field %}
+{% extends "place.html" %}
+
+{% block page_content %}
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.committee_structures', key=place.key)}}">Committee Structures</a></li>
+    <li></li>
+  </ul>  
+  <h2>Edit <a href="{{url_for('.view_committee_structure', key=place.key, slug=committee_type.slug)}}">{{committee_type.name}}</a></h2>
+
+<form role="form" method="POST" style="width: 400px">
+  {{ form.csrf_token }}
+  {{ form.committee_type_id() }}  
+  {{ render_field(form.name) }}
+  {{ render_field(form.slug, readonly="true") }}
+  {{ render_field(form.level, readonly="true") }}
+  {{ render_field(form.description) }}
+
+  <h3>Roles</strong></h3>
+  <table class="table table-borderless roles-table">
+    <tr>
+      <th>Role</th><th>#Members</th><th>Permissions</th>
+    </tr>
+    <tbody id="tbody-roles">
+      {% for role in form.roles %}
+        <tr class="tr-role">
+          {{ role.form.role_id() }}
+          <td>{{ role.form.name() }}</td>
+          <td>{{ role.form.multiple() }}</td>
+          <td>{{ role.form.permission() }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    <tbody>
+      <tr><td><a href="javascript:;" id="add-more-roles">Add more roles</a></td</tr>
+    </tbody>
+  </table>
+  <button type="submit" class="btn btn-default">Save</button>
+</form>
+
+<script type="text/javascript">
+  $(function() {
+    function add_role() {
+      var tr = $("#tbody-roles tr:last-child").clone();
+      var count = $("#tbody-roles tr").length;
+      var html = tr.html().replace(/roles-[0-9]+/g, "roles-" + count);
+      tr.html(html);
+      console.log(html);
+      $("#tbody-roles").append(tr);
+    }
+    $("#add-more-roles").click(function() {
+      add_role();
+    });
+  });
+</script>
+
+
+{% endblock %}

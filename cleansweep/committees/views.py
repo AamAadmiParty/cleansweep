@@ -76,3 +76,16 @@ def view_committee_structure(place, slug):
     committee_type = CommitteeType.find(place, slug)
     return render_template("view_committee_structure.html", place=place, committee_type=committee_type)
 
+@plugin.place_view("/committee-structures/<slug>/edit", methods=['GET', 'POST'], permission="write")
+def edit_committee_structure(place, slug):
+    form = forms.NewCommitteeForm(place)
+    committee_type = CommitteeType.find(place, slug)
+    if request.method == "POST" and form.validate():
+        form.save(committee_type)
+        db.session.commit()
+        flash("Successfully updated {}.".format(committee_type.name), category="success")
+        return redirect(url_for(".view_committee_structure", key=place.key, slug=committee_type.slug))
+    else:
+        if request.method != 'POST':
+            form.load(committee_type)
+        return render_template("edit_committee_structure.html", place=place, committee_type=committee_type, form=form)

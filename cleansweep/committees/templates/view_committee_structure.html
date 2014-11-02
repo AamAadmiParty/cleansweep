@@ -1,6 +1,12 @@
 {% extends "place.html" %}
 {% block page_content %}
-  <h2>{{committee_type.name}}</h2>
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.committee_structures', key=place.key)}}">Committee Structures</a></li>
+    <li></li>
+  </ul>
+  <h2>{{committee_type.name}}
+      <a class="small" href="{{url_for('.edit_committee_structure', key=place.key, slug=committee_type.slug)}}">Edit</a>
+  </h2>
 
   <div>Slug: {{committee_type.slug}}</div>
   <div>{{committee_type.description}}</div>
