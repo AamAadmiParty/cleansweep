@@ -22,7 +22,7 @@ def admin_voters(place):
     page = int(request.args.get('page', 1))
     return render_template("admin/voters.html", place=place, page=page)
 
-@place_view("/admin/voters/<voterid>", methods=['GET', 'POST'], permission="write")
+@place_view("/admin/voters/<path:voterid>", methods=['GET', 'POST'], permission="write")
 def admin_voter_view(place, voterid):
     voter = voterdb.get_voter(voterid)
     if not voter:
