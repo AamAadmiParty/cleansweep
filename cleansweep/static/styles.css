@@ -95,7 +95,7 @@ footer {
 
 /* 
 Responsive table, inspired by:
- from css-tricks.com/examples/ResponsiveTables/responsive.php
+ http://css-tricks.com/examples/ResponsiveTables/responsive.php
 */
 @media 
 only screen and (max-width: 760px) {
@@ -124,5 +124,15 @@ only screen and (max-width: 760px) {
         border: none !important; 
         padding: 0px !important;
         position: relative;
+    }
+    .table-voters td.serial {
+      float: right;
+    }
+
+    .table-voters td.rel_name:before { content: "("; }
+    .table-voters td.rel_name:after { content: ")"; }
+
+    .table-voters td.booth {
+      display: none;
     }
 }
