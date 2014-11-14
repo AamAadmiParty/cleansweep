@@ -1,11 +1,11 @@
-{% extends "admin/index.html" %}
+{% extends "page.html" %}
 
 {% block subnav %}
   {{ subnav(voter.get_place(), tab="voters") }}
 {% endblock %}
 
 {% block page_content %}
-  <h2><a href="{{url_for('admin_voters', key=place.key)}}">Voters</a> / {{voter.voterid}}</h2>
+  <h2><a href="{{url_for('.voters', key=place.key)}}">Voters</a> / {{voter.voterid}}</h2>
   <table class="table">
     <tr>
       <td>Voter ID</td>
