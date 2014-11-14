@@ -83,3 +83,46 @@ footer {
 .page-content h2 {
     margin-top: 0px;
 }
+
+.table-voters td.booth {
+  font-size: 0.9em;
+}
+
+.table-voters td.voterid {
+  font-size: 0.9em;
+}
+
+
+/* 
+Responsive table, inspired by:
+ from css-tricks.com/examples/ResponsiveTables/responsive.php
+*/
+@media 
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+    /* Force table to not be like tables anymore */
+    table.table-voters, 
+    .table-voters tbody, 
+    .table-voters th, 
+    .table-voters td,
+    .table-voters tr { 
+        display: block; 
+    }
+        
+    /* Hide table headers (but not display: none;, for accessibility) */
+    .table-voters thead { 
+      display: none;
+    }
+        
+    .table-voters tr { 
+      border: 1px solid #ccc; 
+      margin: 10p 0px;
+    }
+        
+    .table-voters td { 
+        /* Behave  like a "row" */
+        border: none !important; 
+        padding: 0px !important;
+        position: relative;
+    }
+}

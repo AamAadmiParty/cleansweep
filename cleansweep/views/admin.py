@@ -17,22 +17,6 @@ from collections import defaultdict
 def admin(place):
     return render_template("admin/index.html", place=place)
 
-@place_view("/admin/voters", methods=['GET', 'POST'], permission="write")
-def admin_voters(place):
-    page = int(request.args.get('page', 1))
-    return render_template("admin/voters.html", place=place, page=page)
-
-@place_view("/admin/voters/<path:voterid>", methods=['GET', 'POST'], permission="write")
-def admin_voter_view(place, voterid):
-    voter = voterdb.get_voter(voterid)
-    if not voter:
-        return abort(404)
-
-    if request.method == 'POST':
-        flash('This is still work in progress, please try again after couple of days.', category='warning')
-    return render_template("admin/voter.html", place=place, voter=voter)
-
-
 @place_view("/admin/sendmail", methods=['GET', 'POST'], permission="write")
 def admin_sendmail(place):
     form = forms.SendMailForm(request.form)

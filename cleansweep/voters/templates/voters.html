@@ -1,0 +1,36 @@
+{% extends "admin/index.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="voters") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Voters</h2>
+  {% set voters = voterdb.get_voters(place) %}
+  {% if not voters %}
+    <em>None found</em>
+  {% else %}
+    <table class="table table-voters">
+      <thead>
+      <tr>
+        <th class="voterid">Voter ID</th>
+        <th class="name">Name</th>
+        <th class="house">House Number</th>
+        <th class="booth">Booth</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for voter in voters %}
+        <tr>
+          <td class="voterid">
+              <a href="{{url_for('.voter_view', key=voter.get_place().key, voterid=voter.voterid)}}">{{voter.voterid}}</a>
+          </td>
+          <td class="name">{{voter.name or "-"}}</td>
+          <td class="house">{{voter.address or "-"}}</td>
+          <td class="booth"><a href="{{voter.get_place_key()}}">{{voter.get_place_key()}}</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}

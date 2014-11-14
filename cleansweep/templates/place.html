@@ -58,9 +58,6 @@
             <a href="{{url_for('vistaar.admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
           </li>
         {% endif %}
-        <li class="list-group-item {{'active' if tab=='voters' }}">
-          <a href="{{url_for('admin_voters', key=place.key)}}">Voters</a>
-        </li>
         {% if place.type.short_name not in ["PB", "PX"] %} 
           <li class="list-group-item {{'active' if tab=='committee-structures' }}">
             <a href="{{url_for('committees.committee_structures', key=place.key)}}">Committee Structures</a>
