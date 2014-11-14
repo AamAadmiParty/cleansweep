@@ -75,7 +75,6 @@ class PlaceType(db.Model, ComparableMixin):
         db.sesson.add(t)
 
     def __lt__(self, other):
-        print "__lt__", self, other, self.level, other.level
         if isinstance(other, PlaceType):
             # Smaller level indicated higher in the hierarchy
             return self.level > other.level
