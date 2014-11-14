@@ -4,17 +4,23 @@
   {{ subnav(place, tab="voters") }}
 {% endblock %}
 
+{% block page_container %}
+  {{ self.two_column_layout() }}
+{% endblock %}
+
 {% block page_content %}
   <h2>Voters</h2>
-  {% set voters = voterdb.get_voters(place) %}
+  {% set voters = voterdb.get_voters(place, offset=(page-1)*100, limit=100) %}
   {% if not voters %}
     <em>None found</em>
   {% else %}
     <table class="table table-voters">
       <thead>
       <tr>
+        <th class="serial" title="serial number">#</th>
         <th class="voterid">Voter ID</th>
         <th class="name">Name</th>
+        <th class="rel_name">Relation Name</th>
         <th class="house">House Number</th>
         <th class="booth">Booth</th>
       </tr>
@@ -22,10 +28,12 @@
       <tbody>
       {% for voter in voters %}
         <tr>
+          <td class="serial">{{voter.serial}}</td>
           <td class="voterid">
               <a href="{{url_for('.voter_view', key=voter.get_place().key, voterid=voter.voterid)}}">{{voter.voterid}}</a>
           </td>
           <td class="name">{{voter.name or "-"}}</td>
+          <td class="rel_name">{{voter.rel_name or "-"}}</td>
           <td class="house">{{voter.address or "-"}}</td>
           <td class="booth"><a href="{{voter.get_place_key()}}">{{voter.get_place_key()}}</a></td>
         </tr>
@@ -33,4 +41,15 @@
       </tbody>
     </table>
   {% endif %}
+  <div class="nav">
+    <ul class="pager">
+      {% if page > 1 %}
+        <li><a href="{{url_for('.voters', key=place.key)}}?page={{page-1}}">Prev</a></li>
+      {% endif %}
+      {% if len(voters) == 100 %}
+        <li><a href="{{url_for('.voters', key=place.key)}}?page={{page+1}}">Next</a></li>
+      {% endif %}
+    </ul>
+  </div>
+
 {% endblock %}

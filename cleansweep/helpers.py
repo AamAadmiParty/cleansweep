@@ -38,6 +38,7 @@ def get_current_user():
 @app.context_processor
 def helpers():
     return {
+        "len": len,
         "request_path": request.path,
         "widget": render_widget,
         "user": get_current_user(),
