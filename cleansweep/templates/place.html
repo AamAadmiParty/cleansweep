@@ -33,6 +33,12 @@ margin-bottom: 0px;">
             </ul>
           </div>
           {{self.subnav()}}
+          <h4>Navigation</h4>
+          <ul class="list-group">
+            {% for p in place.parents %}
+              <li class="list-group-item"><a href="{{ url_for('place', key=p.key) }}">{{ p.name }}</a> <span class="divider"></span></li>
+            {% endfor %}
+          </ul>
         </div><!-- collapse -->
       </div> <!-- container -->
     </div> <!-- cs-header -->
