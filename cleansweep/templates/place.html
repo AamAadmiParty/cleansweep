@@ -87,13 +87,13 @@
 {% block three_column_layout %}
   <div class="container">
     <div class="row">
-      <div class="col-md-2">
+      <div class="col-md-2 col-xs-0 hidden-xs">
         {{self.subnav()}}
       </div>
-      <div class="col-md-7">
+      <div class="col-md-7 col-xs-12">
         {{self.page_content()}}
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 col-xs-0 hidden-xs">
         {{ self.rightsidebar() }}
       </div>      
     </div>
@@ -103,10 +103,10 @@
 {% block two_column_layout %}
   <div class="container">
     <div class="row">
-      <div class="col-md-2">
+      <div class="col-md-2 col-xs-0 hidden-xs">
         {{self.subnav()}}
       </div>
-      <div class="col-md-10">
+      <div class="col-md-10 col-xs-12">
         {{self.page_content()}}
       </div>
     </div>

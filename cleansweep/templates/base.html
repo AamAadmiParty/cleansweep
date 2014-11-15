@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
 
     {% block extrahead %}
     {% endblock %}
@@ -24,35 +25,42 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">    
   </head>
   <body>
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">{{ get_config("SITE_TITLE") }}</a>
-        </div>
+    {% block navbar %}
+      <nav class="navbar navbar-default" role="navigation">
+        <div class="container">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">{{ get_config("SITE_TITLE") }}</a>
+          </div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li><a href="#">About</a></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            {% if user %}
-              <li><div style="padding: 15px 0px; color: ">Welcome <strong>{{user.name}}</strong></div></li>
-              <li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
-              <li>
-                <form name="logout" action="{{url_for('logout')}}" method="POST" style="display: none;">
-                </form>
-                <a class="logout" href="/account/logout" onclick="document.forms.logout.sumit();">Log Out</a>
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                  {% if user %}
+                    <li class="hidden-sm hidden-xs"><div style="padding: 15px 0px; color: ">Welcome <strong>{{user.name}}</strong></div></li>
+                    <li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
+                    <li>
+                      <form name="logout" action="{{url_for('logout')}}" method="POST" style="display: none;">
+                      </form>
+                      <a class="logout" href="/account/logout" onclick="document.forms.logout.sumit();">Log Out</a>
+                    </li>
+                  {% else %}
+                    <li><a class="login" href="{{url_for('login')}}">Log In</a></li>
+                    <li><a class="login" href="{{url_for('signups.signup')}}">Sign Up</a></li>
+                  {% endif %}
+                </ul>
               </li>
-            {% else %}
-              <li><a class="login" href="{{url_for('login')}}">Log In</a></li>
-              <li><a class="login" href="{{url_for('signups.signup')}}">Sign Up</a></li>
-            {% endif %}
-          </ul>
-        </div><!-- /.navbar-collapse -->
-      </div>
-    </nav>
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+    {% endblock %}
 
     {% block content %}
       <div class="container">
