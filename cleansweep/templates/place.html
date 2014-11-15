@@ -1,8 +1,48 @@
 {% import "macros.html" as macros %}
-
 {% extends "base.html" %}
+
+{% block navbar %}
+  <div class="visible-xs">
+    <div class="cs-header">
+      <div class="container">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+data-target="#bs-example-navbar-collapse-2" style="margin-top: 0px;
+margin-bottom: 0px;">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar" style="background-color: white;"></span>
+          <span class="icon-bar" style="background-color: white;"></span>
+          <span class="icon-bar" style="background-color: white;"></span>
+        </button>
+        <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
+      </div>
+      <div class="container">
+        <div class="collapse" id="bs-example-navbar-collapse-2">
+          <div class="subnav">
+            <ul class="list-group">
+              {% if user %}
+                <li class="list-group-item"><a href="{{url_for('dashboard')}}">Dashboard</a></li>
+                <li class="list-group-item">
+                  <form name="logout" action="{{url_for('logout')}}" method="POST" style="display: none;">
+                  </form>
+                  <a class="logout" href="/account/logout" onclick="document.forms.logout.sumit();">Log Out</a>
+                </li>
+              {% else %}
+                <li class="list-group-item"><a class="login" href="{{url_for('login')}}">Log In</a></li>
+                <li class="list-group-item"><a class="login" href="{{url_for('signups.signup')}}">Sign Up</a></li>
+              {% endif %}
+            </ul>
+          </div>
+          {{self.subnav()}}
+        </div><!-- /.navbar-collapse -->
+    </div>
+  </div>
+  <div class="hidden-xs">
+    {{super()}}
+  </div>
+{% endblock %}
+
 {% block content %}
-  <div class="cs-header">
+  <div class="cs-header hidden-xs">
     <div class="container">
       {{ macros.breadcrumbs(place) }}
       <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
