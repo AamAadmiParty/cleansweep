@@ -20,7 +20,7 @@
         <td><a href="{{url_for('place', key=record.place.key)}}">{{record.place.key}}</a></td>
         <td>
           {% if record.user %}
-            <strong>{{record.user.name}}</strong>
+            <a href="{{url_for('volunteers.profile', id=record.user.id, hash=record.user.get_hash())}}"><strong>{{record.user.name}}</strong></a>
           {% endif %}
         </td>
         <td>{{render_audit_record(record)}}</td>
