@@ -1,0 +1,33 @@
+<div class="widget widget-placelist">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <strong>{{stats.title}}</strong>
+    </div>
+    <div class="panel-body">
+      {% if stats.type == "timeseries" %}
+        <div class="graph">
+            <div id="{{stats.id}}" class="plot" style="width:100%;height:150px; border: 1px solid gray;"></div>
+        </div>      
+      {% elif stats.type == "stats" %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(function() {
+      var data = {{stats.get_timeseries_data_for_graph(place) | json_encode}};
+      var options = {
+          xaxis: {
+              mode: "time",
+              timeformat: "%b %d",
+              minTickSize: [1, "day"]
+          },
+          yaxis: {
+              min: 0,
+              minTickSize: 1,
+              tickDecimals: 0
+          }
+      };
+      $.plot("#{{stats.id}}", [data], options);
+  });
+</script>

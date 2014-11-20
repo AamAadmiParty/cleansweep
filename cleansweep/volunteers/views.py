@@ -3,7 +3,7 @@ from flask import (flash, request, render_template, redirect, url_for, abort)
 from ..models import db, Place, Member
 from .. import forms
 from ..voterlib import voterdb
-from . import signals, notifications, audits
+from . import signals, notifications, audits, stats
 
 plugin = Plugin("volunteers", __name__, template_folder="templates")
 

@@ -70,7 +70,15 @@ margin-bottom: 0px;">
 {% endblock %}
 
 {% block page_content %}
+  <h2>{{place.name}}</h2>
+
+  <h3>Stats</h3>
+  {% for s in get_stats(place) %}
+    {{s.render(place)}}
+  {% endfor %}
+
   {{ widget("PlaceList", place=place) }}
+
 {% endblock %}
 
 {% block rightsidebar %}

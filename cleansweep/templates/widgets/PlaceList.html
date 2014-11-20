@@ -1,7 +1,7 @@
 
 <div class="widget widget-placelist">
   {% for subtype, places in place.get_child_places_by_type() %}
-    <h2>{{ subtype.name | pluralize }}</h2>
+    <h3>{{ subtype.name | pluralize }}</h3>
       <ul class="list-group">
         {% for p in places %}
           <li class="list-group-item"><a href="{{ url_for('place', key=p.key) }}">{{ p.name }}</a></li>
