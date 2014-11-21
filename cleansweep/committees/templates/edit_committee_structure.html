@@ -6,7 +6,7 @@
     <li><a href="{{url_for('.committee_structures', key=place.key)}}">Committee Structures</a></li>
     <li></li>
   </ul>  
-  <h2>Edit <a href="{{url_for('.view_committee_structure', key=place.key, slug=committee_type.slug)}}">{{committee_type.name}}</a></h2>
+  <h2>Edit <a href="{{committee_type.url_for('.view_committee_structure')}}">{{committee_type.name}}</a></h2>
 
 <form role="form" method="POST" style="width: 400px">
   {{ form.csrf_token }}

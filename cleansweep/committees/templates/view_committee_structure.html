@@ -5,7 +5,7 @@
     <li></li>
   </ul>
   <h2>{{committee_type.name}}
-      <a class="small" href="{{url_for('.edit_committee_structure', key=place.key, slug=committee_type.slug)}}">Edit</a>
+      <a class="small" href="{{committee_type.url_for('.edit_committee_structure')}}">Edit</a>
   </h2>
 
   <div>Slug: {{committee_type.slug}}</div>

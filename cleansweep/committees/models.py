@@ -1,7 +1,8 @@
 """Models of committee related tables.
 """
-from ..models import db, Place, Member, Place
+from ..models import db, Place, PlaceType, Member, Place
 from collections import defaultdict
+from flask import url_for
 
 class CommitteeType(db.Model):
     """Specification of a Committee.
@@ -54,13 +55,16 @@ class CommitteeType(db.Model):
         db.session.add(role)
 
     @staticmethod
-    def find(place, slug, recursive=False):
+    def find(place, slug, level=None, recursive=False):
         """Returns CommitteeType defined at given place with given slug.
 
         If recursive=True, it tries to find the CommitteType at nearest parent,
         but make sures the committee_type matches the place_type.
         """
         q = CommitteeType.query_by_place(place, recursive=recursive).filter_by(slug=slug)
+        if level:
+            place_type = PlaceType.get(level)
+            q = q.filter_by(place_type=place_type)
         return q.first()
 
     @staticmethod
@@ -71,8 +75,7 @@ class CommitteeType(db.Model):
         at nearest parent, but make sures the committee_type matches the place_type.
         """
         if recursive:
-            parents = [place] + place.parents
-            parent_ids = [p.id for p in parents]
+            parent_ids = [p.id for p in place.parents]
 
             # XXX-Anand
             # Taking the first matching row for now.
@@ -101,6 +104,13 @@ class CommitteeType(db.Model):
                     roledata['multiple'] == 'yes',
                     roledata['permission'])
         return c
+
+    def url_for(self, endpoint):
+        return url_for(endpoint, key=self.place.key, slug=self.slug, level=self.get_level())
+
+    def get_level(self):
+        return self.place_type.short_name
+
 
 class CommitteeRole(db.Model):
     """Role in a committee.
@@ -177,6 +187,10 @@ class Committee(db.Model):
         for role in self.type.roles:
             yield role, d[role.id]
 
+    def get_members_as_list(self):
+        return [m for role, members in self.get_members()
+                  for m in members]
+
     def add_member(self, role, member):
         # TODO: Validate role and member
         # The role should be one of the roles defined in the committee type.
@@ -250,7 +264,7 @@ class CommitteePlaceMixin:
             return type.committees.filter_by(place_id=self.id).first() or Committee(self, type)
         return [get_committee(type) for type in committee_types]
 
-    def get_committee(self, slug):
+    def get_committee(self, slug, _create=True):
         """Returns a committee with given slug.
 
         * If there is already a committee with that slug, it will be returned.
@@ -262,6 +276,18 @@ class CommitteePlaceMixin:
         committee_type = CommitteeType.find(self, slug, recursive=True)
         if committee_type:
             c = committee_type.committees.filter_by(place_id=self.id).first()
-            if not c:
+            if not c and _create:
                 c = Committee(self, committee_type)
             return c
+
+    def get_closest_committee(self, slug):
+        """Returns the commiteee with given slug attached to this place
+        or any place up in the hierarchy.
+
+        Useful for finding admin of a place etc.
+        """
+        c = self.get_committee(slug, _create=False)
+        if c and c.committee_members:
+            return c
+        elif self.iparent:
+            return self.iparent.get_closest_committee(slug)

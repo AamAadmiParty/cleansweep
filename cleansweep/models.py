@@ -324,6 +324,9 @@ class Member(db.Model):
         self.place = place
         self.voterid = voterid
 
+    def __repr__(self):
+        return "<Member:{}>".format(self.email)
+
     @staticmethod
     def find(email=None, **kw):
         if email:
