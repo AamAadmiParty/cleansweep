@@ -1,5 +1,6 @@
 from ..plugin import Plugin
-from ..models import db, CommitteeRole, CommitteeType, Member
+from ..models import Member
+from .models import CommitteeRole, CommitteeType
 from flask import (flash, request, render_template, redirect, url_for, abort)
 from .. import forms
 from . import signals, notifications, audits

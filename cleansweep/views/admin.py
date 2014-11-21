@@ -2,7 +2,7 @@
 """
 
 from flask import (render_template, abort, url_for, redirect, request, flash, jsonify)
-from ..models import CommitteeType, CommitteeRole, Member, db, PendingMember, Place
+from ..models import Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
 from ..voterlib import voterdb
