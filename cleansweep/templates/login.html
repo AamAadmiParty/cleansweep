@@ -8,7 +8,7 @@
     <div class="alert alert-danger">
         <p><a href="{{ url_for('oauth_reset') }}" class="pull-right" style="color: inherit;">Sign out?</a>
         You've been authenticated as <strong>{{userdata['email']}}</strong> via {{userdata['service']}}, but you are not a registered user.</p>
-        <p>Would you like to <a class="alert-link" href="{{url_for('signup')}}">sign up as a volunteer</a>?</p>
+        <p>Would you like to <a class="alert-link" href="{{url_for('signups.signup')}}">sign up as a volunteer</a>?</p>
     </div>
   {% else %}
     <h3>Log in instantly using:</h3>
