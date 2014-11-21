@@ -45,12 +45,12 @@ class Stats(object):
         today = datetime.date.today()
         yday = today - datetime.timedelta(days=1)
 
-        rows = rows or [web.storage(date=today, count=0)]
+        rows = rows or [dict(date=today, count=0)]
 
-        mindate = min(rows[0].date, yday)
-        maxdate = max(rows[-1].date, today)
+        mindate = min(rows[0]['date'], yday)
+        maxdate = max(rows[-1]['date'], today)
 
-        d = dict((row.date, row.count) for row in rows)
+        d = dict((row['date'], row['count']) for row in rows)
         x = []
         count = 0
         for date in self.daterange(mindate, maxdate):
@@ -61,7 +61,7 @@ class Stats(object):
             else:
                 value = v
             x.append([time.mktime(date.timetuple()) * 1000, value])
-        return x        
+        return x
 
     def daterange(self, start, end):
         date = start
