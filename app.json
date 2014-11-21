@@ -3,5 +3,8 @@
   "description": "Political Campaign Management Software",
   "repository": "https://github.com/anandology/cleansweep",
   "success_url": "/",
-  "addons": ["heroku-postgresql:hobby-dev"]
+  "addons": ["heroku-postgresql:hobby-dev"],
+  "scripts": {
+    "postdeploy": "python run.py --load data/KA"
+  }
 }
