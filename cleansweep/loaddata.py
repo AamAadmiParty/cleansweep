@@ -11,7 +11,7 @@ following files as input.
 import os, sys
 import re
 import logging
-from .models import Place, PlaceType, db
+from .models import db, Place, PlaceType, Member
 
 logger = logging.getLogger("cleansweep.loaddata")
 
@@ -169,6 +169,54 @@ def main_loadfiles(filenames):
     loader = Loader(None)
     for f in filenames:
         loader.load_file(f)
+
+def xinput(prompt, pattern=None):
+    while True:
+        value = raw_input(prompt + ": ")
+        value = value.strip()
+        if not value:
+            continue
+        if pattern and not re.match(pattern, value):
+            print "Invalid ", prompt.lower()
+            continue
+        return value
+
+def read_user_info():
+    print "\nPlease enter your details to add you as an admin.\n"
+    name = xinput("Your Name")
+    email = xinput("E-mail address", "[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+")
+    phone = xinput("Phone number (10 digits)", "^[0-9]+$")
+    return name, email, phone
+
+def init():
+    # create database tables
+    db.create_all()
+
+    print "=" * 20    
+
+    # load places
+    print "loading places..."
+    Loader("data").load()
+
+    # read user data and add him as member
+    name, email, phone = read_user_info()
+
+
+    if Member.find(email=email):
+        print "{} is already added as volunteer.".format(email)
+    else:
+        add_member("DL/AC061/PB0001", name, email, phone)
+
+    with open("production.cfg", "w") as f:
+        f.write('ADMINS = ["{}"]'.format(email))
+
+    print "\nDONE!\n"
+    print "{} have been setup as admin".format(email)
+    print 
+    print "Run the app using:"
+    print "python run.py"
+    print 
+    print "The website will be accessible at http://localhost:5000/"
 
 if __name__ == '__main__':
     main(sys.argv[1])

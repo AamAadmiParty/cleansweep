@@ -36,6 +36,9 @@ if __name__ == "__main__":
     elif "--worker" in sys.argv:
         from cleansweep.core.mailer import run_worker
         run_worker()
+    elif "--init" in sys.argv:
+        from cleansweep.loaddata import init
+        init()
     else:
         try:
             port = int(sys.argv[1])

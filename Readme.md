@@ -16,33 +16,27 @@ How to Setup
 
 * Clone the repository
 
-        git clone https://github.com/anandology/cleansweep.git
-        cd cleansweep
+        $ git clone https://github.com/anandology/cleansweep.git
+        $ cd cleansweep
 
 * setup virtualenv
 
-        virtualenv . 
-        pip install -r requirements.txt
+        $ virtualenv . 
+        $ pip install -r requirements.txt
 
 * activate the virtualenv
 
-        source bin/activate
+        $ source bin/activate
 
-* load data
+* Init the app by adding you as admin. It'll prompt you for your name, email 
+  and phone number.
 
-        python run.py --load data
-
-* Add yourself as a volunteer
-        
-        python run.py --add-member DL/AC061/PB0001 "Your Name" email@domain.com  1234567890
-
-    Change the last 3 arguments with your name, email and phone number.
-
-* Add yourself as admin by creating a production.cfg file with the following contents.
-
-        # replace email@domain.com with your email address
-        ADMIN_USERS = ["email@domain.com"]
-
+        $ python run.py --init
+        ...
+        Your Name: ______
+        E-mail address: ______
+        Phone: ______
+    
 * run the webapp
 
         python run.py
