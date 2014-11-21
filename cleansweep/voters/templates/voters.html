@@ -21,6 +21,7 @@
         <th class="voterid">Voter ID</th>
         <th class="name">Name</th>
         <th class="rel_name">Relation Name</th>
+        <th class="age">Age</th>
         <th class="house">House Number</th>
         <th class="booth">Booth</th>
       </tr>
@@ -34,6 +35,7 @@
           </td>
           <td class="name">{{voter.name or "-"}}</td>
           <td class="rel_name">{{voter.rel_name or "-"}}</td>
+          <td class="age">{{voter.age or "-"}}</td>
           <td class="house">{{voter.address or "-"}}</td>
           <td class="booth"><a href="{{voter.get_place_key()}}">{{voter.get_place_key()}}</a></td>
         </tr>
