@@ -1,0 +1,7 @@
+{
+  "name": "Cleansweep",
+  "description": "Political Campaign Management Software",
+  "repository": "https://github.com/anandology/cleansweep",
+  "success_url": "/",
+  "addons": ["heroku-postgresql:hobby-dev"],
+}
