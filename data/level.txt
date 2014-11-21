@@ -1,0 +1,9 @@
+COUNTRY	Country
+REGION	Region
+STATE	State
+ZONE	Zone
+DISTRICT	District
+AC	Assembly Constituency
+LB	Local Body
+PX	Polling Center
+PB	Polling Booth

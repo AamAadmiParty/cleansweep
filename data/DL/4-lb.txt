@@ -1,0 +1,12 @@
+DL/AC061	DL/W233	W233 - Dharam Pura
+DL/AC061	DL/W234	W234 - Gandhi Nagar
+DL/AC061	DL/W235	W235 - Azad Nagar
+DL/AC061	DL/W236	W236 - Raghubar Pura
+DL/AC062	DL/W237	W237 - Shahdara
+DL/AC062	DL/W238	W238 - Jhilmil
+DL/AC062	DL/W239	W239 - Vivek Vihar
+DL/AC062	DL/W240	W240 - Dilshad Colony
+DL/AC063	DL/W241	W241 - Dilshad Garden
+DL/AC063	DL/W242	W242 - New Seemapuri
+DL/AC063	DL/W243	W243 - Nand Nagri
+DL/AC063	DL/W244	W244 - Sundar Nagri
