@@ -6,10 +6,17 @@ Cleansweep
 Requirements
 ------------
 
+A Linux (or Mac OS X) node with the following software installed. Ubuntu 14.04 is preferred.
+
 * PostgreSQL 9.3 database server
 * Python 2.7
+* Git
+* python virtualenv
 
-Preferably a UNIX box (Linux/Mac OS X). 
+Installing them on Ubuntu/Debian:
+
+    $ sudo apt-get install postgresql-9.3 postgresql-server-dev-9.3 python-dev python-virtualenv git
+
 
 How to Setup
 ------------
@@ -22,11 +29,14 @@ How to Setup
 * setup virtualenv
 
         $ virtualenv . 
-        $ pip install -r requirements.txt
 
 * activate the virtualenv
 
         $ source bin/activate
+
+* Install dependent python packages
+
+        $ pip install -r requirements.txt
 
 * Init the app by adding you as admin. It'll prompt you for your name, email 
   and phone number.
