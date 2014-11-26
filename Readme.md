@@ -54,6 +54,13 @@ How to Setup
 Visit the website at:
 <http://localhost:5000/>
 
+Getting Started with Development
+--------------------------------
+
+Look at the
+[helloworld](/anandology/cleansweep/tree/master/cleansweep/helloworld) module
+to learn about how to a component in cleansweep works.
+
 LICENSE
 -------
 
