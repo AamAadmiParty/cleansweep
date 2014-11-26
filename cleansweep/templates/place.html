@@ -128,7 +128,7 @@ margin-bottom: 0px;">
           <a href="{{url_for('admin_sms', key=place.key)}}">Send SMS</a>
         </li>
         {% for e in sidebar_entries %}
-          {% if e['permission'] in permissions %}
+          {% if not e['permission'] or e['permission'] in permissions %}
             <li class="list-group-item {{'active' if tab==e['tab'] }}">
               <a href="{{url_for(e['entrypoint'], key=place.key)}}">{{e['title']}}</a>
             </li>
