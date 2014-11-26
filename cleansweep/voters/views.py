@@ -6,6 +6,7 @@ plugin = Plugin("voters", __name__, template_folder="templates")
 
 def init_app(app):
     plugin.init_app(app)
+    voterdb.init_app(app)
 
 @plugin.place_view("/voters", methods=['GET', 'POST'], permission="write",
 sidebar_entry="Voters")

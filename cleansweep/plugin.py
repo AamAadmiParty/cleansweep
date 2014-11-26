@@ -2,7 +2,7 @@
 """
 from flask import Blueprint
 from . import view_helpers
-
+from .app import app
 
 class Plugin(Blueprint):
     def place_view(self, path, func=None, permission=None, sidebar_entry=None, *args, **kwargs):
@@ -15,5 +15,10 @@ class Plugin(Blueprint):
             **kwargs)
 
     def init_app(self, app):
-        app.logger.info("loading pluging %s ...", self.name)
         app.register_blueprint(self)
+
+
+def load_plugin(modname):
+    app.logger.info("Loading plugin %s", modname)
+    mod = __import__(modname, globals(), locals(), fromlist=["x"])
+    mod.init_app(app)

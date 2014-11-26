@@ -4,8 +4,7 @@ from .app import app
 from .models import db
 from . import notifications
 from .voterlib import voterdb
-
-from . import audit, signups, committees, vistaar, volunteers, voters
+from . import plugin
 
 def init_app(app):
     app.config.from_object('cleansweep.default_settings')
@@ -22,13 +21,9 @@ def init_app(app):
     # Setup the view helpers
     view_helpers.init_app(app)
 
-    volunteers.init_app(app)
-    voters.init_app(app)
-    signups.init_app(app)
-    committees.init_app(app)
-    vistaar.init_app(app)
-    voterdb.init_app(app)
-    audit.init_app(app)
+    # load plugins
+    for name in app.config['PLUGINS']:
+        plugin.load_plugin(name)
 
     app.logger.info("Starting cleansweep app")
 

@@ -32,6 +32,16 @@ GOOGLE_CLIENT_SECRET = "Qa-afy19Z9J6gqyqnpcHJjvQ"
 # Specify the list of admin users here.
 ADMIN_USERS = []
 
+PLUGINS = [
+    "cleansweep.volunteers",
+    "cleansweep.voters",
+    "cleansweep.signups",
+    "cleansweep.committees",
+    "cleansweep.vistaar",
+    "cleansweep.audit",
+]
+DEFAULT_PLUGINS = PLUGINS
+
 def _load_from_config():
     g = globals()
 
