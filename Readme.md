@@ -57,9 +57,9 @@ Visit the website at:
 Getting Started with Development
 --------------------------------
 
-Look at the
-[helloworld](/anandology/cleansweep/tree/master/cleansweep/helloworld) module
-to learn about how to a component in cleansweep works.
+Look at the [helloworld][] module to learn about how to a component in cleansweep works.
+
+[helloworld]: https://github.com/anandology/cleansweep/tree/master/cleansweep/helloworld
 
 LICENSE
 -------
