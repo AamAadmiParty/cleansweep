@@ -22,7 +22,8 @@ def init_app(app):
     view_helpers.init_app(app)
 
     # load plugins
-    for name in app.config['PLUGINS']:
+    plugins = app.config['DEFAULT_PLUGINS'] + app.config['PLUGINS']
+    for name in plugins:
         plugin.load_plugin(name)
 
     app.logger.info("Starting cleansweep app")

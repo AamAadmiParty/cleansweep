@@ -32,7 +32,8 @@ GOOGLE_CLIENT_SECRET = "Qa-afy19Z9J6gqyqnpcHJjvQ"
 # Specify the list of admin users here.
 ADMIN_USERS = []
 
-PLUGINS = [
+# These plugins are loaded by default
+DEFAULT_PLUGINS = [
     "cleansweep.volunteers",
     "cleansweep.voters",
     "cleansweep.signups",
@@ -40,7 +41,9 @@ PLUGINS = [
     "cleansweep.vistaar",
     "cleansweep.audit",
 ]
-DEFAULT_PLUGINS = PLUGINS
+
+# Specify any additional plugins that you may want to load here.
+PLUGINS = []
 
 def _load_from_config():
     g = globals()
