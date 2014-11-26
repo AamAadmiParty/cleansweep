@@ -1,0 +1,22 @@
+{# we are importing the render_field macro defined in "macros.html" #}
+{% from "macros.html" import render_field %}
+
+{% extends "place.html" %}
+
+{% block page_content %}
+
+	<h1>Add Two Numbers</h1>
+
+	<form method="POST">
+    	{{ form.csrf_token }}
+    	{{ render_field(form.x) }}
+    	{{ render_field(form.y) }}
+		<button class="btn btn-primary" type="submit" name="pill" value="blue">Add</button>
+	</form>
+
+	{% if result %}
+		<br/><br/>
+		<h2>Result = {{result}}</h2>
+	{% endif %}
+
+{% endblock %}

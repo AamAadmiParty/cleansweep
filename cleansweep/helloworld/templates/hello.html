@@ -1,0 +1,17 @@
+{#
+
+This is a Jinja template.
+
+If you are new to Jinja, checkout the Jinja documentation at:
+http://jinja.pocoo.org/
+
+This templates extends the an existing template place.html, which provides all the header, sidebars etc. All we need to do is provide what to have in the center in the page_content block.
+#}
+
+{% extends "place.html" %}
+
+{% block page_content %}
+	<h1>Hello World!</h1>
+
+	<p>You are seeing this page at <a href="{{url_for('place', key=place.key)}}">{{place.name}}</a></p>.
+{% endblock %}
