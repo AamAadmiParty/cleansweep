@@ -233,6 +233,16 @@ class Place(db.Model, Mixable):
         places.sort(key=lambda p: (p.type.level, p.key))
         return itertools.groupby(places, lambda p: p.type)
 
+    def get_all_child_places(self, type):
+        q = Place.query.filter(
+            place_parents.c.child_id==Place.id,
+            place_parents.c.parent_id==self.id)
+        if isinstance(type, list):
+            q = q.filter(Place.type_id.in_([t.id for t in type]))
+        elif type is not None:
+            q = q.filter(Place.type_id==t.id)
+        return q.all()
+
     def add_member(self, name, email, phone, voterid=None):
         """Adds a new member.
 
