@@ -75,7 +75,7 @@ class CommitteeType(db.Model):
         at nearest parent, but make sures the committee_type matches the place_type.
         """
         if recursive:
-            parent_ids = [p.id for p in place.parents]
+            parent_ids = [p.id for p in place._parents]
 
             # XXX-Anand
             # Taking the first matching row for now.
