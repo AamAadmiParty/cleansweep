@@ -38,6 +38,14 @@ How to Setup
 
         $ pip install -r requirements.txt
 
+* Create database user
+        
+        $ sudo -u postgres createuser -s $USER
+
+* create database for cleansweep
+    
+        $ createdb cleansweep 
+
 * Init the app by adding you as admin. It'll prompt you for your name, email 
   and phone number.
 
