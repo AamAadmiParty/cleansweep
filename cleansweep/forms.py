@@ -31,7 +31,7 @@ class SignupForm(Form):
 
         if self.voterid.data:
             voterid = self.voterid.data
-            voterinfo = voterdb.get_voter(voterid=voterid)
+            voterinfo = voterdb.get_voter(voterid=voterid, trynew=True)
             if not voterinfo:
                 raise validators.ValidationError("Invalid Voter ID")
 

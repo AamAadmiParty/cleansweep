@@ -22,7 +22,7 @@ def add_volunteer(place):
     if request.method == "POST" and form.validate():
         if form.voterid.data:
             voterid = form.voterid.data
-            voter = voterdb.get_voter(voterid=voterid)
+            voter = voterdb.get_voter(voterid=voterid, trynew=True)
             p = voter.get_place()
         else:
             p = Place.find(key=form.place.data)

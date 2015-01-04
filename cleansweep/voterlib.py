@@ -41,12 +41,15 @@ class VoterDB:
         url = self.base_url.rstrip("/") + "/" + path
         return requests.get(url, params=params).json()
 
-    def get_voter(self, voterid):
+    def get_voter(self, voterid, trynew=False):
         """Returns details of the voter with given voterid.
         """
         result = self._get("voters", voterid=voterid)
         if result:
             return Voter(result[0])
+        if trynew:
+            result = get_voter_info(voterid)
+            return result and Voter(result)
 
     def tonum(self, value):
         return RE_NOTNUM_PREFIX.sub("", value)
@@ -108,12 +111,9 @@ def get_voter_info(voterid):
     results the response.
     """
     data = _fetch_voter_info(voterid)
-    if data:
+    if data and data['response']['docs']:
         # return the first matching record
-        try:
-            return _process_voter_info(data['response']['docs'][0])
-        except (KeyError, IndexError):
-            pass
+        return _process_voter_info(data['response']['docs'][0])
 
 def get_lat_lon(voterid):
     """Returns latitude and longitude of the specified voter's polling booth.
@@ -152,17 +152,27 @@ def _fetch_voter_info(voterid):
     # and read json from it
     return r.json()
 
+STATE_CODES = {
+    '13': 'MH'
+}
+
 re_voter_info_id = re.compile("^S(\d\d)(\d\d\d)(\d\d\d\d)\d\d(\d\d\d\d)$")
 def _process_voter_info(d):
     """Process the voter info suitable for use in cleansweep.
     """
     m = re_voter_info_id.match(d['id'])
+    d['serial'] = d.get('slno_inpart')
+    d['voterid'] = d['epic_no']
     if m:
         d['state_code'] = m.group(1)
         d['ac_code'] = m.group(2)
         d['pb_code'] = m.group(3)
-        d['serial'] = m.group(4)
+
+        d['state'] = STATE_CODES[d['state_code']]
+        d['ac'] = int(d['ac_code'])
+        d['pb'] = int(d['pb_code'])
         return d
+
 
 re_token = re.compile("function _aquire\(\) *{ *return '([0-9a-f-]+)';")
 def get_token(text):
