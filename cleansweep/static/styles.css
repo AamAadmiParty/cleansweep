@@ -140,3 +140,30 @@ only screen and (max-width: 760px) {
     font-size: 20px;
   }
 }
+
+
+.content-head {
+    margin: 0px;
+    padding: 20px 0px;
+}
+.content-head h2 {
+    margin: 0px;
+    padding: 0px;
+}
+
+body.campaign a { color: #008CBA;}
+body.campaign {
+    background: #ddeeff;
+}
+
+body.campaign .cs-header {
+    background: #008CBA;
+}
+body.campaign .cs-header h2 {
+    margin: 10px 0px;
+}
+
+a.header {
+    color: black !important;
+    text-decoration: none;
+}

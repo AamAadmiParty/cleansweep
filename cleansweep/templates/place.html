@@ -51,8 +51,10 @@ margin-bottom: 0px;">
 {% block content %}
   <div class="cs-header hidden-xs">
     <div class="container">
-      {{ macros.breadcrumbs(place) }}
-      <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
+      {% block page_header %}
+        {{ macros.breadcrumbs(place) }}
+        <h1>{{ place.name }} <span class="small">{{ place.type.name }}</span></h1>
+      {% endblock %}
     </div>
   </div>
   <div class="page-content">

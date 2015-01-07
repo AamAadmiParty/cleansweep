@@ -1,0 +1,14 @@
+{% extends "place.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="campaigns") }}
+{% endblock %}
+
+{% block page_container %}
+  {{ self.two_column_layout() }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Campaigns</h2>
+  <a href="{{url_for('.view_campaign', key=place.key, slug='door-to-door')}}">Door to Door Campaign</a>
+{% endblock %}

@@ -3,6 +3,7 @@ import itertools
 from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.sql.expression import func
 from .app import app
 import md5
 
@@ -312,6 +313,31 @@ class Place(db.Model, Mixable):
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
 
+    def get_stats(self, name, limit=100, total=False):
+        q = (db.session.query(Stats.date, func.sum(Stats.value).label("value"))
+            .filter(
+                place_parents.c.parent_id==self.id,
+                place_parents.c.child_id==Stats.place_id,
+                Stats.name==name)
+            .group_by(Stats.date)
+            .order_by(Stats.date)
+            .limit(limit))
+        return q.all()
+
+class Stats(db.Model):
+    """Model for storing stats for a place.
+
+    This allows storing a (name, value) or (date, name, number) for a place.
+    This is useful for storing values like number of houses visited etc.
+    """
+    __table_args__ = (db.UniqueConstraint('place_id', 'name', 'date'), {})
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False)
+    date = db.Column(db.Date)
+    name = db.Column(db.Text, nullable=False)
+    value = db.Column(db.Integer)
 
 class Member(db.Model):
     __tablename__ = "member"

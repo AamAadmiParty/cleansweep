@@ -1,16 +1,16 @@
-{% macro breadcrumbs(place, include_self=False) %}
+{% macro breadcrumbs(place, include_self=False, endpoint='place', view_params={}) %}
   {% if place.parents %}
     <ul class="breadcrumb breadcrumb-collapse">
       {% for p in place.parents %}
-        <li><a href="{{ url_for('place', key=p.key) }}">{{ p.name }}</a> <span class="divider"></span></li>
+        <li class="breadcrumb-{{p.type.short_name.lower()}}"><a href="{{ url_for(endpoint, key=p.key, **view_params) }}">{{ p.name }}</a> <span class="divider"></span></li>
       {% endfor %}
       {% if include_self %}
-        <li><a href="{{ url_for('place', key=place.key) }}">{{ place.name }}</a> <span class="divider"></span></li>
+        <li class="breadcrumb-self"><a href="{{ url_for(endpoint, key=place.key, **view_params) }}">{{ place.name }}</a> <span class="divider"></span></li>
       {% endif %}
     </ul>
   {% elif include_self %}
     <ul class="breadcrumb breadcrumb-collapse">
-      <li><a href="{{ url_for('place', key=place.key) }}">{{ place.name }}</a> <span class="divider"></span></li>
+        <li class="breadcrumb-self"><a href="{{ url_for(endpoint, key=place.key, **view_params) }}">{{ place.name }}</a> <span class="divider"></span></li>
     </ul>
   {% endif %}
 {% endmacro %}

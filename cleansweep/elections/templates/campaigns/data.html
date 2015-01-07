@@ -1,0 +1,6 @@
+{% extends "campaigns/view.html" %}
+{% block page_content %}
+    {{breadcrumbs(place)}}
+    <h2>{{place.name}} <span class="small">{{ place.type.name }}</span> / Data</h2>
+
+{% endblock %}
