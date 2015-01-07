@@ -43,6 +43,19 @@ def get_current_user():
     if session.get('user'):
         return Member.find(email=session['user'])
 
+def changeview(**view_args):
+    """Returns URL for the current view, with some arguments replaced.
+
+    For example, when the current URL is "DL/volunteers"
+
+        changeview(key="DL/AC001")
+
+    will return "DL/AC001/volunteers"
+    """
+    endpoint = request.endpoint
+    view_args = dict(request.view_args, **view_args)
+    return url_for(request.endpoint, **view_args)
+
 @app.context_processor
 def helpers():
     return {
@@ -60,6 +73,7 @@ def helpers():
         "get_stat": stats.get_stat,
         "today": datetime.datetime.today(),
         "yesterday": datetime.datetime.today() - datetime.timedelta(days=1),
+        "changeview": changeview
     }
 
 @app.context_processor
