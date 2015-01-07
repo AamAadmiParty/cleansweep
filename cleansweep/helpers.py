@@ -43,6 +43,15 @@ def get_current_user():
     if session.get('user'):
         return Member.find(email=session['user'])
 
+
+def get_site_title():
+    place = getattr(g, "place", None)
+    state = place and place.get_parent('STATE')
+    if state:
+        key = state.code + '_SITE_TITLE'
+        return app.config.get(key) or app.config.get("SITE_TITLE")
+    return app.config.get("SITE_TITLE")
+
 def changeview(**view_args):
     """Returns URL for the current view, with some arguments replaced.
 
@@ -73,6 +82,7 @@ def helpers():
         "get_stat": stats.get_stat,
         "today": datetime.datetime.today(),
         "yesterday": datetime.datetime.today() - datetime.timedelta(days=1),
+        "get_site_title": get_site_title,
         "changeview": changeview
     }
 

@@ -60,6 +60,7 @@ def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=N
         place = Place.find(key)
         if not place:
             abort(404)
+        g.place = place
         user = h.get_current_user()
         if not user:
             return render_template("permission_denied.html")

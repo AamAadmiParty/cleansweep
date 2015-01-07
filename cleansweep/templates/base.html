@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>{% block title %}{{ get_config("SITE_TITLE") }}{% endblock %}</title>
+    <title>{% block title %}{{ get_site_title() }}{% endblock %}</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}">
@@ -26,7 +26,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">    
   </head>
-  <body>
+  {% set body_class = body_class|default('home') -%}
+  <body class="{{body_class}}">
     {% block navbar %}
       <nav class="navbar navbar-default" role="navigation">
         <div class="container">
@@ -38,7 +39,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">{{ get_config("SITE_TITLE") }}</a>
+            <a class="navbar-brand" href="/">{{ get_site_title() }}</a>
           </div>
 
           <!-- Collect the nav links, forms, and other content for toggling -->
