@@ -30,9 +30,12 @@ class NewCommitteeForm(Form):
         self.ensure_empty_slots()
 
     def validate_slug(self, field):
-        # don't validate slug when editing a committee type
+        # When editing an existing committee type
         if self.committee_type_id.data:
-            return
+            ct = CommitteeType.query.filter_by(id=self.committee_type_id.data).first()
+            # if the slug is not modified
+            if ct.slug == field.data:
+                return
 
         level = self.level.data
         if CommitteeType.find(self.place, field.data, level=level):
@@ -64,11 +67,11 @@ class NewCommitteeForm(Form):
         for roledata in self.data['roles']:
             if roledata.get('role_id'):
                 role = CommitteeRole.query.filter_by(id=roledata['role_id']).first()
-                role.name = roledata['name']
+                role.role = roledata['name']
                 role.multiple = roledata['multiple'] == 'yes'
                 role.permission = roledata['permission']
                 db.session.add(role)
-            elif roledata.get('name').strip():
+            elif roledata.get('name') and roledata.get('name').strip():
                 c.add_role(
                     roledata['name'],
                     roledata['multiple'] == 'yes',
