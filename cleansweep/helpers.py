@@ -2,11 +2,12 @@
 
 Includes template filters and context processors.
 """
-from flask import (request, session, g)
+from flask import (request, session, g, url_for)
+import datetime
 import humanize
 from .app import app
 from .widgets import render_widget
-from .models import Member, Place
+from .models import Member, Place, PlaceType
 from . import oauth
 from .voterlib import VoterDB
 from . import stats
@@ -55,5 +56,13 @@ def helpers():
         "permissions": getattr(g, "permissions", []),
         "voterdb": VoterDB(app.config["VOTERDB_URL"]),
         "sidebar_entries": sidebar_entries,
-        "get_stats": stats.get_stats
+        "get_stats": stats.get_stats,
+        "get_stat": stats.get_stat,
+        "today": datetime.datetime.today(),
+        "yesterday": datetime.datetime.today() - datetime.timedelta(days=1),
     }
+
+@app.context_processor
+def place_types():
+    types = PlaceType.all()
+    return dict((t.short_name, t) for t in types)

@@ -40,12 +40,9 @@ class Stats(object):
     def prepare_data_for_graph(self, rows):
         """Expects each row to have date and count fields.
         """
-        rows = sorted(rows)
-
         today = datetime.date.today()
         yday = today - datetime.timedelta(days=1)
-
-        rows = rows or [dict(date=today, count=0)]
+        rows = sorted(rows, key=lambda row: row['date']) or [dict(date=today, count=0)]
 
         mindate = min(rows[0]['date'], yday)
         maxdate = max(rows[-1]['date'], today)
@@ -76,3 +73,8 @@ def register_stats(cls=None):
 def get_stats(place):
     return [s() for s in STATS if s().is_enabled_for(place)]
 
+def get_stat(place, name):
+    for cls in STATS:
+        s = cls()
+        if cls.__name__ == name and s.is_enabled_for(place):
+            return s
