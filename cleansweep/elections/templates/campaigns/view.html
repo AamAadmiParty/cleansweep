@@ -15,12 +15,14 @@
         {% endfor %}
       </ul>
     {% elif place.type.short_name == "AC" %}
-      <table class="table">
+      <table class="table booth-report-table">
       {% for px, booths in place.get_booths_by_px() %}
         <tr>
-          <td>
+          <td class="px">
             {% if px %}
-              <a href="{{changeview(key=px.key)}}" title="{{px.name}}">{{px.code}}</a>
+              {% set name = px.name.split("-", 1)[-1] %}
+              <a href="{{changeview(key=px.key)}}" title="{{px.name}}">{{px.code}}
+              <!-- <br/><span class="small">{{name|fitlength(30)}}</span></a> -->
             {% endif %}
           </td>
           <td>
@@ -54,6 +56,14 @@ ul.booths li {
 }
 ul.booths a {
   color: inherit;
+}
+td.px {
+  max-width: 100px;
+  overflow: hidden;
+}
+table.booth-report-table tr {
+  height: 50px !important;
+  max-height: 50px;
 }
 </style>
 {% endblock %}
