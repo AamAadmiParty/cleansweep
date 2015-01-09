@@ -1,0 +1,46 @@
+{% extends "campaigns/index.html" %}
+
+{% block page_header %}
+  <h2>{{campaign.name}}</h2>
+{% endblock %}
+
+{% block page_content %}
+    {{breadcrumbs(place)}}
+    <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
+    
+    <ul class="nav nav-pills">
+      <li role="presentation"><a href="{{url_for('.view_campaign', key=place.key, slug=campaign.slug)}}">Home</a></li>
+      <li role="presentation" class="active"><a href="#">Status</a></li>
+    </ul>
+    <br/>
+{% endblock %}
+
+{% block extrahead %}
+  {{super()}}
+
+<style type="text/css">
+ul.booths {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+ul.booths li {
+  float: left;
+  padding: 5px;
+  width: 50px;
+  border: 1px solid gray;
+  margin: 0px 2px;
+}
+ul.booths a {
+  color: inherit;
+}
+td.px {
+  max-width: 100px;
+  overflow: hidden;
+}
+table.booth-report-table tr {
+  height: 50px !important;
+  max-height: 50px;  
+}
+</style>
+{% endblock %}

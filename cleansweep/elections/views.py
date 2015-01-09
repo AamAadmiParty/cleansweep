@@ -46,3 +46,9 @@ def view_campaign(place, slug):
     c = place.get_campaign(slug)
     return render_template("campaigns/view.html", place=place, campaign=c)
 
+@plugin.place_view("/campaigns/<slug>/status")
+def campaign_status(place, slug):
+    if place.type.short_name != "AC":
+        abort(404)
+    c = place.get_campaign(slug)
+    return render_template("campaigns/status.html", place=place, campaign=c)

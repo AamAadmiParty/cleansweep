@@ -8,6 +8,14 @@
     {{breadcrumbs(place)}}
     <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
 
+    {% if place.type == AC %}
+      <ul class="nav nav-pills">
+        <li role="presentation" class="active"><a href="#">Home</a></li>
+        <li role="presentation"><a href="{{url_for('.campaign_status', key=place.key, slug=campaign.slug)}}">Status</a></li>
+      </ul>
+      <br/>
+    {% endif %}
+
     {% if place.type.short_name == "STATE" %}
       <ul class="list-group">
         {% for p in place.get_all_child_places(AC) %}
