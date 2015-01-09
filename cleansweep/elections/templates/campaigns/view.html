@@ -14,5 +14,46 @@
           <li class="list-group-item"><a href="{{changeview(key=p.key)}}">{{p.name}}</a></li>
         {% endfor %}
       </ul>
+    {% elif place.type.short_name == "AC" %}
+      <table class="table">
+      {% for px, booths in place.get_booths_by_px() %}
+        <tr>
+          <td>
+            {% if px %}
+              <a href="{{changeview(key=px.key)}}" title="{{px.name}}">{{px.code}}</a>
+            {% endif %}
+          </td>
+          <td>
+            <ul class="booths">
+            {% for b in booths %}
+              <li class="booth" title="{{b.name}}"><a href="{{changeview(key=b.key)}}">{{b.code.lstrip("PB0")}}</a></li>
+            {% endfor %}
+            </ul>
+          </td>
+        </tr>
+      {% endfor %}
+      </table>
     {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+  {{super()}}
+
+<style type="text/css">
+ul.booths {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+ul.booths li {
+  float: left;
+  padding: 5px;
+  width: 50px;
+  border: 1px solid gray;
+  margin: 0px 2px;
+}
+ul.booths a {
+  color: inherit;
+}
+</style>
 {% endblock %}
