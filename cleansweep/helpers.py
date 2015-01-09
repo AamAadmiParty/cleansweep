@@ -3,6 +3,7 @@
 Includes template filters and context processors.
 """
 from flask import (request, session, g, url_for)
+from jinja2 import Markup
 import datetime
 import humanize
 from .app import app
@@ -36,7 +37,7 @@ def naturaltime(datetime):
 
 @app.template_filter()
 def json_encode(value):
-    return json.dumps(value)
+    return Markup(json.dumps(value))
 
 
 def get_current_user():
