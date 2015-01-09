@@ -241,7 +241,7 @@ class Place(db.Model, Mixable):
         if isinstance(type, list):
             q = q.filter(Place.type_id.in_([t.id for t in type]))
         elif type is not None:
-            q = q.filter(Place.type_id==t.id)
+            q = q.filter(Place.type_id==type.id)
         return q.all()
 
     def add_member(self, name, email, phone, voterid=None):
