@@ -53,7 +53,7 @@ def get_site_title():
         return app.config.get(key) or app.config.get("SITE_TITLE")
     return app.config.get("SITE_TITLE")
 
-def changeview(**view_args):
+def changeview(endpoint=None, **view_args):
     """Returns URL for the current view, with some arguments replaced.
 
     For example, when the current URL is "DL/volunteers"
@@ -62,9 +62,9 @@ def changeview(**view_args):
 
     will return "DL/AC001/volunteers"
     """
-    endpoint = request.endpoint
+    endpoint = endpoint or request.endpoint
     view_args = dict(request.view_args, **view_args)
-    return url_for(request.endpoint, **view_args)
+    return url_for(endpoint, **view_args)
 
 @app.context_processor
 def helpers():
