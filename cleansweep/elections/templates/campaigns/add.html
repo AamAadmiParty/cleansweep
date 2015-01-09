@@ -14,6 +14,7 @@
   <form role="form" method="POST">
     {{ form.csrf_token }}
     {{ render_field(form.name) }}
+    {{ render_field(form.slug) }}
     {{ render_field(form.description) }}
 
     <button type="submit" class="btn btn-default">Add</button>    

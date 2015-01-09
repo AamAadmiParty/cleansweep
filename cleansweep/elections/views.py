@@ -28,10 +28,10 @@ def add_campaign(place):
     if place.type.short_name != "STATE":
         abort(404)
 
-    form = forms.NewCampaignForm()
+    form = forms.NewCampaignForm(place)
     if request.method == 'POST' and form.validate():
         name = form.name.data
-        slug = name.lower().replace(" ", "-")
+        slug = form.slug.data
         c = Campaign(place, slug, name)
         db.session.add(c)
         db.session.commit()

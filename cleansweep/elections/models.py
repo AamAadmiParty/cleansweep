@@ -98,12 +98,12 @@ class ElectionPlaceMixin:
 
     def get_campaigns(self):
         parent_ids = [p.id for p in self._parents]
-        q = Campaign.query.filter(CommitteeType.place_id.in_(parent_ids))
+        q = Campaign.query.filter(Campaign.place_id.in_(parent_ids))
         return q.all()
 
     def get_campaign(self, slug):
         parent_ids = [p.id for p in self._parents]
-        q = Campaign.query.filter(CommitteeType.place_id.in_(parent_ids), Campaign.slug == slug)
+        q = Campaign.query.filter(Campaign.place_id.in_(parent_ids), Campaign.slug == slug)
         return q.first()
 
 class Campaign(db.Model):
