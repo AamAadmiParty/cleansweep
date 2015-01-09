@@ -119,12 +119,72 @@ class Campaign(db.Model):
         self.slug = slug
         self.name = name
 
-
 class CampaignStatus(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     campaign_id = db.Column(db.Integer, db.ForeignKey("campaign.id"), nullable=False, index=True)
+    campaign = db.relationship('Campaign')
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
+    place = db.relationship('Place')
     status = db.Column(db.Text, nullable=False)
+
+    def __init__(self, place, campaign, status):
+        self.place = place
+        self.campaign =  campaign
+        self.status = status
+
+    @property
+    def status_code(self):
+        return self.status.lower().replace(" ", "-")
+
+    def dict(self):
+        name = self.place.name.split("-", 1)[-1].strip()
+        return dict(code=self.place.code, name=name, status=self.status)
+
+class CampaignStatusTable:
+    """Class to manage all campaign status objects for an AC.
+    """
+    def __init__(self, place, campaign):
+        self.place = place
+        self.campaign = campaign
+        self._status_dict = None
+
+    def get_status(self, place):
+        status_dict = self.get_status_dict()
+        return status_dict.get(place.code)
+
+    def get_status_dict(self):
+        if self._status_dict is None:
+            self._status_dict = self._get_status_dict()
+        return self._status_dict
+
+    def _get_status_dict(self):
+        places = self.place.get_all_child_places(PlaceType.get('PB'))
+        place_dict = {p.id:p for p in places}
+        place_ids = place_dict.keys()
+        result = CampaignStatus.query.filter(
+            CampaignStatus.place_id.in_(place_ids),
+            CampaignStatus.campaign_id==self.campaign.id).all()
+
+        d = {s.place.code: s for s in result}
+        for p in places:
+            if p.code not in d:
+                d[p.code] = CampaignStatus(p, self.campaign, "Not Started")
+        return d
+
+    def serialize(self):
+        """Serializes the status objects as a list to display in a spreadsheet.
+        """
+        status_dict = self.get_status_dict()
+        return sorted([s.dict() for s in status_dict.values()], key=lambda d: d['code'])
+
+    def update(self, data):
+        status_dict = self.get_status_dict()
+        for row in data:
+            code = row['code']
+            status = status_dict[code]
+            if status and status.status != row['status']:
+                status.status = row['status']
+                db.session.add(status)
 
 class CampaignMetric(db.Model):
     id = db.Column(db.Integer, primary_key=True)

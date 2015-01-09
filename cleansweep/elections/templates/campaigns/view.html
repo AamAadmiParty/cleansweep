@@ -29,14 +29,15 @@
           <td class="px">
             {% if px %}
               {% set name = px.name.split("-", 1)[-1] %}
-              <a href="{{changeview(key=px.key)}}" title="{{px.name}}">{{px.code}}
+              {{px.code}}
               <!-- <br/><span class="small">{{name|fitlength(30)}}</span></a> -->
             {% endif %}
           </td>
           <td>
             <ul class="booths">
             {% for b in booths %}
-              <li class="booth" title="{{b.name}}"><a href="{{changeview(key=b.key)}}">{{b.code.lstrip("PB0")}}</a></li>
+              {% set status = status_table.get_status(b) %}
+              <li class="booth booth-{{status.status_code}}" title="{{b.name}}">{{b.code.lstrip("PB0")}} - 20</li>
             {% endfor %}
             </ul>
           </td>
@@ -53,14 +54,15 @@
 ul.booths {
   list-style-type: none;
   padding-left: 0px;
+  margin: 0px;
 }
 
 ul.booths li {
   float: left;
   padding: 5px;
-  width: 50px;
+  width: 80px;
   border: 1px solid gray;
-  margin: 0px 2px;
+  margin: 2px 2px;
 }
 ul.booths a {
   color: inherit;
@@ -70,8 +72,20 @@ td.px {
   overflow: hidden;
 }
 table.booth-report-table tr {
-  height: 50px !important;
-  max-height: 50px;
 }
+table.booth-report-table td {
+  padding: 2px !important;
+}
+
+.booth-not-started {
+  background: red;
+}
+.booth-in-progress {
+  background: yellow;
+}
+.booth-done {
+  background: #22dd22;
+}
+
 </style>
 {% endblock %}
