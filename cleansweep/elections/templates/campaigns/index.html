@@ -1,14 +1,80 @@
 {% extends "place.html" %}
 
-{% block subnav %}
-  {{ subnav(place, tab="campaigns") }}
+{% set body_class = 'campaign' -%} 
+
+{% block rightsidebar %}
+  {{widget('PlaceNavigation', place=place, endpoint='.view_campaign', view_params=dict(slug=slug))}}
 {% endblock %}
 
 {% block page_container %}
-  {{ self.two_column_layout() }}
+  <div class="container">  
+    <div class="row">
+      <div class="col-md-9 col-xs-12">
+        {{self.page_content()}}
+      </div>
+      <div class="col-md-3 col-xs-0 hidden-xs">
+        {{ self.rightsidebar() }}
+      </div>      
+    </div>
+  </div>
 {% endblock %}
 
 {% block page_content %}
+    {{breadcrumbs(place)}}
+    <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
+
+  <h3>Campaigns</h3>
+  {% if not campaigns %}
+  	<em>None found.</em>
+  {% else %}
+  	<ul class="list-group">
+  	{% for c in campaigns %}
+  		<li class="list-group-item"><a href="{{url_for('.view_campaign', key=place.key, slug=c.slug)}}">{{c.name}}</a></li>
+  	{% endfor %}
+  	</ul>
+  {% endif %}
+
+  {% if "write" in permissions %}
+	  <div>
+	  <a href="{{url_for('.add_campaign', key=place.key)}}" class="btn btn-primary">Create a New Campaign</a>
+	  </div>
+  {% endif %}
+{% endblock %}
+
+{% block page_header %}
   <h2>Campaigns</h2>
-  <a href="{{url_for('.view_campaign', key=place.key, slug='door-to-door')}}">Door to Door Campaign</a>
+{% endblock %}
+
+{% macro breadcrumbs(place) %}
+  <ul class="breadcrumb breadcrumb-collapse">
+  {% if place.type < STATE %}
+    {% set p = place.get_parent(STATE) %}
+    <li class="breadcrumb-{{p.type.short_name.lower()}}">
+      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
+      <span class="divider"></span>
+    </li>
+  {% endif %}
+  {% if place.type < AC %}
+    {% set p = place.get_parent(AC) %}
+    <li class="breadcrumb-{{p.type.short_name.lower()}}">
+      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
+      <span class="divider"></span>
+    </li>
+  {% endif %}
+  </ul>
+{% endmacro %}
+
+{% block extrahead %}
+  {{super()}}
+  <style type="text/css">
+  .panel-heading {
+    display: none;
+  }
+  .panel-heading-ac {
+  	display: block;
+  }
+  .panel-body-state {
+  	display: none;
+  }
+  </style>
 {% endblock %}

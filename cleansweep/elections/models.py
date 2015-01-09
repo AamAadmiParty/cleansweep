@@ -82,3 +82,53 @@ class ElectionPlaceMixin:
             .group_by(Committee.place_id))
         return dict((row.place_id, row.count) for row in q.all())
 
+    def get_booth_incharges(self):
+        booths = self.get_polling_booths()
+        booth_ids = [b.id for b in booths]
+
+        booth_committe_slug = "booth-committee"
+        PB = self.get_place_type_id("PB")
+        committee_type = db.session.query(CommitteeType.id).filter_by(slug=booth_committe_slug, place_type_id=PB).as_scalar()
+
+        q = (db.session.query(Committee.place_id, CommitteeMember.member_id)
+            .filter(
+                Committee.type_id==committee_type,
+                CommitteeMember.committee_id==Committee.id,
+                Committee.place_id.in_(booth_ids)))
+
+    def get_campaigns(self):
+        parent_ids = [p.id for p in self._parents]
+        q = Campaign.query.filter(CommitteeType.place_id.in_(parent_ids))
+        return q.all()
+
+    def get_campaign(self, slug):
+        parent_ids = [p.id for p in self._parents]
+        q = Campaign.query.filter(CommitteeType.place_id.in_(parent_ids), Campaign.slug == slug)
+        return q.first()
+
+class Campaign(db.Model):
+    __table_args__ = (db.UniqueConstraint('place_id', 'slug'), {})
+
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.Text, nullable=False)
+    name = db.Column(db.Text, nullable=False)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
+
+    def __init__(self, place, slug, name):
+        self.place_id = place.id
+        self.slug = slug
+        self.name = name
+
+
+class CampaignStatus(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey("campaign.id"), nullable=False, index=True)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
+    status = db.Column(db.Text, nullable=False)
+
+class CampaignMetric(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey("campaign.id"), nullable=False, index=True)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
+    date = db.Column(db.Date, index=True)
+    value = db.Column(db.Integer)

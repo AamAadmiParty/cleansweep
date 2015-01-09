@@ -9,8 +9,8 @@
         <small>{{ p.type.name }}</small>
       </div>
     {% endfor %}        
-    <div class="panel-heading"><strong>{{ place.type.name | pluralize }}</strong></div>
-    <div class="panel-body">
+    <div class="panel-heading panel-heading-{{place.type.name.lower()}}"><strong>{{ place.type.name | pluralize }}</strong></div>
+    <div class="panel-body panel-body-{{place.type.name.lower()}}">
       <ul class="list-unstyled parents section-body">
         {% for p in siblings %}
           {% if p == place %}

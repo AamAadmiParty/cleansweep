@@ -1,81 +1,18 @@
 {% extends "campaigns/index.html" %}
 
-{% set body_class = 'campaign' -%} 
-
-{% block rightsidebar %}
-  {{widget('PlaceNavigation', place=place, endpoint='.view_campaign', view_params=dict(slug=slug))}}
-{% endblock %}
-
-{% block page_container %}
-  <div class="container">  
-    <div class="row">
-      <div class="col-md-9 col-xs-12">
-        {{self.page_content()}}
-      </div>
-      <div class="col-md-3 col-xs-0 hidden-xs">
-        {{ self.rightsidebar() }}
-      </div>      
-    </div>
-  </div>
+{% block page_header %}
+  <h2>{{campaign.name}}</h2>
 {% endblock %}
 
 {% block page_content %}
     {{breadcrumbs(place)}}
-
     <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
 
-    {{widget('Stats', stats=get_stat(place, 'DoorToDoorStats'), place=place)}}
-
-  <h3>Houses Visited</h3>
-  {% set houses_visited = place.get_stats("houses-visited") %}  
-  {% if houses_visited %}
-    <table class="table">
-      <tr>
-        <th>Date</th>
-        <th>#Houses visited</th>
-      </tr>
-    {% for row in houses_visited[::-1] %}
-      <tr>
-        <td>{{row.date}}</td>
-        <td>{{row.value}}</td>
-      </tr>
-    {% endfor %}
-    </table>
-  {% else %}
-    <em>No houses visted yet.</em>
-  {% endif %}    
-{% endblock %}
-
-{% block page_header %}
-  <h2>Door to Door Campaign</h2>
-{% endblock %}
-
-
-{% macro breadcrumbs(place) %}
-  <ul class="breadcrumb breadcrumb-collapse">
-  {% if place.type < STATE %}
-    {% set p = place.get_parent(STATE) %}
-    <li class="breadcrumb-{{p.type.short_name.lower()}}">
-      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
-      <span class="divider"></span>
-    </li>
-  {% endif %}
-  {% if place.type < AC %}
-    {% set p = place.get_parent(AC) %}
-    <li class="breadcrumb-{{p.type.short_name.lower()}}">
-      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
-      <span class="divider"></span>
-    </li>
-  {% endif %}
-  </ul>
-{% endmacro %}
-
-
-{% block extrahead %}
-  {{super()}}
-  <style type="text/css">
-  .panel-heading-country, .panel-heading-region {
-    display: none;
-  }
-  </style>
+    {% if place.type.short_name == "STATE" %}
+      <ul class="list-group">
+        {% for p in place.get_all_child_places(AC) %}
+          <li class="list-group-item"><a href="{{changeview(key=p.key)}}">{{p.name}}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
 {% endblock %}

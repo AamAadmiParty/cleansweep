@@ -151,6 +151,9 @@ only screen and (max-width: 760px) {
     padding: 0px;
 }
 
+body.campaign a.btn { 
+    color: white;
+}
 body.campaign a { color: #008CBA;}
 body.campaign {
     background: #ddeeff;
