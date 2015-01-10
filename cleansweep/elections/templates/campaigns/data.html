@@ -1,6 +1,111 @@
-{% extends "campaigns/view.html" %}
+{% extends "campaigns/index.html" %}
+
+{% block page_header %}
+  <h2>{{campaign.name}}</h2>
+{% endblock %}
+
 {% block page_content %}
     {{breadcrumbs(place)}}
-    <h2>{{place.name}} <span class="small">{{ place.type.name }}</span> / Data</h2>
+    <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
 
+    <ul class="nav nav-pills">
+      <li role="presentation"><a href="{{url_for('.view_campaign', key=place.key, slug=campaign.slug)}}">Home</a></li>
+      <li role="presentation"><a href="{{url_for('.campaign_status', key=place.key, slug=campaign.slug)}}">Status</a></li>
+      <li role="presentation" class="active"><a href="#">Data</a></li>
+    </ul>
+    <br/>
+
+    <div>
+      <a href="javascript:;" class="btn btn-primary save-table">Save</a>
+    </div>
+
+    <div id="example">
+    </div>
+
+    <div>
+      <a href="javascript" class="btn btn-primary save-table">Save</a>
+    </div>
+
+  <script type="text/javascript">
+
+    $(function() {
+        var data = {{data_table.serialize()|json_encode}};
+
+        $('#example').handsontable({
+          data: data,
+          colHeaders: ["Date", "Count"],
+          columns: [{
+            data: "date",
+            type: "date"
+          }, {
+            data: "count",
+            type: "number",
+            readOnly: true,
+          }],
+          contextMenu: false,
+          colWidths: [200, 200]
+        });
+    });
+
+    $(function() {
+        $("a.save-table").click(function(e) {
+            e.preventDefault();
+
+            handsontable = $("#example").data("handsontable");
+            console.log(handsontable.getData());
+            $.ajax({
+                url: window.location.href,
+                data: {data: JSON.stringify(handsontable.getData())},
+                dataType: "json",
+                type: 'POST',
+                success: function (res) {
+                  console.log(res.result);
+                  if (res.status === 'ok') {
+                    window.location.href = "{{changeview(endpoint='.view_campaign')}}";
+                  }
+                  else {
+                    alert('Save error');
+                  }
+                },
+                error: function () {
+                    alert('Save error');
+                }
+            });
+        });
+    });
+
+
+  </script>
+{% endblock %}
+
+{% block extrahead %}
+  {{super()}}
+  <script type="text/javascript" src="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.css') }}">
+
+<style type="text/css">
+ul.booths {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+ul.booths li {
+  float: left;
+  padding: 5px;
+  width: 50px;
+  border: 1px solid gray;
+  margin: 0px 2px;
+}
+ul.booths a {
+  color: inherit;
+}
+td.px {
+  max-width: 100px;
+  overflow: hidden;
+}
+table.booth-report-table tr {
+  height: 50px !important;
+  max-height: 50px;
+}
+</style>
 {% endblock %}

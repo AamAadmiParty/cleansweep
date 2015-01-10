@@ -4,6 +4,7 @@ from collections import defaultdict
 from sqlalchemy.sql.expression import func
 from flask import g
 import functools
+import datetime
 
 def memoize(f):
     @functools.wraps(f)
@@ -186,9 +187,38 @@ class CampaignStatusTable:
                 status.status = row['status']
                 db.session.add(status)
 
-class CampaignMetric(db.Model):
+class CampaignData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     campaign_id = db.Column(db.Integer, db.ForeignKey("campaign.id"), nullable=False, index=True)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
     date = db.Column(db.Date, index=True)
     value = db.Column(db.Integer)
+
+class CampaignDataTable:
+    def __init__(self, place, campaign):
+        self.place = place
+        self.campaign = campaign
+        self._data_dict = None
+
+    def get_data_dict(self):
+        if self._data_dict is None:
+            self._data_dict = self._get_data_dict()
+        return self._data_dict
+
+    def _get_data_dict(self):
+        q = CampaignData.query.filter_by(place_id=self.place.id, campaign_id=self.campaign.id)
+        return {d.date:d.value for d in q.all()}
+
+    def serialize(self):
+        today = datetime.date.today()
+        weekago = today - datetime.timedelta(days=7)
+
+        d = self.get_data_dict() or {today: 0}
+        mindate = min(min(d.keys()), weekago)
+        print mindate
+        return [{"date": date.isoformat(), "count": d.get(date, 0)} for date in self.daterange(mindate, today)]
+
+    def daterange(self, start, end):
+        while start <= end:
+            yield start
+            start = start + datetime.timedelta(days=1)

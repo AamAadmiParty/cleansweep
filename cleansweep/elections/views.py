@@ -1,6 +1,6 @@
 from ..plugin import Plugin
 from ..models import db, Member
-from .models import Campaign, CampaignStatusTable
+from .models import Campaign, CampaignStatusTable, CampaignDataTable
 from flask import (render_template, abort, request, flash, redirect, url_for, make_response)
 from . import models, stats, forms
 
@@ -49,7 +49,7 @@ def view_campaign(place, slug):
     status_table = CampaignStatusTable(place, c)
     return render_template("campaigns/view.html", place=place, campaign=c, status_table=status_table)
 
-@plugin.place_view("/campaigns/<slug>/status", methods=['GET', 'POST'])
+@plugin.place_view("/campaigns/<slug>/status", permission='write', methods=['GET', 'POST'])
 def campaign_status(place, slug):
     if place.type.short_name != "AC":
         abort(404)
@@ -67,3 +67,23 @@ def campaign_status(place, slug):
         response.headers['Content-type'] = 'application/json'
         return response
     return render_template("campaigns/status.html", place=place, campaign=c, status_table=status_table)
+
+@plugin.place_view("/campaigns/<slug>/data", permission='write', methods=['GET', 'POST'])
+def campaign_data(place, slug):
+    if place.type.short_name != "AC":
+        abort(404)
+
+    # WARNING - not tested
+    c = place.get_campaign(slug)
+    data_table = CampaignDataTable(place, c)
+
+    if request.method == 'POST':
+        data = json.loads(request.form['data'])
+        status_table.update(data)
+        db.session.commit()
+        flash("The status has been saved successfully.")
+
+        response = make_response('{"status": "ok"}', 200)
+        response.headers['Content-type'] = 'application/json'
+        return response
+    return render_template("campaigns/data.html", place=place, campaign=c, data_table=data_table)
