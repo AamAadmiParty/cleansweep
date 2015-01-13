@@ -90,9 +90,12 @@ def campaign_data(place, slug):
 
 @plugin.place_view("/booth-agents", permission='write')
 def booth_agents(place):
-    if place.type.short_name != "AC":
+    if place.type.short_name not in ["AC", "STATE"]:
         abort(404)
-    report = BoothAgentReport(place)
+    if place.type.short_name == 'AC':
+        report = BoothAgentReport(place)
+    else:
+        report = None
     return render_template("booth_agents.html", place=place, report=report)
 
 @plugin.place_view("/booth-agents/data", permission='write', methods=['GET', 'POST'])

@@ -23,13 +23,21 @@
     {{breadcrumbs(place)}}
     <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
 
-    <ul class="nav nav-pills">
-      <li role="presentation" class="active"><a href="#">Report</a></li>
-      <li role="presentation"><a href="{{url_for('.booth_agents_data', key=place.key)}}">Data</a></li>
-    </ul>
-    <br/>
 
-    {{render_booth_report(place, report)}}
+    {% if place.type.short_name == "STATE" %}
+      <ul class="list-group">
+        {% for p in place.get_all_child_places(AC) %}
+          <li class="list-group-item"><a href="{{changeview(key=p.key)}}">{{p.name}}</a></li>
+        {% endfor %}
+      </ul>
+    {% elif place.type.short_name == "AC" %}
+      <ul class="nav nav-pills">
+        <li role="presentation" class="active"><a href="#">Report</a></li>
+        <li role="presentation"><a href="{{url_for('.booth_agents_data', key=place.key)}}">Data</a></li>
+      </ul>
+      <br/>
+      {{render_booth_report(place, report)}}
+    {% endif %}
 {% endblock %}
 
 {% block page_header %}
