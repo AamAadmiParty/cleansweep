@@ -70,6 +70,7 @@ def changeview(endpoint=None, **view_args):
 def helpers():
     return {
         "len": len,
+        "int": int,
         "request_path": request.path,
         "widget": render_widget,
         "user": get_current_user(),
