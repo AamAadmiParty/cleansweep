@@ -2,6 +2,7 @@ from ..models import db, Place, PlaceType
 from ..committees.models import Committee, CommitteeMember, CommitteeType
 from collections import defaultdict
 from sqlalchemy.sql.expression import func
+from sqlalchemy.dialects.postgresql import JSON
 from flask import g
 import functools
 import datetime
@@ -65,7 +66,7 @@ class ElectionPlaceMixin:
         print self.get_booth_agent_counts()
 
         #print d
-        return sorted(d.items(), key=lambda item: item[0].code)
+        return sorted(d.items(), key=lambda item: item and item[0].code)
 
     def get_booth_agent_counts(self):
         booths = self.get_polling_booths()
@@ -222,3 +223,93 @@ class CampaignDataTable:
         while start <= end:
             yield start
             start = start + datetime.timedelta(days=1)
+
+class BoothAgent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ac_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
+    booth_number = db.Column(db.Integer)
+    name = db.Column(db.Text)
+    email = db.Column(db.Text)
+    phone = db.Column(db.Text)
+    voterid = db.Column(db.Text)
+    status = db.Column(db.Text)
+    data = JSON()
+
+    def __init__(self, ac, booth_number, name, phone, email, voterid):
+        self.ac_id = ac.id
+        self.booth_number = booth_number
+        self.name = name
+        self.phone = phone
+        self.email = email
+        self.voterid = voterid
+
+    def update(self, d):
+        self.booth_number = d.get('booth_number')
+        self.name = d.get('name')
+        self.phone = d.get('phone')
+        self.email = d.get('email')
+        self.voterid = d.get('voterid')
+
+    def dict(self):
+        return dict(
+            id=self.id,
+            booth_number=self.booth_number,
+            name=self.name,
+            email=self.email,
+            phone=self.phone,
+            voterid=self.voterid)
+
+class BoothAgentReport:
+    def __init__(self, ac):
+        self.ac = ac
+        self.booth_count = len(self.ac.get_all_child_places(PlaceType.get("PB")))
+        self.data = BoothAgent.query.filter_by(ac_id=self.ac.id).order_by('booth_number').all()
+
+        counts_result = BoothAgent.query.filter_by(ac_id=self.ac.id).all()
+
+        count_results = (db.session.query(BoothAgent.booth_number, func.count(BoothAgent.booth_number).label("count"))
+                .filter(BoothAgent.ac_id==self.ac.id)
+                .group_by(BoothAgent.booth_number)).all()
+        self.counts = {row.booth_number:row.count for row in count_results}
+
+    def get_status(self, booth_number):
+        v = self.get_value(booth_number)
+        print "get_status", booth_number
+        if v == 0:
+            return 'None'
+        elif v == 1:
+            return 'Progress'
+        else:
+            return 'Done'
+
+    def get_value(self, booth_number):
+        return self.counts.get(booth_number, 0)
+
+    def serialize_data(self):
+        return [row.dict() for row in self.data]
+
+    def update_data(self, data):
+        for row in data:
+            self.update_row(row)
+    def update_row(self, row):
+        if self.has_value(row, 'name') and self.has_value(row, 'booth_number'):
+            id = row.get('id')
+            a = id and BoothAgent.query.filter_by(id=id).first()
+            if a:
+                a.update(row)
+            else:
+                a = BoothAgent(ac=self.ac,
+                               booth_number=row.get('booth_number'),
+                               name=row.get('name'),
+                               phone=row.get('phone'),
+                               email=row.get('email'),
+                               voterid=row.get('voterid'))
+            db.session.add(a)
+        elif row.get('id'):
+            id = row.get('id')
+            a = id and BoothAgent.query.filter_by(id=id).first()
+            if a:
+                db.session.delete(a)
+
+    def has_value(self, d, key):
+        return d.get(key) and str(d[key]).strip()

@@ -1,6 +1,6 @@
 from ..plugin import Plugin
 from ..models import db, Member
-from .models import Campaign, CampaignStatusTable, CampaignDataTable
+from .models import Campaign, CampaignStatusTable, CampaignDataTable, BoothAgentReport
 from flask import (render_template, abort, request, flash, redirect, url_for, make_response)
 from . import models, stats, forms
 
@@ -87,3 +87,28 @@ def campaign_data(place, slug):
         response.headers['Content-type'] = 'application/json'
         return response
     return render_template("campaigns/data.html", place=place, campaign=c, data_table=data_table)
+
+@plugin.place_view("/booth-agents", permission='write')
+def booth_agents(place):
+    if place.type.short_name != "AC":
+        abort(404)
+    report = BoothAgentReport(place)
+    return render_template("booth_agents.html", place=place, report=report)
+
+@plugin.place_view("/booth-agents/data", permission='write', methods=['GET', 'POST'])
+def booth_agents_data(place):
+    if place.type.short_name != "AC":
+        abort(404)
+    report = BoothAgentReport(place)
+
+    if request.method == 'POST':
+        data = json.loads(request.form['data'])
+        report.update_data(data)
+        db.session.commit()
+        flash("The data has been saved successfully.")
+
+        response = make_response('{"status": "ok"}', 200)
+        response.headers['Content-type'] = 'application/json'
+        return response
+    else:
+        return render_template("booth_agents_data.html", place=place, report=report)

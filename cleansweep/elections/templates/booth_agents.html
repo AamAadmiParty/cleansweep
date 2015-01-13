@@ -1,0 +1,72 @@
+{% extends "place.html" %}
+{% from "booth_report.html" import render_booth_report with context %}
+{% set body_class = 'booth-agents' -%} 
+
+{% block rightsidebar %}
+  {{widget('PlaceNavigation', place=place, endpoint='.view_campaign', view_params=dict(slug=slug))}}
+{% endblock %}
+
+{% block page_container %}
+  <div class="container">  
+    <div class="row">
+      <div class="col-md-9">
+        {{self.page_content()}}
+      </div>
+      <div class="col-md-3">
+        {{ self.rightsidebar() }}
+      </div>      
+    </div>
+  </div>
+{% endblock %}
+
+{% block page_content %}
+    {{breadcrumbs(place)}}
+    <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
+
+    <ul class="nav nav-pills">
+      <li role="presentation" class="active"><a href="#">Report</a></li>
+      <li role="presentation"><a href="{{url_for('.booth_agents_data', key=place.key)}}">Data</a></li>
+    </ul>
+    <br/>
+
+    {{render_booth_report(place, report)}}
+{% endblock %}
+
+{% block page_header %}
+  <h2>Booth Agents</h2>
+
+{% endblock %}
+
+{% macro breadcrumbs(place) %}
+  <ul class="breadcrumb breadcrumb-collapse">
+  {% if place.type < STATE %}
+    {% set p = place.get_parent(STATE) %}
+    <li class="breadcrumb-{{p.type.short_name.lower()}}">
+      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
+      <span class="divider"></span>
+    </li>
+  {% endif %}
+  {% if place.type < AC %}
+    {% set p = place.get_parent(AC) %}
+    <li class="breadcrumb-{{p.type.short_name.lower()}}">
+      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
+      <span class="divider"></span>
+    </li>
+  {% endif %}
+  </ul>
+{% endmacro %}
+
+{% block extrahead %}
+  {{super()}}
+  <style type="text/css">
+  .panel-heading {
+    display: none;
+  }
+  .panel-heading-ac {
+  	display: block;
+  }
+  .panel-body-state {
+  	display: none;
+  }
+  </style>
+{% endblock %}

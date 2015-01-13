@@ -1,0 +1,62 @@
+
+{% macro render_booth_report(place, report) %}
+  <table class="table booth-report-table">
+  {% for px, booths in place.get_booths_by_px() %}
+    <tr>
+      <td class="px">
+        {% if px %}
+          {% set name = px.name.split("-", 1)[-1] %}
+          {{px.code}}
+        {% endif %}
+      </td>
+      <td>
+        <ul class="booths">
+        {% for b in booths %}
+          {% set booth_number = int(b.code.lstrip("PB0")) %}
+          {% set status = report.get_status(booth_number) %}
+          {% set value = report.get_value(booth_number) %}
+          <li class="booth booth-{{status.lower()}}" title="{{b.name}}">{{booth_number}}:{{status}}:{{value}}</li>
+        {% endfor %}
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+<style type="text/css">
+ul.booths {
+  list-style-type: none;
+  padding-left: 0px;
+  margin: 0px;
+}
+
+ul.booths li {
+  float: left;
+  padding: 5px;
+  width: 100px;
+  border: 1px solid gray;
+  margin: 2px 2px;
+}
+ul.booths a {
+  color: inherit;
+}
+td.px {
+  max-width: 100px;
+  overflow: hidden;
+}
+table.booth-report-table tr {
+}
+table.booth-report-table td {
+  padding: 2px !important;
+}
+
+.booth-none {
+  background: #ff3333;
+}
+.booth-progress {
+  background: #ffff00;
+}
+.booth-done {
+  background: #00dd00;
+}
+</style>  
+{% endmacro %}
