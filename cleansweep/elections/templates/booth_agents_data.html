@@ -28,10 +28,12 @@
 
         $('#example').handsontable({
           data: data,
-          colHeaders: ["Booth Number", "Name", "Phone", "E-Mail", "Voter ID"],
+          colHeaders: ["Booth Number", "Status", "Name", "Phone", "E-Mail", "Voter ID"],
           minSpareRows: 5,          
           columns: [{
             data: "booth_number",
+          }, {
+            data: "status",
           }, {
             data: "name",
           }, {

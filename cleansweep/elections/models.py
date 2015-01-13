@@ -235,13 +235,14 @@ class BoothAgent(db.Model):
     status = db.Column(db.Text)
     data = JSON()
 
-    def __init__(self, ac, booth_number, name, phone, email, voterid):
+    def __init__(self, ac, booth_number, name, phone, email, voterid, status=None):
         self.ac_id = ac.id
         self.booth_number = booth_number
         self.name = name
         self.phone = phone
         self.email = email
         self.voterid = voterid
+        self.status = status
 
     def update(self, d):
         self.booth_number = d.get('booth_number')
@@ -249,6 +250,7 @@ class BoothAgent(db.Model):
         self.phone = d.get('phone')
         self.email = d.get('email')
         self.voterid = d.get('voterid')
+        self.status = d.get('status')
 
     def dict(self):
         return dict(
@@ -257,7 +259,8 @@ class BoothAgent(db.Model):
             name=self.name,
             email=self.email,
             phone=self.phone,
-            voterid=self.voterid)
+            voterid=self.voterid,
+            status=self.status)
 
 class BoothAgentReport:
     def __init__(self, ac):
@@ -303,7 +306,8 @@ class BoothAgentReport:
                                name=row.get('name'),
                                phone=row.get('phone'),
                                email=row.get('email'),
-                               voterid=row.get('voterid'))
+                               voterid=row.get('voterid'),
+                               status=row.get('status'))
             db.session.add(a)
         elif row.get('id'):
             id = row.get('id')
