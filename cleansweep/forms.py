@@ -36,7 +36,7 @@ class SignupForm(Form):
                 raise validators.ValidationError("Invalid Voter ID")
 
 class AddVolunteerForm(SignupForm):
-    email = StringField('Email Address', [validators.Email()])
+    email = StringField('Email Address')
 
     def __init__(self, place, *a, **kw):
         SignupForm.__init__(self, *a, **kw)
@@ -44,6 +44,16 @@ class AddVolunteerForm(SignupForm):
 
     def validate_email(self, field):
         email = field.data
+
+        # email is optional
+        if not email:
+            return
+
+        # if some value is provided, make sure it is a valid email address
+        validate = validators.Email()
+        validate(self, field)
+
+        # make sure the email address is not already used
         if models.PendingMember.find(email=email) or models.Member.find(email=email):
             raise validators.ValidationError('This email address is already used')
 
