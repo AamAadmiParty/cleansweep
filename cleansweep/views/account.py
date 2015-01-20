@@ -112,6 +112,20 @@ def remoteauth():
     else:
         return redirect(url_for('login', next=url_for('remoteauth', redirect_uri=redirect_uri)))
 
+@app.route("/account/remoteauth/userinfo", methods=['POST'])
+def remoteauth_userinfo():
+    token = request.form.get('token')
+    user = token2user(token)
+    if not user:
+        return jsonify(
+                status='failed',
+                code='error_token_invalid',
+                message='Token is either invalid or expired.')
+    else:
+        return jsonify(
+            status='ok',
+            user=dict(name=user.name, email=user.email))
+
 @app.route("/account/remoteauth/authorize", methods=['POST'])
 def remoteauth_authorizarion():
     token = request.form.get('token')
