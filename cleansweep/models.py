@@ -425,6 +425,9 @@ class Member(db.Model):
 
         return perms
 
+    def has_permission(self, place, permission):
+        return permission in self.get_permissions(place)
+
 class PendingMember(db.Model):
     __tablename__ = "pending_member"
     id = db.Column(db.Integer, primary_key=True)
