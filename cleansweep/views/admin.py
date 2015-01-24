@@ -35,21 +35,33 @@ def admin_sendmail(place):
         return render_template("admin/sendmail.html", place=place, form=form, sent=True)
     return render_template("admin/sendmail.html", place=place, form=form, sent=False)
 
+def get_sms_config(place):
+    name = "{}_SMS_CONFIG".format(place.key.replace("/", "_"))
+    config = app.config.get(name)
+    if not config and place.iparent:
+        return get_sms_config(place.iparent)
+    return config
+
 @place_view("/admin/sms", methods=['GET', 'POST'], permission="write")
 def admin_sms(place):
+    config = get_sms_config(place)
+    sms_provider = config and smslib.get_sms_provider(**config)
+    is_sms_configured = sms_provider is not None
+
     form = forms.SendSMSForm(request.form)
-    if request.method == "POST" and form.validate():
+    if is_sms_configured and request.method == "POST" and form.validate():
         if form.people.data == 'self':
             people = [get_current_user()]
         elif form.people.data == 'volunteers':
             people = place.get_all_members_iter()
         elif form.people.data == 'contacts':
             people = place.get_contacts_iter()
+
         message = form.message.data
         phone_numbers = [p.phone for p in people]
-        smslib.send_sms_async(phone_numbers, message)
-        return render_template("admin/sms.html", place=place, form=form, sent=True)
-    return render_template("admin/sms.html", place=place, form=form, sent=False)
+        sms_provider.send_sms_async(phone_numbers, message)
+        return render_template("admin/sms.html", place=place, form=form, sent=True, is_sms_configured=is_sms_configured)
+    return render_template("admin/sms.html", place=place, form=form, sent=False, is_sms_configured=is_sms_configured)
 
 @place_view("/admin/contacts", methods=['GET', 'POST'], permission="write")
 def admin_contacts(place):
