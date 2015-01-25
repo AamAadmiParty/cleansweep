@@ -38,7 +38,7 @@
 
         $('#example').handsontable({
           data: data,
-          colHeaders: ["Booth#", "Name", "Phone", "E-Mail", "Voter ID", "Role", "Notes"],
+          colHeaders: ["Booth#", "Name", "Phone", "Voter ID", "Role", "Notes"],
           minSpareRows: 5,          
           columns: [{
             data: "booth_number",
@@ -46,8 +46,6 @@
             data: "name",
           }, {
             data: "phone",
-          }, {
-            data: "email",
           }, {
             data: "voterid",
           }, {
@@ -58,7 +56,7 @@
             data: "notes",
           }],
           contextMenu: false,
-          colWidths: [70, 200, 200, 200, 150, 150, 150]
+          colWidths: [70, 300, 150, 150, 150, 250]
         });
 
         $("a.save-table").click(function(e) {
