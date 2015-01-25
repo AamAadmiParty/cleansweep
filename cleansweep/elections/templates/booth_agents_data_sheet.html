@@ -39,7 +39,7 @@
 
         $('#example').handsontable({
           data: data,
-          colHeaders: ["Booth#", "Name", "Phone", "Voter ID", "Address", "Role", "Notes"],
+          colHeaders: ["Booth#", "Name", "Phone", "Voter ID", "Address", "Notes", "Role"],
           minSpareRows: 5,          
           columns: [{
             data: "booth_number",
@@ -52,14 +52,14 @@
           }, {
             data: "address",
           }, {
+            data: "notes",
+          }, {
             data: "role",
             type: 'dropdown',
             source: ["Booth Agent", "Table Incharge", "Booth Volunteer"]
-          }, {
-            data: "notes",
           }],
           contextMenu: false,
-          colWidths: [70, 250, 150, 150, 200, 150, 250]
+          colWidths: [70, 250, 150, 150, 200, 250, 125]
         });
 
         $("a.save-table").click(function(e) {
