@@ -24,6 +24,7 @@
         <div class="header-field header-name">Name</div>
         <div class="header-field header-phone">Phone</div>
         <div class="header-field header-voterid">Voter ID</div>
+        <div class="header-field header-address">Address</div>
         <div class="header-field header-role">Role</div>
         <div class="header-field header-notes">Notes</div>
         <div style="clear: both;"></div>
@@ -58,6 +59,7 @@
             </div>
             <div class="volunteer-field volunteer-phone">{{volunteer.phone or ""}}</div>
             <div class="volunteer-field volunteer-voterid">{{volunteer.voterid or ""}}</div>
+            <div class="volunteer-field volunteer-address">{{volunteer.get_detail('address') or ""}}</div>
             <div class="volunteer-field volunteer-role" title="{{entry.role}}">{{roles.get(entry.role, 'BV')}}</div>
             <div class="volunteer-field volunteer-notes">{{volunteer.get_detail('booth-agent-notes') or ""}}</div>
             <div style="clear: both;"></div>
@@ -94,7 +96,7 @@
       }
       .booth-volunteers {
         float: left;
-        margin: 10px;
+        margin: 0px 10px 10px 10px;
       }
       .volunteer {
         padding: 10px 0px;
@@ -114,7 +116,7 @@
         font-weight: bold;
       }
       .volunteer-role, .header-role {
-        width: 50px;
+        width: 40px;
       }
       .volunteer-name, .header-name {
         width: 200px;
@@ -123,19 +125,30 @@
         font-size: 0.8em;
       }
       .volunteer-phone, .header-phone {
-        width: 150px;
+        width: 100px;
       }
       .volunteer-voterid, .header-voterid {
-        width: 150px;
+        width: 100px;
+      }
+      .volunteer-address, .header-address {
+        width: 100px;
       }
       .volunteer-notes, .header-notes {
-        width: 200px;
+        width: 150px;
       }
-      .volunteer-serial {
-        color: #666;
+      .volunteer-serial, .header-serial {
         width: 2em;
         text-align: right;
       }
+      .volunteer-serial {
+        color: #666;
+      }
+
+      .volunteer-address {
+        color: #666;
+        font-size: 0.8em;
+      }
+
       .volunteer-notes {
         color: #666;
         font-style: italic;

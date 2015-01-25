@@ -347,6 +347,7 @@ class BoothAgentReport:
             'phone': row.Member.phone,
             'voterid': row.Member.voterid,
             'role': row.role,
+            'address': row.Member.get_detail('address'),
             'notes': row.Member.get_detail('booth-agent-notes')
         }
 
@@ -369,6 +370,8 @@ class BoothAgentReport:
                             email=None,
                             phone=row['phone'],
                             voterid=row['voterid'])
+            member.add_details('booth-agent-notes', row['notes'])
+            member.add_details('address', row['address'])
             role = row['role'] or "Booth Volunteer"
             committee = booth.get_committee("booth-committee")
             committee.add_member(role, member)
@@ -389,6 +392,7 @@ class BoothAgentReport:
             m.phone = row['phone']
             m.voterid = row['voterid']
             m.add_details("booth-agent-notes", row['notes'])
+            m.add_details('address', row['address'])
             db.session.add(m)
 
             role = row['role'] or "Booth Volunteer"
