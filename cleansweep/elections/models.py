@@ -1,4 +1,4 @@
-from ..models import db, Place, PlaceType, Member
+from ..models import db, Place, PlaceType, Member, place_parents
 from ..committees.models import Committee, CommitteeMember, CommitteeType, CommitteeRole
 from collections import defaultdict
 from sqlalchemy.sql.expression import func
@@ -62,8 +62,6 @@ class ElectionPlaceMixin:
             if px.type_id != PX:
                 px = None
             d[px].append(pb)
-
-        print self.get_booth_agent_counts()
 
         #print d
         return sorted(d.items(), key=lambda item: item[0] and item[0].code)
@@ -263,24 +261,10 @@ class BoothAgent(db.Model):
             status=self.status)
 
 class BoothAgentReport:
-    def __init__(self, ac):
-        self.ac = ac
+    def __init__(self, place):
+        self.place = place
+        self.ac = place.get_parent("AC")
         self.booth_count = len(self.ac.get_all_child_places(PlaceType.get("PB")))
-
-        """
-        self.data = BoothAgent.query.filter_by(ac_id=self.ac.id).order_by('booth_number').all()
-
-        self.data_dict = defaultdict(list)
-        for a in self.data:
-            self.data_dict[a.booth_number].append(a)
-
-        counts_result = BoothAgent.query.filter_by(ac_id=self.ac.id).all()
-
-        count_results = (db.session.query(BoothAgent.booth_number, func.count(BoothAgent.booth_number).label("count"))
-                .filter(BoothAgent.ac_id==self.ac.id)
-                .group_by(BoothAgent.booth_number)).all()
-        self.counts = {row.booth_number:row.count for row in count_results}
-        """
 
         self.data = self.get_data()
 
@@ -294,7 +278,7 @@ class BoothAgentReport:
     def get_data(self):
         #volunteers = self.ac.get_all_members()
 
-        parent_ids = [p.id for p in self.ac._parents]
+        parent_ids = [p.id for p in self.place._parents]
         committee_type = (CommitteeType.query.filter(CommitteeType.place_id.in_(parent_ids))
                             .filter(CommitteeType.slug=='booth-committee')
                             .first())
@@ -306,6 +290,7 @@ class BoothAgentReport:
                 .filter(CommitteeMember.member_id==Member.id)
                 .filter(CommitteeMember.role_id==CommitteeRole.id)
                 .filter(Committee.place_id==Place.id)
+                .filter(place_parents.c.child_id==Place.id, place_parents.c.parent_id==self.place.id)
                 .all())
 
         return rows
@@ -318,6 +303,7 @@ class BoothAgentReport:
                 .filter(CommitteeMember.role_id==CommitteeRole.id)
                 .filter(CommitteeRole.role == 'Booth Agent')
                 .filter(Committee.place_id==Place.id)
+                .filter(place_parents.c.child_id==Place.id, place_parents.c.parent_id==self.place.id)
                 .group_by(Place.key)
                 .all())
         return {row.key:row.count for row in rows}
@@ -328,15 +314,17 @@ class BoothAgentReport:
         return Place.find(key=key)
 
     def get_booths(self):
-        for i in range(1, 1+self.booth_count):
-            yield i, self.get_booth(i)
+        booths = self.place.get_all_child_places(PlaceType.get("PB"))
+        print "booths", booths
+        for b in booths:
+            booth_number = int(b.key.split("/")[-1].lstrip("PB0"))
+            yield booth_number, b
 
     def get_booth_agents(self, booth_number):
         return self.data_dict[booth_number]
 
     def get_status(self, booth_number):
         v = self.get_value(booth_number)
-        print "get_status", booth_number
         if v == 0:
             return 'None'
         elif v == 1:

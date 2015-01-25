@@ -17,7 +17,7 @@ from collections import defaultdict
 def admin(place):
     return render_template("admin/index.html", place=place)
 
-@place_view("/admin/sendmail", methods=['GET', 'POST'], permission="write")
+@place_view("/sendmail", methods=['GET', 'POST'], permission="write")
 def admin_sendmail(place):
     form = forms.SendMailForm(request.form)
     if request.method == "POST" and form.validate():
@@ -42,7 +42,7 @@ def get_sms_config(place):
         return get_sms_config(place.iparent)
     return config
 
-@place_view("/admin/sms", methods=['GET', 'POST'], permission="write")
+@place_view("/sms", methods=['GET', 'POST'], permission="write")
 def admin_sms(place):
     config = get_sms_config(place)
     sms_provider = config and smslib.get_sms_provider(**config)

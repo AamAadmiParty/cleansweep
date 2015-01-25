@@ -30,7 +30,7 @@
           <li class="list-group-item"><a href="{{changeview(key=p.key)}}">{{p.name}}</a></li>
         {% endfor %}
       </ul>
-    {% elif place.type.short_name == "AC" %}
+    {% else %}
       <ul class="nav nav-pills">
         <li role="presentation" class="active"><a href="#">Report</a></li>
         <li role="presentation"><a href="{{url_for('.booth_agents_data', key=place.key)}}">Data</a></li>

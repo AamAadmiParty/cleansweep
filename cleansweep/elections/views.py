@@ -90,9 +90,9 @@ def campaign_data(place, slug):
 
 @plugin.place_view("/booth-agents", permission='write', sidebar_entry="Booth Agents")
 def booth_agents(place):
-    if place.type.short_name not in ["AC", "STATE"]:
-        return redirect(url_for("place", key=place.key))
-    if place.type.short_name == 'AC':
+    if place.type.short_name not in ["AC", "STATE", "LB", "PX"]:
+        return redirect(url_for("place", key=place.key), code=303)
+    if place.type.short_name in ['AC', 'LB', 'PX']:
         report = BoothAgentReport(place)
     else:
         report = None
@@ -100,8 +100,8 @@ def booth_agents(place):
 
 @plugin.place_view("/booth-agents/data", permission='write', methods=['GET', 'POST'])
 def booth_agents_data(place):
-    if place.type.short_name != "AC":
-        return redirect(url_for("place", key=place.key))
+    if place.type.short_name not in ["AC", "LB", "PX"]:
+        return redirect(url_for("place", key=place.key), code=303)
     report = BoothAgentReport(place)
 
     if request.method == 'POST':
@@ -118,8 +118,8 @@ def booth_agents_data(place):
 
 @plugin.place_view("/booth-agents/data-sheet", permission='write', methods=['GET', 'POST'])
 def booth_agents_data_sheet(place):
-    if place.type.short_name != "AC":
-        return redirect(url_for("place", key=place.key))
+    if place.type.short_name not in ["AC", "LB", "PX"]:
+        return redirect(url_for("place", key=place.key), code=303)
     report = BoothAgentReport(place)
 
     if request.method == 'POST':
