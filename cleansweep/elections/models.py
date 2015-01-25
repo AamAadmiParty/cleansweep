@@ -289,6 +289,8 @@ class BoothAgentReport:
             booth_number = int(row.key.split("/")[-1].lstrip("PB0"))
             self.data_dict[booth_number].append(row)
 
+        self.counts = self.get_counts()
+
     def get_data(self):
         #volunteers = self.ac.get_all_members()
 
@@ -307,6 +309,18 @@ class BoothAgentReport:
                 .all())
 
         return rows
+
+    def get_counts(self):
+        rows = (db.session.query(Place.key, func.count(Place.key).label("count"))
+                .filter(Committee.type_id==CommitteeType.id)
+                .filter(CommitteeType.slug=="booth-committee")
+                .filter(CommitteeMember.committee_id==Committee.id)
+                .filter(CommitteeMember.role_id==CommitteeRole.id)
+                .filter(CommitteeRole.role == 'Booth Agent')
+                .filter(Committee.place_id==Place.id)
+                .group_by(Place.key)
+                .all())
+        return {row.key:row.count for row in rows}
 
     def get_booth(self, booth_number):
         booth_number = int(booth_number)
@@ -331,7 +345,9 @@ class BoothAgentReport:
             return 'Done'
 
     def get_value(self, booth_number):
-        return self.counts.get(booth_number, 0)
+        booth_number = int(booth_number)
+        key = "{}/PB{:04d}".format(self.ac.key, booth_number)
+        return self.counts.get(key, 0)
 
     def serialize_data(self):
         return sorted([self._serialize_row(row) for row in self.data], key=lambda row: int(row['booth_number']))
@@ -362,7 +378,6 @@ class BoothAgentReport:
                 self.new_row(row)
 
     def new_row(self, row):
-        print "**** new_row", row
         if self.has_value(row, 'name') and self.has_value(row, 'booth_number'):
             booth = self.get_booth(row['booth_number'])
             member = booth.add_member(
