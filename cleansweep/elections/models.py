@@ -214,7 +214,6 @@ class CampaignDataTable:
 
         d = self.get_data_dict() or {today: 0}
         mindate = min(min(d.keys()), weekago)
-        print mindate
         return [{"date": date.isoformat(), "count": d.get(date, 0)} for date in self.daterange(mindate, today)]
 
     def daterange(self, start, end):
@@ -315,7 +314,6 @@ class BoothAgentReport:
 
     def get_booths(self):
         booths = self.place.get_all_child_places(PlaceType.get("PB"))
-        print "booths", booths
         for b in booths:
             booth_number = int(b.key.split("/")[-1].lstrip("PB0"))
             yield booth_number, b
@@ -355,13 +353,11 @@ class BoothAgentReport:
     def update_data(self, data):
         current_data = {row.id:row for row in self.data}
         for row in data:
-            print "update_data", row
-            if row.get('id'):
-                continue
-                current_row = current_data.get(row['id'])
+            if row.get('id') and current_data.get(row['id']):
+                current_row = self._serialize_row(current_data.get(row['id']))
                 if current_row == row:
                     continue
-                self.update_row(row, current_data.get(row.get('id')))
+                self.update_row(row, current_row)
             else:
                 self.new_row(row)
 
@@ -379,28 +375,28 @@ class BoothAgentReport:
 
     def update_row(self, row, old_row):
         if old_row is None:
-            booth = self.get_booth(row.booth_number)
+            return
 
+        id = row.get('id')
+        committee_member = CommitteeMember.query.filter_by(id=id).first()
+        if not committee_member:
+            # unexpected
+            raise Exception("Internal error")
 
         if self.has_value(row, 'name') and self.has_value(row, 'booth_number'):
-            id = row.get('id')
-            a = id and BoothAgent.query.filter_by(id=id).first()
-            if a:
-                a.update(row)
-            else:
-                a = BoothAgent(ac=self.ac,
-                               booth_number=row.get('booth_number'),
-                               name=row.get('name'),
-                               phone=row.get('phone'),
-                               email=row.get('email'),
-                               voterid=row.get('voterid'),
-                               status=row.get('status'))
-            db.session.add(a)
-        elif row.get('id'):
-            id = row.get('id')
-            a = id and BoothAgent.query.filter_by(id=id).first()
-            if a:
-                db.session.delete(a)
+            m = committee_member.member
+            m.name = row['name']
+            m.phone = row['phone']
+            m.voterid = row['voterid']
+            m.add_details("booth-agent-notes", row['notes'])
+            db.session.add(m)
+
+            role = row['role'] or "Booth Volunteer"
+            committee_member.role = committee_member.committee.type.get_role(role)
+            db.session.add(committee_member)
+        else:
+            db.session.delete(committee_member)
+            db.session.delete(committee_member.member)
 
     def has_value(self, d, key):
         return d.get(key) and str(d[key]).strip()

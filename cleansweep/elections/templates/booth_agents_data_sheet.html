@@ -6,18 +6,19 @@
 
     <ul class="nav nav-pills">
       <li role="presentation"><a href="{{url_for('.booth_agents', key=place.key)}}">Report</a></li>
-      <li role="presentation" class="active"><a href="#">Data</a></li>
+      <li role="presentation" class="active"><a href="{{url_for('.booth_agents_data', key=place.key)}}">Data</a></li>
     </ul>
 
     <br/>
 
     <div class="alert alert-warning">
-      <strong>This is work in progress.</strong>
-      Adding new entries is working, but modifying existing ones is not ready yet.
+      Be very careful while editing.<br/>
+      To delete an entry, remove name and phone number.
     </div>
 
     <div>
       <a href="javascript:;" class="btn btn-primary save-table">Save</a>
+      <a href="{{url_for('.booth_agents_data', key=place.key)}}" class="btn btn-danger">Cancel</a>
     </div>
     <br/>
 
@@ -27,6 +28,7 @@
 
     <div>
       <a href="javascript" class="btn btn-primary save-table">Save</a>
+      <a href="{{url_for('.booth_agents_data', key=place.key)}}" class="btn btn-danger">Cancel</a>
     </div>
 
   <script type="text/javascript">
@@ -72,7 +74,7 @@
                 success: function (res) {
                   console.log(res.result);
                   if (res.status === 'ok') {
-                    window.location.href = "{{changeview(endpoint='.booth_agents_data_sheet')}}";
+                    window.location.href = "{{changeview(endpoint='.booth_agents_data')}}";
                   }
                   else {
                     alert('Save error');

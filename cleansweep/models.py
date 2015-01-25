@@ -376,7 +376,8 @@ class Member(db.Model):
             "name": self.name,
             "email": self.email,
             "phone": self.phone,
-            "voterid": self.voterid
+            "voterid": self.voterid,
+            "details": self.details
         }
 
     def add_details(self, name, value):
@@ -385,6 +386,8 @@ class Member(db.Model):
         if self.details is None:
             self.details = {}
         if self.details.get(name) != value:
+            # Force an assignment to let SA know that the field is modified
+            self.details = dict(self.details)
             self.details[name] = value
             db.session.add(self)
 

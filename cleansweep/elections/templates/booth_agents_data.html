@@ -11,12 +11,8 @@
 
     <br/>
 
-    <div class="alert alert-warning">
-      <strong>This is work in progress.</strong><br/>
-      Adding new entries and editing existing entries is not ready yet.
-    </div>
-
     <div>
+      <a class="btn btn-primary" href="{{url_for('.booth_agents_data_sheet', key=place.key)}}">Edit</a>
       <a class="btn btn-primary" href="{{url_for('admin_sms', key=place.key)}}">Send SMS</a>
     </div>
 
