@@ -362,7 +362,7 @@ class Member(db.Model):
         self.voterid = voterid
 
     def __repr__(self):
-        return "<Member:{}>".format(self.email)
+        return "<Member:{}>".format(self.email or self.name)
 
     @staticmethod
     def find(email=None, **kw):

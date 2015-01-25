@@ -88,10 +88,10 @@ def campaign_data(place, slug):
         return response
     return render_template("campaigns/data.html", place=place, campaign=c, data_table=data_table)
 
-@plugin.place_view("/booth-agents", permission='write')
+@plugin.place_view("/booth-agents", permission='write', sidebar_entry="Booth Agents")
 def booth_agents(place):
     if place.type.short_name not in ["AC", "STATE"]:
-        abort(404)
+        return redirect(url_for("place", key=place.key))
     if place.type.short_name == 'AC':
         report = BoothAgentReport(place)
     else:
@@ -101,7 +101,7 @@ def booth_agents(place):
 @plugin.place_view("/booth-agents/data", permission='write', methods=['GET', 'POST'])
 def booth_agents_data(place):
     if place.type.short_name != "AC":
-        abort(404)
+        return redirect(url_for("place", key=place.key))
     report = BoothAgentReport(place)
 
     if request.method == 'POST':
@@ -115,3 +115,21 @@ def booth_agents_data(place):
         return response
     else:
         return render_template("booth_agents_data.html", place=place, report=report)
+
+@plugin.place_view("/booth-agents/data-sheet", permission='write', methods=['GET', 'POST'])
+def booth_agents_data_sheet(place):
+    if place.type.short_name != "AC":
+        return redirect(url_for("place", key=place.key))
+    report = BoothAgentReport(place)
+
+    if request.method == 'POST':
+        data = json.loads(request.form['data'])
+        report.update_data(data)
+        db.session.commit()
+        flash("The data has been saved successfully.")
+
+        response = make_response('{"status": "ok"}', 200)
+        response.headers['Content-type'] = 'application/json'
+        return response
+    else:
+        return render_template("booth_agents_data_sheet.html", place=place, report=report)

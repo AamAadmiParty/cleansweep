@@ -1,4 +1,4 @@
-{% extends "booth_agents.html" %}
+  {% extends "booth_agents.html" %}
 
 {% block page_content %}
     {{breadcrumbs(place)}}
@@ -10,73 +10,164 @@
     </ul>
 
     <br/>
-    <div>
-      <a href="javascript:;" class="btn btn-primary save-table">Save</a>
+
+    <div class="alert alert-warning">
+      <strong>This is work in progress.</strong><br/>
+      Adding new entries and editing existing entries is not ready yet.
     </div>
 
-    <div id="example">
+    <br/>
+
+      <div class="booth-headers">
+        <div class="header-field header-booth">Booth</div>
+        <div class="header-field header-serial">#</div>
+        <div class="header-field header-name">Name</div>
+        <div class="header-field header-phone">Phone</div>
+        <div class="header-field header-voterid">Voter ID</div>
+        <div class="header-field header-role">Role</div>
+        <div class="header-field header-notes">Notes</div>
+        <div style="clear: both;"></div>
+      </div>
+
+    {% for booth_number, booth in report.get_booths() %}
+      <div class="booth">
+        <div class="booth-header">
+          <strong>{{booth.code}}</strong><br/>
+          <span class="booth-name">{{booth.name.split("-", 1)[-1]}}</span>
+          <br/>
+        </div>
+
+        <div class="booth-volunteers">
+        {% set roles = {
+          "Booth Incharge": "BI",
+          "Booth Agent": "BA",
+          "Booth Volunteer": "BV",
+          "Table Incharge": "TI",
+          }
+        %}
+        {% for entry in report.get_booth_agents(booth_number) %}
+          {% set volunteer = entry.Member %}
+          <div class="volunteer">
+            <div class="volunteer-field volunteer-serial">{{loop.index}}</div>
+            <div class="volunteer-field volunteer-name">
+              <a href="javascript:;" class="edit-role">{{volunteer.name}}</a>
+              {% if volunteer.email %}
+                <br/>
+                <a class="volunteer-email" href="mailto:{{entry.email}}">{{volunteer.email}}</a>
+              {% endif %}
+            </div>
+            <div class="volunteer-field volunteer-phone">{{volunteer.phone or ""}}</div>
+            <div class="volunteer-field volunteer-voterid">{{volunteer.voterid or ""}}</div>
+            <div class="volunteer-field volunteer-role" title="{{entry.role}}">{{roles.get(entry.role, 'BV')}}</div>
+            <div class="volunteer-field volunteer-notes">{{volunteer.get_detail('booth-agent-notes') or ""}}</div>
+            <div style="clear: both;"></div>
+          </div>
+        {% endfor %}
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+    {% endfor %}
+    <br/>
+    <br/>
+    <div class="hidden edit-dialog" title="Edit">
+      I'm dialog
     </div>
 
-    <div>
-      <a href="javascript" class="btn btn-primary save-table">Save</a>
-    </div>
+    <script type="text/javascript">
+      $(function() {
+        $(".edit-dialog" ).dialog({autoOpen: false});
 
-  <script type="text/javascript">
-
-    $(function() {
-        var data = {{report.serialize_data()|json_encode}};
-
-        $('#example').handsontable({
-          data: data,
-          colHeaders: ["Booth Number", "Status", "Name", "Phone", "E-Mail", "Voter ID"],
-          minSpareRows: 5,          
-          columns: [{
-            data: "booth_number",
-          }, {
-            data: "status",
-          }, {
-            data: "name",
-          }, {
-            data: "phone",
-          }, {
-            data: "email",
-          }, {
-            data: "voterid",
-          }],
-          contextMenu: false,
-          colWidths: [50, 200, 200, 200, 100]
+        $("a.edit-role").click(function() {
+          $(".edit-dialog").dialog("open");
         });
+      });
+    </script>
 
-        $("a.save-table").click(function(e) {
-            e.preventDefault();
+    <style type="text/css">
+      .booth {
+        background: #eee;
+        border: 3px solid #ccc;
+        padding: 0px;
+      }
+      .booth-headers {
+        background: #ccc;
+        padding: 10px;
+      }
+      .booth-header, .header-booth {
+        font-weight: normal;
+        float: left;
+        width: 200px;
+        margin: 10px;
+      }
+      .header-booth {
+        width: 220px;
+      }
 
-            var handsontable = $("#example").data("handsontable");
-            console.log(handsontable.getData());
-            $.ajax({
-                url: window.location.href,
-                data: {data: JSON.stringify(handsontable.getData())},
-                dataType: "json",
-                type: 'POST',
-                success: function (res) {
-                  console.log(res.result);
-                  if (res.status === 'ok') {
-                    window.location.href = "{{changeview(endpoint='.booth_agents')}}";
-                  }
-                  else {
-                    alert('Save error');
-                  }
-                },
-                error: function () {
-                    alert('Save error');
-                }
-            });
-        });
-    });
-  </script>
+      .booth-name {
+        font-size: 0.8em;
+      }
+      .booth-volunteers {
+        float: left;
+        margin: 10px;
+      }
+      .volunteer {
+        padding: 10px 0px;
+        border-top: 1px solid #ddd;
+        clear: both;
+        margin-left: 10px;
+      }
+      .volunteer:first-child {
+        border-top: none;
+      }
+      .volunteer-field, .header-field {
+        float: left;
+        min-height: 5px;
+        margin: 0px 5px;
+      }
+      .header-field {
+        font-weight: bold;
+      }
+      .volunteer-role, .header-role {
+        width: 50px;
+      }
+      .volunteer-name, .header-name {
+        width: 200px;
+      }
+      .volunteer-email {
+        font-size: 0.8em;
+      }
+      .volunteer-phone, .header-phone {
+        width: 150px;
+      }
+      .volunteer-voterid, .header-voterid {
+        width: 150px;
+      }
+      .volunteer-notes, .header-notes {
+        width: 200px;
+      }
+      .volunteer-serial {
+        color: #666;
+      }
+      .volunteer-notes {
+        color: #666;
+        font-style: italic;
+        font-size: 0.8em;
+      }
+    </style>
+
 {% endblock %}
 
 {% block extrahead %}
   {{super()}}
-  <script type="text/javascript" src="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.js') }}
+  "></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.css') }}">
+{% endblock %}
+
+{% block page_container %}
+  <div class="container">
+    {{self.page_content()}}
+  </div>
 {% endblock %}

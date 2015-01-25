@@ -1,5 +1,5 @@
-from ..models import db, Place, PlaceType
-from ..committees.models import Committee, CommitteeMember, CommitteeType
+from ..models import db, Place, PlaceType, Member
+from ..committees.models import Committee, CommitteeMember, CommitteeType, CommitteeRole
 from collections import defaultdict
 from sqlalchemy.sql.expression import func
 from sqlalchemy.dialects.postgresql import JSON
@@ -66,7 +66,7 @@ class ElectionPlaceMixin:
         print self.get_booth_agent_counts()
 
         #print d
-        return sorted(d.items(), key=lambda item: item and item[0].code)
+        return sorted(d.items(), key=lambda item: item[0] and item[0].code)
 
     def get_booth_agent_counts(self):
         booths = self.get_polling_booths()
@@ -266,7 +266,13 @@ class BoothAgentReport:
     def __init__(self, ac):
         self.ac = ac
         self.booth_count = len(self.ac.get_all_child_places(PlaceType.get("PB")))
+
+        """
         self.data = BoothAgent.query.filter_by(ac_id=self.ac.id).order_by('booth_number').all()
+
+        self.data_dict = defaultdict(list)
+        for a in self.data:
+            self.data_dict[a.booth_number].append(a)
 
         counts_result = BoothAgent.query.filter_by(ac_id=self.ac.id).all()
 
@@ -274,6 +280,45 @@ class BoothAgentReport:
                 .filter(BoothAgent.ac_id==self.ac.id)
                 .group_by(BoothAgent.booth_number)).all()
         self.counts = {row.booth_number:row.count for row in count_results}
+        """
+
+        self.data = self.get_data()
+
+        self.data_dict = defaultdict(list)
+        for row in self.data:
+            booth_number = int(row.key.split("/")[-1].lstrip("PB0"))
+            self.data_dict[booth_number].append(row)
+
+    def get_data(self):
+        #volunteers = self.ac.get_all_members()
+
+        parent_ids = [p.id for p in self.ac._parents]
+        committee_type = (CommitteeType.query.filter(CommitteeType.place_id.in_(parent_ids))
+                            .filter(CommitteeType.slug=='booth-committee')
+                            .first())
+
+        rows = (db.session.query(CommitteeMember.id, Member, Place.key, Place.name, CommitteeRole.role)
+                .filter(Committee.type_id==CommitteeType.id)
+                .filter(CommitteeType.slug=="booth-committee")
+                .filter(CommitteeMember.committee_id==Committee.id)
+                .filter(CommitteeMember.member_id==Member.id)
+                .filter(CommitteeMember.role_id==CommitteeRole.id)
+                .filter(Committee.place_id==Place.id)
+                .all())
+
+        return rows
+
+    def get_booth(self, booth_number):
+        booth_number = int(booth_number)
+        key = "{}/PB{:04d}".format(self.ac.key, booth_number)
+        return Place.find(key=key)
+
+    def get_booths(self):
+        for i in range(1, 1+self.booth_count):
+            yield i, self.get_booth(i)
+
+    def get_booth_agents(self, booth_number):
+        return self.data_dict[booth_number]
 
     def get_status(self, booth_number):
         v = self.get_value(booth_number)
@@ -289,12 +334,51 @@ class BoothAgentReport:
         return self.counts.get(booth_number, 0)
 
     def serialize_data(self):
-        return [row.dict() for row in self.data]
+        return sorted([self._serialize_row(row) for row in self.data], key=lambda row: int(row['booth_number']))
+
+    def _serialize_row(self, row):
+        booth_number = int(row.key.split("/")[-1].lstrip("PB0"))
+        return {
+            'id': row.id,
+            'booth_number': booth_number,
+            'name': row.Member.name,
+            'phone': row.Member.phone,
+            'voterid': row.Member.voterid,
+            'role': row.role,
+            'notes': row.Member.get_detail('booth-agent-notes')
+        }
 
     def update_data(self, data):
+        current_data = {row.id:row for row in self.data}
         for row in data:
-            self.update_row(row)
-    def update_row(self, row):
+            print "update_data", row
+            if row.get('id'):
+                continue
+                current_row = current_data.get(row['id'])
+                if current_row == row:
+                    continue
+                self.update_row(row, current_data.get(row.get('id')))
+            else:
+                self.new_row(row)
+
+    def new_row(self, row):
+        print "**** new_row", row
+        if self.has_value(row, 'name') and self.has_value(row, 'booth_number'):
+            booth = self.get_booth(row['booth_number'])
+            member = booth.add_member(
+                            name=row['name'],
+                            email=None,
+                            phone=row['phone'],
+                            voterid=row['voterid'])
+            role = row['role'] or "Booth Volunteer"
+            committee = booth.get_committee("booth-committee")
+            committee.add_member(role, member)
+
+    def update_row(self, row, old_row):
+        if old_row is None:
+            booth = self.get_booth(row.booth_number)
+
+
         if self.has_value(row, 'name') and self.has_value(row, 'booth_number'):
             id = row.get('id')
             a = id and BoothAgent.query.filter_by(id=id).first()

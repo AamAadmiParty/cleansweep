@@ -54,6 +54,11 @@ class CommitteeType(db.Model):
         role = CommitteeRole(self, role_name, multiple, permission)
         db.session.add(role)
 
+    def get_role(self, role_name):
+        for role in self.roles:
+            if role.role == role_name:
+                return role
+
     @staticmethod
     def find(place, slug, level=None, recursive=False):
         """Returns CommitteeType defined at given place with given slug.
@@ -197,6 +202,12 @@ class Committee(db.Model):
         # The member must be from a place in the subtree of committee's place.
         if not role or not member:
             return
+
+        if isinstance(role, basestring):
+            role = self.type.get_role(role)
+
+        if role is None:
+            raise ValueError("role can't be None.")
 
         # Already added
         if CommitteeMember.query.filter_by(committee=self, role=role, member=member).first():

@@ -71,6 +71,7 @@ def helpers():
     return {
         "len": len,
         "int": int,
+        "list": list,
         "request_path": request.path,
         "widget": render_widget,
         "user": get_current_user(),

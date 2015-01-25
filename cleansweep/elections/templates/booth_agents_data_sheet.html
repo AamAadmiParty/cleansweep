@@ -1,0 +1,100 @@
+{% extends "booth_agents.html" %}
+
+{% block page_content %}
+    {{breadcrumbs(place)}}
+    <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
+
+    <ul class="nav nav-pills">
+      <li role="presentation"><a href="{{url_for('.booth_agents', key=place.key)}}">Report</a></li>
+      <li role="presentation" class="active"><a href="#">Data</a></li>
+    </ul>
+
+    <br/>
+
+    <div class="alert alert-warning">
+      <strong>This is work in progress.</strong>
+      Adding new entries is working, but modifying existing ones is not ready yet.
+    </div>
+
+    <div>
+      <a href="javascript:;" class="btn btn-primary save-table">Save</a>
+    </div>
+    <br/>
+
+    <div id="example">
+    </div>
+    <br/>
+
+    <div>
+      <a href="javascript" class="btn btn-primary save-table">Save</a>
+    </div>
+
+  <script type="text/javascript">
+
+    $(function() {
+        var data = {{report.serialize_data()|json_encode}};
+
+        $('#example').handsontable({
+          data: data,
+          colHeaders: ["Booth#", "Name", "Phone", "E-Mail", "Voter ID", "Role", "Notes"],
+          minSpareRows: 5,          
+          columns: [{
+            data: "booth_number",
+          }, {
+            data: "name",
+          }, {
+            data: "phone",
+          }, {
+            data: "email",
+          }, {
+            data: "voterid",
+          }, {
+            data: "role",
+            type: 'dropdown',
+            source: ["Booth Incharge", "Booth Agent", "Table Incharge", "Booth Volunteer"]
+          }, {
+            data: "notes",
+          }],
+          contextMenu: false,
+          colWidths: [70, 200, 200, 200, 150, 150, 150]
+        });
+
+        $("a.save-table").click(function(e) {
+            e.preventDefault();
+
+            var handsontable = $("#example").data("handsontable");
+            console.log(handsontable.getData());
+            $.ajax({
+                url: window.location.href,
+                data: {data: JSON.stringify(handsontable.getData())},
+                dataType: "json",
+                type: 'POST',
+                success: function (res) {
+                  console.log(res.result);
+                  if (res.status === 'ok') {
+                    window.location.href = "{{changeview(endpoint='.booth_agents_data_sheet')}}";
+                  }
+                  else {
+                    alert('Save error');
+                  }
+                },
+                error: function () {
+                    alert('Save error');
+                }
+            });
+        });
+    });
+  </script>
+{% endblock %}
+
+{% block extrahead %}
+  {{super()}}
+  <script type="text/javascript" src="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.css') }}">
+{% endblock %}
+
+{% block page_container %}
+  <div class="container">  
+    {{self.page_content()}}
+  </div>
+{% endblock %}
