@@ -19,7 +19,7 @@ class BaseSMSProvider:
     # Right now , and / are supported.
     re_sep = re.compile("[,/]")
 
-    def _process_phone(number):
+    def _process_phone(self, number):
         if not number:
             return
 
@@ -42,12 +42,12 @@ class BaseSMSProvider:
     def send_sms_async(self, phone_numbers, message):
         q = get_queue()
         if q:
-            return q.enqueue(send_sms, phone_numbers, message)
+            return q.enqueue(self.send_sms, phone_numbers, message)
         else:
-            send_sms(phone_numbers, message)
+            self.send_sms(phone_numbers, message)
 
 class PinacleSMSProvider(BaseSMSProvider):
-    BASE_URL = "http://www.smsjust.com/blank/sms/user/urlsms.php?username={username}&pass={password}&senderid={}&message=XXXX&dest_ mobileno=XXXX&response=Y"
+    BASE_URL = "http://www.smsjust.com/blank/sms/user/urlsms.php?username={username}&pass={password}&senderid={senderid}&message={message}&dest_mobileno={phone_numbers}&response=Y"
 
     def __init__(self, username, password, senderid):
         self.username = username
@@ -58,7 +58,10 @@ class PinacleSMSProvider(BaseSMSProvider):
         phone_numbers = ["91" + p for p in self.process_phone_numbers(phone_numbers)]
         for chunk in group(phone_numbers, 300):
             phone_numbers_txt = ",".join(chunk)
-            url = sms_url.format(
+            url = self.BASE_URL.format(
+                username=self.username,
+                password=self.password,
+                senderid=self.senderid,
                 phone_numbers=urllib.quote_plus(phone_numbers_txt),
                 message=urllib.quote_plus(message))
             response = urllib.urlopen(url)
