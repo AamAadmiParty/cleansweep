@@ -17,6 +17,10 @@ class BaseSMSProvider:
     def _process_phone(number):
         if not number:
             return
+
+        # take first number when there are multiple
+        number = number.split(",")[0]
+
         number = self.re_not_num.sub("", number)
         # remove +91
         if len(number) == 12 and number.startswith("91"):
