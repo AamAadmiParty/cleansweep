@@ -14,12 +14,17 @@ def group(values, size):
 
 class BaseSMSProvider:
     re_not_num = re.compile("[^0-9]")
+
+    # separator for specifying multiple phone numbers.
+    # Right now , and / are supported.
+    re_sep = re.compile("[,/]")
+
     def _process_phone(number):
         if not number:
             return
 
         # take first number when there are multiple
-        number = number.split(",")[0]
+        number = self.re_sep.split(number)[0]
 
         number = self.re_not_num.sub("", number)
         # remove +91
