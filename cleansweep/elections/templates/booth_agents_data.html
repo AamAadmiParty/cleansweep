@@ -69,20 +69,6 @@
     {% endfor %}
     <br/>
     <br/>
-    <div class="hidden edit-dialog" title="Edit">
-      I'm dialog
-    </div>
-
-    <script type="text/javascript">
-      $(function() {
-        $(".edit-dialog" ).dialog({autoOpen: false});
-
-        $("a.edit-role").click(function() {
-          $(".edit-dialog").dialog("open");
-        });
-      });
-    </script>
-
     <style type="text/css">
       .booth {
         background: #eee;
@@ -147,6 +133,8 @@
       }
       .volunteer-serial {
         color: #666;
+        width: 2em;
+        text-align: right;
       }
       .volunteer-notes {
         color: #666;
@@ -161,8 +149,10 @@
   {{super()}}
   <script type="text/javascript" src="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.js') }}
   "></script>
+  <!--
   <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+  -->
   <link rel="stylesheet" href="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.css') }}">
 {% endblock %}
 
