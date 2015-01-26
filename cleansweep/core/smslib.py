@@ -34,6 +34,9 @@ class BaseSMSProvider:
 
     def process_phone_numbers(self, phone_numbers):
         phone_numbers = [self._process_phone(phone) for phone in phone_numbers]
+        for p in phone_numbers:
+            if p and len(p) != 10:
+                logger.warn("Bad phone number %s, ignoring...", p)
         return list(set(p for p in phone_numbers if p and len(p) == 10))
 
     def send_sms(self, phone_numbers, message):
@@ -56,6 +59,7 @@ class PinacleSMSProvider(BaseSMSProvider):
 
     def send_sms(self, phone_numbers, message):
         phone_numbers = ["91" + p for p in self.process_phone_numbers(phone_numbers)]
+        logger.info("sending sms to {} phone numbers.", len(phone_numbers))
         for chunk in group(phone_numbers, 300):
             phone_numbers_txt = ",".join(chunk)
             url = self.BASE_URL.format(
