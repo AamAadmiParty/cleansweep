@@ -10,6 +10,7 @@ from ..view_helpers import place_view
 from ..helpers import get_current_user
 from ..core import mailer, smslib
 from ..voterlib import voterdb
+from ..audit import record_audit
 import json
 from collections import defaultdict
 
@@ -60,6 +61,15 @@ def admin_sms(place):
         message = form.message.data
         phone_numbers = [p.phone for p in people]
         sms_provider.send_sms_async(phone_numbers, message)
+        record_audit(
+            action="send-sms",
+            timestamp=None,
+            place=place,
+            data=dict(
+                group=form.people.data,
+                message=message,
+                phone_numbers=sms_provider.process_phone_numbers(phone_numbers)))
+        db.session.commit()
         return render_template("admin/sms.html", place=place, form=form, sent=True, is_sms_configured=is_sms_configured)
     return render_template("admin/sms.html", place=place, form=form, sent=False, is_sms_configured=is_sms_configured)
 
