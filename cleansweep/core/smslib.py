@@ -68,6 +68,7 @@ class PinacleSMSProvider(BaseSMSProvider):
                 senderid=self.senderid,
                 phone_numbers=urllib.quote_plus(phone_numbers_txt),
                 message=urllib.quote_plus(message))
+            logger.info("sending sms using URL: %s", url)
             response = urllib.urlopen(url)
             logger.info("sms response\n%s", response.read())
         return len(phone_numbers)
