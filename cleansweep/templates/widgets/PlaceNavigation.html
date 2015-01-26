@@ -9,17 +9,37 @@
         <small>{{ p.type.name }}</small>
       </div>
     {% endfor %}        
-    <div class="panel-heading panel-heading-{{place.type.name.lower()}}"><strong>{{ place.type.name | pluralize }}</strong></div>
-    <div class="panel-body panel-body-{{place.type.name.lower()}}">
-      <ul class="list-unstyled parents section-body">
-        {% for p in siblings %}
-          {% if p == place %}
-            <li><strong>{{ p.name }}</strong></li>
-          {% else %}
-            <li><a href="{{ changeview(key=p.key) }}"> {{ p.name }}</a></li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    </div>
+    {% if not show_child_places %}
+      <div class="panel-heading panel-heading-{{place.type.name.lower()}}"><strong>{{ place.type.name | pluralize }}</strong></div>
+      <div class="panel-body panel-body-{{place.type.name.lower()}}">
+        <ul class="list-unstyled parents section-body">
+          {% for p in siblings %}
+            {% if p == place %}
+              <li><strong>{{ p.name }}</strong></li>
+            {% else %}
+              <li><a href="{{ changeview(key=p.key) }}"> {{ p.name }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    {% if show_child_places %}
+      <div class="panel-heading panel-heading-{{place.type.name.lower()}}"><strong>{{ place.type.name }}</strong></div>
+      <div class="panel-body panel-body-{{place.type.name.lower()}}">
+        <ul class="list-unstyled parents section-body">
+            <li><strong>{{ place.name }}</strong></li>
+        </ul>
+      </div>
+      {% for type, places in place.get_child_places_by_type() %}
+        <div class="panel-heading panel-heading-{{type.name.lower()}}"><strong>{{ type.name | pluralize }}</strong></div>
+        <div class="panel-body panel-body-{{type.name.lower()}}">
+          <ul class="list-unstyled parents section-body">
+            {% for p in places %}
+                <li><a href="{{ changeview(key=p.key) }}"> {{ p.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    {% endif %}
   </div>
 </div>

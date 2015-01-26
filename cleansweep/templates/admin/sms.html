@@ -24,3 +24,7 @@
   {% endif %}
 
 {% endblock %}
+
+{% block rightsidebar %}
+    {{ widget("PlaceNavigation", place=place, show_child_places=True) }}
+{% endblock %}
