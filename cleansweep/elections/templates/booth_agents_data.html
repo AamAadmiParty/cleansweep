@@ -57,7 +57,10 @@
                 <a class="volunteer-email" href="mailto:{{entry.email}}">{{volunteer.email}}</a>
               {% endif %}
             </div>
-            <div class="volunteer-field volunteer-phone">{{volunteer.phone or ""}}</div>
+            <div class="volunteer-field volunteer-phone">
+              {% set phone_class = "phone-invalid" if volunteer.phone and not is_phone_valid(volunteer.phone) else "" %}
+              <span class="phone {{phone_class}}">{{volunteer.phone or ""}}</span>
+            </div>
             <div class="volunteer-field volunteer-voterid">{{volunteer.voterid or ""}}</div>
             <div class="volunteer-field volunteer-address">{{volunteer.get_detail('address') or ""}}</div>
             <div class="volunteer-field volunteer-role" title="{{entry.role}}">{{roles.get(entry.role, 'BV')}}</div>
@@ -153,6 +156,9 @@
         color: #666;
         font-style: italic;
         font-size: 0.8em;
+      }
+      .phone-invalid {
+        color: red;
       }
     </style>
 

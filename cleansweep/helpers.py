@@ -66,6 +66,11 @@ def changeview(endpoint=None, **view_args):
     view_args = dict(request.view_args, **view_args)
     return url_for(endpoint, **view_args)
 
+def is_phone_valid(phone):
+    from .core.smslib import BaseSMSProvider
+    phone = BaseSMSProvider()._process_phone(phone)
+    return phone and len(phone) == 10
+
 @app.context_processor
 def helpers():
     return {
@@ -86,7 +91,8 @@ def helpers():
         "today": datetime.datetime.today(),
         "yesterday": datetime.datetime.today() - datetime.timedelta(days=1),
         "get_site_title": get_site_title,
-        "changeview": changeview
+        "changeview": changeview,
+        "is_phone_valid": is_phone_valid
     }
 
 @app.context_processor
