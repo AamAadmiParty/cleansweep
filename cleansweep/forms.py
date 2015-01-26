@@ -95,7 +95,6 @@ class SendMailForm(Form):
 class SendSMSForm(Form):
     people = SelectField('Send SMS to',
                 choices=[
-                    ('self', 'Just Me (for testing)'),
                     ('volunteers', 'All Volunteers'),
                     ('contacts', 'All Contacts')
                 ])
