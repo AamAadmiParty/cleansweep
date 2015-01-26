@@ -3,7 +3,7 @@
 {% set body_class = 'booth-agents' -%} 
 
 {% block rightsidebar %}
-  {{widget('PlaceNavigation', place=place, endpoint='.view_campaign', view_params=dict(slug=slug))}}
+  {{widget('PlaceNavigation', place=place, endpoint='.view_campaign', view_params=dict(slug=slug), show_child_places=True)}}
 {% endblock %}
 
 {% block page_container %}
@@ -34,6 +34,7 @@
       <ul class="nav nav-pills">
         <li role="presentation" class="active"><a href="#">Report</a></li>
         <li role="presentation"><a href="{{url_for('.booth_agents_data', key=place.key)}}">Data</a></li>
+        <li role="presentation"><a href="{{url_for('admin_sms', key=place.key)}}">Send SMS</a></li>
       </ul>
       <br/>
       {{render_booth_report(place, report)}}
