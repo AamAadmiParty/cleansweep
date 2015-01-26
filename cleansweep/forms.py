@@ -16,13 +16,15 @@ class AddMemberForm(Form):
 
 class SignupForm(Form):
     name = StringField('Name', [validators.Required()])
-    phone = StringField('Phone Number', [validators.Required()])
+    phone = StringField('Phone Number')
     voterid = StringField('Voter ID')
     locality = StringField('Locality')
     place = HiddenField()
 
     def validate_phone(self, field):
         phone = field.data
+        if not phone:
+            raise validators.ValidationError('This field is required.')
         if models.PendingMember.find(phone=phone) or models.Member.find(phone=phone):
             raise validators.ValidationError('This phone number is already used')
 
@@ -42,6 +44,10 @@ class AddVolunteerForm(SignupForm):
     def __init__(self, place, *a, **kw):
         SignupForm.__init__(self, *a, **kw)
         self._place = place
+
+    def validate_phone(self, field):
+        # Disable phone validation to allow people with no phone or duplicate phone number
+        return
 
     def validate_email(self, field):
         email = field.data

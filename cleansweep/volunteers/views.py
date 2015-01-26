@@ -28,9 +28,9 @@ def add_volunteer(place):
             p = Place.find(key=form.place.data)
         volunteer = p.add_member(
             name=form.name.data, 
-            email=form.email.data,
-            phone=form.phone.data,
-            voterid=form.voterid.data)
+            email=form.email.data or None,
+            phone=form.phone.data or None,
+            voterid=form.voterid.data or None)
         db.session.commit()
         signals.add_new_volunteer.send(volunteer)
         flash(u"Added {} as volunteer to {}.".format(form.name.data, p.name))
