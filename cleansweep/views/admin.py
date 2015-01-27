@@ -97,6 +97,8 @@ def _add_volunteers(place, data):
     data = [row for row in data if row[0] and row[0].strip()]
     for name, email, phone, voterid, location in data:
         p = Place.find(key=location)
+        if not p or Member.find(email=email):
+            continue
         p.add_member(
             name=name,
             email=email or None,
