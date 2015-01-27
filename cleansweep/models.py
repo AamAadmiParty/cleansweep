@@ -349,7 +349,7 @@ class Member(db.Model):
 
     name = db.Column(db.Text, nullable=False)
     email = db.Column(db.Text, unique=True)
-    phone = db.Column(db.Text, nullable=False, unique=True)
+    phone = db.Column(db.Text)
     voterid = db.Column(db.Text)
     details = db.Column(JSON)
     created = db.Column(db.DateTime, default=datetime.datetime.now)

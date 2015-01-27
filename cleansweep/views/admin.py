@@ -81,11 +81,28 @@ def admin_contacts(place):
 def admin_add_contacts(place):
     if request.method == "POST":
         jsontext = request.form['data']
+        action = request.form.get('action', 'add-contacts')
         data = json.loads(jsontext)
-        contacts = _load_contacts(place, data)
-        flash(u"Successfully imported {} contacts.".format(len(contacts)))
-        return redirect(url_for("admin_contacts", key=place.key))
+        if action == 'add-contacts':
+            contacts = _load_contacts(place, data)
+            flash(u"Successfully imported {} contacts.".format(len(contacts)))
+            return redirect(url_for("admin_contacts", key=place.key))
+        elif action == "add-volunteers":
+            _add_volunteers(place, data)
+            return redirect(url_for("volunteers.volunteers", key=place.key))
     return render_template("admin/add_contacts.html", place=place)
+
+def _add_volunteers(place, data):
+    # columns: name, email, phone, voterid, location
+    data = [row for row in data if row[0] and row[0].strip()]
+    for name, email, phone, voterid, location in data:
+        p = Place.find(key=location)
+        p.add_member(
+            name=name,
+            email=email or None,
+            phone=phone or None,
+            voterid=voterid or None)
+    db.session.commit()
 
 def _load_contacts(place, data):
     # columns: name, email, phone, voterid, location    

@@ -15,14 +15,17 @@
 
   <div class="" style="margin: 20px 0px;">
     <a href="#" class="btn btn-primary btn-add-contacts">Add</a>
+    <a href="#" class="btn btn-primary btn-add-volunteers pull-right">Add Volunteers</a>
   </div>
 
   <div id="example" style="width: 100%;">
   </div>
   <div class="" style="margin: 20px 0px;">
     <a href="#" class="btn btn-primary btn-add-contacts">Add</a>
+    <a href="#" class="btn btn-primary btn-add-volunteers pull-right">Add Volunteers</a>
   </div>
   <form name="contacts" method="POST">
+    <input id="action" type="hidden" name="action" value="add-contacts"/>
     <input id="input-data" type="hidden" name="data"/>
   </form>
 
@@ -48,6 +51,17 @@
         var data = JSON.stringify(handsontable.getData());
         console.log(handsontable.getData());
         $("#input-data").val(data);
+        $("#action").val("add-contacts");
+        document.forms.contacts.submit();
+      });
+      $(".btn-add-volunteers").click(function(e) {
+        e.preventDefault();
+
+        var handsontable = $("#example").data("handsontable");
+        var data = JSON.stringify(handsontable.getData());
+        console.log(handsontable.getData());
+        $("#input-data").val(data);
+        $("#action").val("add-volunteers");
         document.forms.contacts.submit();
       });
     });
