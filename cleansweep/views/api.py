@@ -3,7 +3,9 @@ import json
 import requests
 from ..app import app
 from ..models import Place
+from flask_cors import CORS
 
+cors = CORS(app, resources={r"/api/*": {"origins": "*", "headers": "accept, x-requested-with"}})
 
 @app.route("/api/geosearch")
 def api_geosearch():

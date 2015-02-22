@@ -32,3 +32,4 @@ simplejson==3.6.3
 six==1.8.0
 times==0.7
 wsgiref==0.1.2
+Flask-Cors==1.10.3
