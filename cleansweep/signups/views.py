@@ -19,16 +19,18 @@ def signup():
     if not userdata:
         return render_template("signup.html", userdata=None)
 
-    # is already a member?
-    user = Member.find(email=userdata['email'])
-    if user:
-        session['user'] = user.email
-        return redirect(url_for("dashboard"))
+    # Disable member check when _force_signup=true is passed
+    if request.args.get('_force_signup') != "true":
+        # is already a member?
+        user = Member.find(email=userdata['email'])
+        if user:
+            session['user'] = user.email
+            return redirect(url_for("dashboard"))
 
-    # is already a member?
-    pending_member = PendingMember.find(email=userdata['email'])
-    if pending_member:
-        return render_template("signup.html", userdata=None, pending_member=pending_member)
+        # is already a member?
+        pending_member = PendingMember.find(email=userdata['email'])
+        if pending_member:
+            return render_template("signup.html", userdata=None, pending_member=pending_member)
 
     # show the form
     form = forms.SignupForm()
