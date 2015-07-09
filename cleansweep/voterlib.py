@@ -153,10 +153,12 @@ def _fetch_voter_info(voterid):
     return r.json()
 
 STATE_CODES = {
-    '13': 'MH'
+    'S13': 'MH',
+    'S10': 'KA',
+    'U05': 'DL',
 }
 
-re_voter_info_id = re.compile("^S(\d\d)(\d\d\d)(\d\d\d\d)\d\d(\d\d\d\d)$")
+re_voter_info_id = re.compile("^([SU]\d\d)(\d\d\d)(\d\d\d\d)\d\d(\d\d\d\d)$")
 def _process_voter_info(d):
     """Process the voter info suitable for use in cleansweep.
     """
@@ -167,7 +169,8 @@ def _process_voter_info(d):
         d['state_code'] = m.group(1)
         d['ac_code'] = m.group(2)
         d['pb_code'] = m.group(3)
-
+        if d['state_code'] not in STATE_CODES:
+            return
         d['state'] = STATE_CODES[d['state_code']]
         d['ac'] = int(d['ac_code'])
         d['pb'] = int(d['pb_code'])
