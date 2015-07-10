@@ -43,7 +43,9 @@
 
 {% macro render_field(field) %}
   {% set klass = "has-error" if field.errors %}
-  <div class="form-group {{klass}}">
+  {% set klass2 = "disabled" if field.flags.disabled %}
+  {% set _x = kwargs.update({"disabled": "disabled"}) if field.flags.disabled %}
+  <div class="form-group {{klass}} {{klass2}}">
       {{field.label}}
       {{field(class_="form-control", **kwargs)}}
       {% if field.errors %}

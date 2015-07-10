@@ -20,12 +20,7 @@ def volunteers(place):
 def add_volunteer(place):
     form = forms.AddVolunteerForm(place, request.form)
     if request.method == "POST" and form.validate():
-        if form.voterid.data:
-            voterid = form.voterid.data
-            voter = voterdb.get_voter(voterid=voterid, trynew=True)
-            p = voter.get_place()
-        else:
-            p = Place.find(key=form.place.data)
+        p = Place.find(key=form.booth.data)
         volunteer = p.add_member(
             name=form.name.data, 
             email=form.email.data or None,

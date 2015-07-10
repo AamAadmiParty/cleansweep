@@ -9,8 +9,11 @@ class SignupForm(Form):
     name = StringField('Name', [validators.Required()])
     phone = StringField('Phone Number')
     voterid = StringField('Voter ID')
-    locality = StringField('Locality')
     place = HiddenField()
+
+    def __init__(self, place=None, *a, **kw):
+        Form.__init__(self, *a, **kw)
+        self._place = place
 
     def validate_phone(self, field):
         phone = field.data
@@ -20,8 +23,9 @@ class SignupForm(Form):
             raise validators.ValidationError('This phone number is already used')
 
     def validate_voterid(self, field):
-        if not self.voterid.data and not self.place.data:
-            raise validators.ValidationError("You must provide either a valid voter ID or locality.")
+        if not self.voterid.data:
+            if not self.place.data and (self._place and self._place.type.short_name not in ['PB', 'PX', 'LB', 'AC']):
+                raise validators.ValidationError("You must provide either a valid voter ID or locality.")
 
         if self.voterid.data:
             voterid = self.voterid.data
@@ -29,16 +33,29 @@ class SignupForm(Form):
             if not voterinfo:
                 raise validators.ValidationError("Invalid Voter ID")
 
-class AddVolunteerForm(SignupForm):
+class AddVolunteerForm(Form):
+    name = StringField('Name', [validators.Required()])
     email = StringField('Email Address')
+    phone = StringField('Phone Number')
+    voterid = StringField('Voter ID')
+    booth = SelectField('Polling Booth')
 
     def __init__(self, place, *a, **kw):
-        SignupForm.__init__(self, *a, **kw)
+        Form.__init__(self, *a, **kw)
         self._place = place
+        self._setup_booth_options()
 
-    def validate_phone(self, field):
-        # Disable phone validation to allow people with no phone or duplicate phone number
-        return
+    def _setup_booth_options(self):
+        t = self._place.type.short_name
+        if t == 'PB':
+            self.booth.choices = [(self._place.key, self._place.name)]
+            self.booth.flags.disabled = True
+        elif t in ['PX', 'LB', 'AC']:
+            PB = models.PlaceType.get("PB")
+            self.booth.choices = [(p.key, p.name) for p in self._place.get_places(PB)]
+        else:
+            self.booth.choices = [('', '')]
+            self.booth.flags.disabled = True
 
     def validate_email(self, field):
         email = field.data
@@ -56,21 +73,13 @@ class AddVolunteerForm(SignupForm):
             raise validators.ValidationError('This email address is already used')
 
     def validate_voterid(self, field):
-        SignupForm.validate_voterid(self, field)
+        #SignupForm.validate_voterid(self, field)
         if self.voterid.data:
             voterid = self.voterid.data
             voterinfo = voterdb.get_voter(voterid=voterid)
             if voterinfo and not voterinfo.get_place().has_parent(self._place):
                 raise validators.ValidationError("This voter ID doesn't belong to the current place.")
 
-    def validate_locality(self, field):
-        if not self.place.data:
-            return
-        p = models.Place.find(key=self.place.data)
-        if not p:
-            raise validators.ValidationError('Unable to identify this locality.')
-        if not p.has_parent(self._place):
-            raise validators.ValidationError("Sorry, the specified location is not outside the current region.")
 
 class SendMailForm(Form):
     people = SelectField('Send Email to',
