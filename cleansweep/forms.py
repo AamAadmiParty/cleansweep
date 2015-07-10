@@ -5,15 +5,6 @@ from wtforms import validators
 from . import models
 from .voterlib import voterdb
 
-class AddMemberForm(Form):
-    name = StringField('Name', [validators.Required()])
-    # phone = StringField('Phone Number', [
-    #     validators.Required(),
-    #     validators.Regexp(r'\d{10}', message="Please enter 10 digit phone number")])
-    phone = StringField('Phone Number') # temporariry disabled validators for phone to add people without phone number
-    email = StringField('Email Address', [validators.Email()])
-    voterid = StringField('Voter ID')
-
 class SignupForm(Form):
     name = StringField('Name', [validators.Required()])
     phone = StringField('Phone Number')

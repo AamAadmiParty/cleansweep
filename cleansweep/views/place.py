@@ -16,16 +16,3 @@ def home():
 @place_view("")
 def place(place):
     return render_template("place.html", place=place)
-
-@place_view("/members/add", methods=["GET", "POST"], permission="write")
-def addmember(place):
-    form = forms.AddMemberForm(request.form)
-    if request.method == "POST" and form.validate():
-        # voterid is ignored for now
-        place.add_member(form.name.data, form.email.data, form.phone.data)
-        db.session.commit()
-        flash("Successfully added {} as member.".format(form.name.data), category="success")
-        return redirect(url_for("members", key=place.key))
-    else:
-        return render_template("members/add.html", place=place, form=form)
-
