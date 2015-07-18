@@ -70,13 +70,6 @@ cleansweep.
 
 [helloworld module]: https://github.com/anandology/cleansweep/tree/master/cleansweep/helloworld
 
-Mailing List
-------------
-
-To discuss about the development, please join the cleansweep-dev mailing list at:
-
-<https://groups.google.com/d/forum/cleansweep-dev>
-
 LICENSE
 -------
 
