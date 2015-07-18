@@ -25,6 +25,11 @@ if __name__ == "__main__":
         sys.argv.remove("--load-files")
         filenames = sys.argv[1:]
         main_loadfiles(filenames)
+    elif "--update-parents" in sys.argv:
+        from cleansweep.loaddata import update_parents
+        index = sys.argv.index("--update-parents")
+        place_key = sys.argv[index+1]
+        update_parents(place_key)
     elif "--add-member" in sys.argv:
         from cleansweep.loaddata import add_member
         index = sys.argv.index("--add-member")

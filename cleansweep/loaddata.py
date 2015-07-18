@@ -188,6 +188,16 @@ def read_user_info():
     phone = xinput("Phone number (10 digits)", "^[0-9]+$")
     return name, email, phone
 
+def update_parents(key):
+    """Updates parents of all places below the specified key.
+
+    This is used when parents are not in sync for whatever reason.
+    This is really a quick fix rather than a utility.
+    """
+    place = Place.find(key=key)
+    place.update_parents_of_all_children()
+    db.session.commit()
+
 def init():
     # create database tables
     db.create_all()

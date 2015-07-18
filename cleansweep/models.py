@@ -218,6 +218,15 @@ class Place(db.Model, Mixable):
         place._parents = self._parents + [place]
         db.session.add(place)
 
+    def update_parents_of_all_children(self):
+        """Updates the parents of all locations below this place.
+        """
+        child_places = self.get_all_child_places(None)
+        for p in child_places:
+            print "** updating", p.key
+            p._parents = self._parents + [p]
+            db.session.add(p)
+
     def get_siblings(self):
         parents = sorted(self.parents, key=lambda p: p.type.level)
         if parents:
