@@ -36,7 +36,7 @@ class SignupForm(Form):
 class AddVolunteerForm(Form):
     name = StringField('Name', [validators.Required()])
     email = StringField('Email Address')
-    phone = StringField('Phone Number')
+    phone = StringField('Phone Number', [validators.Required()])
     voterid = StringField('Voter ID')
     booth = SelectField('Polling Booth')
 
@@ -53,6 +53,7 @@ class AddVolunteerForm(Form):
         elif t in ['PX', 'LB', 'AC']:
             PB = models.PlaceType.get("PB")
             self.booth.choices = [(p.key, p.name) for p in self._place.get_places(PB)]
+            self.booth.choices.insert(0, (self._place.key, self._place.name))
         else:
             self.booth.choices = [('', '')]
             self.booth.flags.disabled = True
@@ -86,7 +87,7 @@ class SendMailForm(Form):
                 choices=[
                     ('self', 'Just Me (for testing)'),
                     ('volunteers', 'All Volunteers'),
-                    ('contacts', 'All Contacts')                    
+                    ('contacts', 'All Contacts')
                 ])
     subject = StringField('Subject', validators=[validators.Required()])
     message = TextAreaField("Message", validators=[validators.Required()])

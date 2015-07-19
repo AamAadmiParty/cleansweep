@@ -34,7 +34,7 @@ init_app(app)
 # load all helpers
 from . import helpers
 
-# load all the views 
+# load all the views
 from . import views
 
 
