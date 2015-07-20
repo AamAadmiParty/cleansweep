@@ -16,3 +16,8 @@ def home():
 @place_view("")
 def place(place):
     return render_template("place.html", place=place)
+
+@place_view("/stats", permission="read")
+def stats(place):
+    return render_template("admin/stats.html", place=place)
+

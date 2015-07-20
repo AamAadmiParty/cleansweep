@@ -74,11 +74,6 @@ margin-bottom: 0px;">
 {% block page_content %}
   <h2>{{place.name}}</h2>
 
-  <h3>Stats</h3>
-  {% for s in get_stats(place) %}
-    {{s.render(place)}}
-  {% endfor %}
-
   {{ widget("PlaceList", place=place) }}
 
 {% endblock %}
@@ -94,6 +89,9 @@ margin-bottom: 0px;">
     <ul class="list-group">
       <li class="list-group-item {{'active' if tab=='home' }}">
         <a href="{{url_for('place', key=place.key)}}">Home</a>
+      </li>
+      <li class="list-group-item {{'active' if tab=='stats' }}">
+        <a href="{{url_for('stats', key=place.key)}}">Stats</a>
       </li>
       {% if "read" in permissions %}
         <li class="list-group-item {{'active' if tab=='committees' }}">
@@ -115,17 +113,17 @@ margin-bottom: 0px;">
             <a href="{{url_for('vistaar.admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
           </li>
         {% endif %}
-        {% if place.type.short_name not in ["PB", "PX"] %} 
+        {% if place.type.short_name not in ["PB", "PX"] %}
           <li class="list-group-item {{'active' if tab=='committee-structures' }}">
             <a href="{{url_for('committees.committee_structures', key=place.key)}}">Committee Structures</a>
-          </li>        
+          </li>
         {% endif %}
         <li class="list-group-item {{'active' if tab=='contacts' }}">
           <a href="{{url_for('admin_contacts', key=place.key)}}">Contacts <span class="badge pull-right">{{place.get_contact_count()}}</span></a>
-        </li>        
+        </li>
         <li class="list-group-item {{'active' if tab=='sendmail' }}">
           <a href="{{url_for('admin_sendmail', key=place.key)}}">Send E-mails</a>
-        </li>        
+        </li>
         <li class="list-group-item {{'active' if tab=='sms' }}">
           <a href="{{url_for('admin_sms', key=place.key)}}">Send SMS</a>
         </li>
@@ -152,7 +150,7 @@ margin-bottom: 0px;">
       </div>
       <div class="col-md-3 col-xs-0 hidden-xs">
         {{ self.rightsidebar() }}
-      </div>      
+      </div>
     </div>
   </div>
 {% endblock %}
