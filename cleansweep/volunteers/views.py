@@ -34,15 +34,15 @@ def add_volunteer(place):
     return render_template("add_volunteer.html", place=place, form=form)
 
 
-@plugin.place_view("/volunteers/download")
+@plugin.place_view("/volunteers.xls")
 def download_volunteer(place):
-    headers = ['Name', "Phone", 'Email', 'Voter ID', 'Location', 'Timestamp']
+    headers = ['Name', "Phone", 'Email', 'Voter ID', 'Location']
     data = tablib.Dataset(headers=headers)
     for m in place.get_all_members():
-        data.append([m.name, m.phone, m.email, m.voterid, m.place.name, m.created.isoformat()])
+        data.append([m.name, m.phone, m.email, m.voterid, m.place.name])
     response = make_response(data.xls)
     response.headers['content_type'] = 'application/vnd.ms-excel;charset=utf-8'
-    response.headers['Content-Disposition'] = "attachment; filename=export.xls"
+    response.headers['Content-Disposition'] = "attachment; filename='{0}-volunteers.xls'".format(place.key)
     return response
 
 
