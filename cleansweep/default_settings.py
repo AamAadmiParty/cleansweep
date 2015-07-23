@@ -54,10 +54,15 @@ def _load_from_config():
         'MAIL_PASSWORD',
         'MAIL_DEFAULT_SENDER',
         'ERROR_EMAIL_RECIPIENTS',
-        'SQLALCHEMY_ECHO'
+        'SQLALCHEMY_ECHO',
+        'ADMIN_USERS'
     ]
     for k in keys:
         if k in os.environ:
             g[k] = os.environ[k]
+
+    # Allow ADMIN_USERS setting to be specified in the env as string
+    if isinstance('ADMIN_USERS', str):
+        ADMIN_USERS = ADMIN_USERS.split(",")
 
 _load_from_config()
