@@ -62,7 +62,7 @@ def _load_from_config():
             g[k] = os.environ[k]
 
     # Allow ADMIN_USERS setting to be specified in the env as string
-    if isinstance('ADMIN_USERS', str):
-        ADMIN_USERS = ADMIN_USERS.split(",")
+    if isinstance(g['ADMIN_USERS'], str):
+        g['ADMIN_USERS'] = g['ADMIN_USERS'].split(",")
 
 _load_from_config()
