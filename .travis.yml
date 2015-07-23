@@ -11,3 +11,5 @@ script: python -m cleansweep.tests.test_models
 env:
   - DATABASE_URL="postgresql://postgres@/cleansweep_test" SQLALCHEMY_ECHO=TRUE
 
+notifications:
+  slack: cleansweep:XCwDDECYJgCmWyyrH7fSyNfI
