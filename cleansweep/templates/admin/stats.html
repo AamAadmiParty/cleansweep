@@ -1,0 +1,13 @@
+{% extends "admin/index.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="stats") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Stats</h2>
+
+  {% for s in get_stats(place) %}
+    {{s.render(place)}}
+  {% endfor %}
+{% endblock %}
