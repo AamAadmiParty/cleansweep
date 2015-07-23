@@ -9,3 +9,13 @@ def on_add_new_volunteer(volunteer):
         place=volunteer.place,
         person=volunteer,
         data=volunteer.dict())
+
+
+@signals.download_volunteers_list.connect
+def on_download_volunteers_list(place):
+
+    record_audit(
+        action="volunteers.downloaded",
+        timestamp=None,
+        person=None,
+        place=place)

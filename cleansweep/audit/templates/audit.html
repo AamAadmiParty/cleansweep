@@ -44,6 +44,8 @@
     Removed <strong>{{record.data['member']['name']}}</strong> as <strong>{{record.data['role']['role']}}</strong> from <strong>{{record.data['committee']['name']}}</strong>.
   {% elif record.action == 'volunteer.added' %}
     Added <strong>{{record.data['name']}}</strong> as volunteer.
+  {% elif record.action == 'volunteers.downloaded' %}
+    Downloaded volunteers list for <strong>{{record.place.name}}</strong>.
   {% elif record.action == 'send-sms' %}
     Sent sms to {{len(record.data.get('phone_numbers', []))}} people.<br/>
     <em>{{record.data.get('message')}}</em>

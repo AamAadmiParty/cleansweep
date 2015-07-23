@@ -43,6 +43,7 @@ def download_volunteer(place):
     response = make_response(data.xls)
     response.headers['content_type'] = 'application/vnd.ms-excel;charset=utf-8'
     response.headers['Content-Disposition'] = "attachment; filename='{0}-volunteers.xls'".format(place.key)
+    signals.download_volunteers_list.send(place)
     return response
 
 
