@@ -34,7 +34,7 @@ def add_volunteer(place):
     return render_template("add_volunteer.html", place=place, form=form)
 
 
-@plugin.place_view("/volunteers.xls", permission="view-volunteers")
+@plugin.place_view("/volunteers.xls", permission="write")
 def download_volunteer(place):
     headers = ['Name', "Phone", 'Email', 'Voter ID', 'Location']
     data = tablib.Dataset(headers=headers)
