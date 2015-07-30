@@ -10,6 +10,8 @@
   {% if "write" in permissions %}
 	  <div class="controls">
 		<a href="{{url_for('.add_volunteer', key=place.key)}}" class="btn btn-primary">Add New Volunteer</a>
+
+    <a href="{{url_for('.download_volunteer', key=place.key)}}" class="btn btn-primary">Export</a>
 	  </div>
   {% endif %}
 
