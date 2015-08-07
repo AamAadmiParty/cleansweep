@@ -4,7 +4,7 @@ from . import signals
 
 @signals.committee_add_member.connect
 def on_committee_add_member(committee, member, role):
-    if not member.email:
+    if not member or not member.email:
         return
 
     message = mailer.Message(to_addr=member.email)

@@ -39,10 +39,13 @@ def edit_committee(place, slug):
             email = request.form['email']
             role = CommitteeRole.query.filter_by(id=role_id).first()
             member = Member.find(email=email)
-            committee.add_member(role, member)
-            db.session.commit()
-            signals.committee_add_member.send(committee, member=member, role=role)
-            flash("{} has been added as {}".format(email, role.role))
+            if member:
+                committee.add_member(role, member)
+                db.session.commit()
+                signals.committee_add_member.send(committee, member=member, role=role)
+                flash("{} has been added as {}".format(email, role.role))
+            else:
+                flash("No member found with email {}".format(email), category='error')
         elif action == 'remove':
             role_id = request.form['role']
             email = request.form['email']
