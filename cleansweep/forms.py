@@ -49,14 +49,20 @@ class AddVolunteerForm(Form):
         t = self._place.type.short_name
         if t == 'PB':
             self.booth.choices = [(self._place.key, self._place.name)]
-            self.booth.flags.disabled = True
+            ## Anand: marking it as disabled is causing form validation error
+            ## as the browser is not sending any data for this input.
+            ## Commenting it out to avoid that issue.
+            # self.booth.flags.disabled = True
         elif t in ['PX', 'LB', 'AC']:
             PB = models.PlaceType.get("PB")
             self.booth.choices = [(p.key, p.name) for p in self._place.get_places(PB)]
-            self.booth.choices.insert(0, (self._place.key, self._place.name))
+            self.booth.choices.insert(0, (self._place.key, "Not Sure"))
         else:
             self.booth.choices = [('', '')]
-            self.booth.flags.disabled = True
+            ## Anand: marking it as disabled is causing form validation error
+            ## as the browser is not sending any data for this input.
+            ## Commenting it out to avoid that issue.
+            # self.booth.flags.disabled = True
 
     def validate_email(self, field):
         email = field.data
