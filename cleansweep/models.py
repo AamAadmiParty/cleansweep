@@ -179,6 +179,22 @@ class Place(db.Model, Mixable):
         # return all parents except self
         return [p for p in self._parents if self.id != p.id]
 
+    def get_parent_names_by_type(self):
+        """Returns names of all parents, including self mapping to their type.
+
+        The returned value will be something like this::
+
+            {
+                "STATE": "Delhi",
+                "AC": "AC001 - aaa",
+                "WARD": "W002 - www",
+                "PX": "PX001 - xxx"
+                "PB": "PB0001 - yyy"
+            }
+        """
+        parents = self.parents + [self]
+        return {p.type.short_name: p.name for p in parents}
+
     def get_parent(self, type):
         """Returns parent place of given type.
         """

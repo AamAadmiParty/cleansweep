@@ -36,10 +36,19 @@ def add_volunteer(place):
 
 @plugin.place_view("/volunteers.xls", permission="write")
 def download_volunteer(place):
-    headers = ['Name', "Phone", 'Email', 'Voter ID', 'Location']
-    data = tablib.Dataset(headers=headers)
+    def get_location_columns():
+        return ['State', 'District', 'Assembly Constituency', 'Ward', 'Booth']
+
+    def get_locations(place):
+        """Returns all locations in the hierarchy to identify this location.
+        """
+        d = place.get_parent_names_by_type()
+        return [d.get('STATE', '-'), d.get('DISTRICT', '-'), d.get('AC', '-'), d.get('WARD', '-'), d.get('PB', '-')]
+
+    headers = ['Name', "Phone", 'Email', 'Voter ID'] + get_location_columns()
+    data = tablib.Dataset(headers=headers, title="Volunteers")
     for m in place.get_all_members():
-        data.append([m.name, m.phone, m.email, m.voterid, m.place.name])
+        data.append([m.name, m.phone, m.email, m.voterid] + get_locations(m.place))
     response = make_response(data.xls)
     response.headers['content_type'] = 'application/vnd.ms-excel;charset=utf-8'
     response.headers['Content-Disposition'] = "attachment; filename='{0}-volunteers.xls'".format(place.key)
