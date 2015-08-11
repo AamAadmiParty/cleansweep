@@ -47,7 +47,7 @@
   {% set _x = kwargs.update({"disabled": "disabled"}) if field.flags.disabled %}
   <div class="form-group {{klass}} {{klass2}}">
       {{field.label}}
-      {{field(class_="form-control", **kwargs)}}
+      {{field(placeholder=field.description, class_="form-control", **kwargs)}}
       {% if field.errors %}
         <ul class="help-block list-unstyled form-errors">
           {% for error in field.errors %}
