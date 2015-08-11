@@ -88,23 +88,29 @@ def admin_add_contacts(place):
             flash(u"Successfully imported {} contacts.".format(len(contacts)))
             return redirect(url_for("admin_contacts", key=place.key))
         elif action == "add-volunteers":
-            _add_volunteers(place, data)
+            volunteers = _add_volunteers(place, data)
+            flash(u"Successfully imported {} volunteers.".format(len(volunteers)))
             return redirect(url_for("volunteers.volunteers", key=place.key))
     return render_template("admin/add_contacts.html", place=place)
 
 def _add_volunteers(place, data):
     # columns: name, email, phone, voterid, location
     data = [row for row in data if row[0] and row[0].strip()]
+    volunteers = []
     for name, email, phone, voterid, location in data:
         p = Place.find(key=location)
-        if not p or Member.find(email=email):
+        if not p or not p.has_parent(place):
             continue
-        p.add_member(
+        if email and Member.find(email=email):
+            continue
+        v = p.add_member(
             name=name,
             email=email or None,
             phone=phone or None,
             voterid=voterid or None)
+        volunteers.append(v)
     db.session.commit()
+    return volunteers
 
 def _load_contacts(place, data):
     # columns: name, email, phone, voterid, location    
