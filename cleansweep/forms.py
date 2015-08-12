@@ -4,6 +4,7 @@ from wtforms import FieldList, FormField, SelectField, StringField, TextAreaFiel
 from wtforms import validators
 from . import models
 from .voterlib import voterdb
+import phonenumbers
 
 class SignupForm(Form):
     name = StringField('Name', [validators.Required()])
@@ -36,7 +37,7 @@ class SignupForm(Form):
 class AddVolunteerForm(Form):
     name = StringField('Name', [validators.Required()])
     email = StringField('Email Address')
-    phone = StringField('Phone Number', [validators.Required()])
+    phone = StringField(label='Phone Number', validators=[validators.Required()], description="10 digits only")
     voterid = StringField('Voter ID')
     booth = SelectField('Polling Booth')
 
@@ -63,6 +64,18 @@ class AddVolunteerForm(Form):
             ## as the browser is not sending any data for this input.
             ## Commenting it out to avoid that issue.
             # self.booth.flags.disabled = True
+
+    def validate_phone(self, field):
+
+        if len(field.data) != 10:
+            raise validators.ValidationError('it should be 10 digit only')
+
+        phone = field.data.strip()
+        if phonenumbers.is_valid_number(phonenumbers.parse(phone, "IN")) == False:
+            raise validators.ValidationError('Invalid Phone number')
+
+        if models.Member.find(phone=phone):
+            raise validators.ValidationError('This phone number is already used')
 
     def validate_email(self, field):
         email = field.data
