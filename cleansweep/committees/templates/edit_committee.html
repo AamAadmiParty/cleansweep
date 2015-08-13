@@ -7,6 +7,29 @@
   <h2>Edit <a href="{{url_for('.view_committee', key=place.key, slug=committee.type.slug)}}">{{committee.type.name}}</a></h2>
   <div>{{committee.type.description}}</div>
 
+  <div class="hidden" id="member-card-template">
+    <div class="member-card">
+      <div class="memebr-photo"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></div>
+      <div class="member-details">
+        <h4>NAME</h4>
+        <div>EMAIL</div>
+        <div>PHONE</div>
+
+        <form method="POST">
+          <input type="hidden" name="action" value="add">
+          <input type="hidden" name="role" value="ROLEID">
+          <input type="hidden" name="person-id" value="MEMBERID">
+          <button type="submit" class="add btn btn-primary" href="#" title="Add this member to this role.">Add</a>
+        </form>
+
+        <!--
+        <div class="small"><a href="PLACE">PLACE</a></div>
+        -->
+      </div>
+
+
+    </div>
+  </div>
   <h3>Committee Members</h3>
   <div class="committee-members">
     {% for role, members in committee.get_members() %}
@@ -15,12 +38,12 @@
       {% for m in members %}
         <div class="member-card">
           {% if m.get_detail("facebook_id") %}
-            <div style="width: 75px; height: 75px;"><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
+            <div class="member-photo"><img src="http://graph.facebook.com/{{m.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></div>
           {% else %}
-            <div style="width: 75px; height: 75px;"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></div>
+            <div class="memebr-photo"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></div>
           {% endif %}
-          <div style="margin-top: -75px; margin-left: 75px; padding-left: 10px;">
-            <strong>{{m.name}}</strong>
+          <div class="member-details">
+            <h4>{{m.name}}</h4>
             <div>{{m.email or ""}}</div>
             <div>{{m.phone}}</div>
             <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.key}}</a></div>
@@ -28,24 +51,64 @@
           <form method="POST">
             <input type="hidden" name="action" value="remove">
             <input type="hidden" name="role" value="{{role.id}}">
-            <input type="hidden" name="email" value="{{m.email or ''}}">
+            <input type="hidden" name="person-id" value="{{m.id or ''}}">
             <a class="remove" href="#" title="Remove this member from this role."><span class="glyphicon glyphicon-remove"></span> Remove</a>
           </form>
         </div> 
       {% endfor %}
       {% if role.multiple or not members %}
-        <div class="new-member">
-          <form class="form" method="POST">
-            <input type="hidden" name="action" value="add">
-            <input type="hidden" name="role" value="{{role.id}}">
-            <input type="email" name="email" value="" placeholder="Enter e-mail address" style="min-width: 300px;">
-            <button type="submit" class="btn btn-primary">Add</button>
-          </form>
-        </div>            
+        <div class="add-role-section">
+          <div class="new-member">
+            <p>Enter the name or email of the person in the text box below to add him to this role.</p>
+            <div class="form-group">
+              <input type="hidden" name="role" class="role-id" value="{{role.id}}">
+              <input type="text" class="form-control role-select-textbox" placeholder="Enter name or email"/>
+            </div>
+            <div class="member-listing">
+            </div>
+          </div>
+        </div>
       {% endif %}
     </div>
     {% endfor %}
   </div>
+  <script type="text/javascript">
+    function render_member(root, member, role_id) {
+        var html = $("#member-card-template").html();
+
+        html = html.replace("NAME", member.name);
+        html = html.replace("EMAIL", member.email ||  "");
+        html = html.replace("PHONE", member.phone || "");
+        html = html.replace("MEMBERID", member.id || "");
+        html = html.replace("ROLEID", role_id);
+
+        root.append(html);
+    }
+
+    $(".role-select-textbox").on('input', function(event) {
+        var input = this;
+        var role_id = $(this).closest(".add-role-section").find("input.role-id").val();
+        var q = $(this).val();
+        var $listing = $(input).closest(".add-role-section").find(".member-listing");
+
+        if (q.length < 3) {
+          $listing.empty();
+          return;
+        }
+
+        $.ajax({
+            url: "{{url_for('volunteers.volunteers_autocomplete', key=place.key)}}",
+            dataType: "json",
+            data: {q: q},
+            success: function(data) {
+                $listing.empty();
+                $.map(data.matches, function(member) {
+                  render_member($listing, member, role_id);
+                });
+            }});
+    });
+
+  </script>
   <style type="text/css">
     .member-card2 {
       margin: 20px 0px;
@@ -56,6 +119,15 @@
       background: inherit;
       border: none;
     }
+    .member-photo {
+      width: 75px;
+      height: 75px;
+    }
+    .member-details {
+      margin-top: -75px;
+      margin-left: 75px;
+      padding-left: 10px;"
+    }
     a.remove, a.remove:hover {
       color: #f00;
     }
@@ -64,6 +136,7 @@
       margin: 20px 0px; 
       padding: 20px; 
       background: #eee;
+      border: 1px solid #ccc;
     }
 
     .committee-role .member-card:last-child {
@@ -73,8 +146,15 @@
       margin: 0px;
     }
 
-    .new-member {
+    .xnew-member {
       margin-top: 20px;
+    }
+
+    .add-role-section {
+      margin-top: 20px;
+      padding: 20px;
+      background: #ddd;
+      border: 1px solid #bbb;
     }
   </style>
   <script type="text/javascript">

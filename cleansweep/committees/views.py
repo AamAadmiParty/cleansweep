@@ -36,25 +36,25 @@ def edit_committee(place, slug):
         action = request.form.get('action')
         if action == "add":
             role_id = request.form['role']
-            email = request.form['email']
+            person_id = request.form['person-id']
             role = CommitteeRole.query.filter_by(id=role_id).first()
-            member = Member.find(email=email)
+            member = Member.find(id=person_id)
             if member:
                 committee.add_member(role, member)
                 db.session.commit()
                 signals.committee_add_member.send(committee, member=member, role=role)
-                flash("{} has been added as {}".format(email, role.role))
+                flash("{} has been added as {}".format(member.name, role.role))
             else:
-                flash("No member found with email {}".format(email), category='error')
+                flash("Invalid input", category='error')
         elif action == 'remove':
             role_id = request.form['role']
-            email = request.form['email']
+            email = request.form['person-id']
             role = CommitteeRole.query.filter_by(id=role_id).first()
             member = Member.find(email=email)
             committee.remove_member(role, member)
             signals.committee_remove_member.send(committee, member=member, role=role)
             db.session.commit()
-            flash("{} has been removed as {}".format(email, role.role))
+            flash("{} has been removed as {}".format(member.name, role.role))
 
     return render_template("edit_committee.html", place=place, committee=committee)
 

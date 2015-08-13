@@ -4,6 +4,7 @@ from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.sql.expression import func
+from sqlalchemy import text
 from .app import app
 import md5
 
@@ -173,6 +174,25 @@ class Place(db.Model, Mixable):
             offset = offset + size
             for m in members:
                 yield m
+
+
+    def search_members(self, q, limit=10):
+        """Searches for members from this place with given query string
+        matching either name, email or phone number.
+        """
+        q = q.lower()
+        # SQLAlchemy I hate you
+        sql = text("""SELECT member.* FROM member
+            JOIN place_parents ON place_parents.child_id = member.place_id
+            JOIN place ON place.id = place_parents.parent_id
+            WHERE member.place_id = place.id
+                AND
+                    (lower(member.name) LIKE :q || :percent
+                    OR lower(member.email) LIKE :q || :percent
+                    OR lower(member.phone) LIKE :q || :percent)
+            LIMIT 10
+            """)
+        return db.engine.execute(sql, q=q, percent='%')
 
     @property
     def parents(self):

@@ -123,6 +123,19 @@ class PlaceTest(DBTestCase):
         self.assertEquals(LC24.iparent, KA)
         self.assertEquals(AC158.iparent, LC24)
 
+    def test_search_members(self):
+        KA = self.add_place("KA", "Karnataka", self.STATE)
+        KA.add_member("Evalu Ator", "eval@ator.com", "0001234500")
+        db.session.commit()
+
+        result = list(KA.search_members("Eval"))
+        assert len(result) == 1
+        assert result[0].name == 'Evalu Ator'
+
+        result = list(KA.search_members("Foo"))
+        assert len(result) == 0
+
+
 class MemberTest(DBTestCase):
     setup_place_types = True
 

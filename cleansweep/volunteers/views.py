@@ -1,5 +1,5 @@
 from ..plugin import Plugin
-from flask import (flash, request, render_template, redirect, url_for, abort, make_response)
+from flask import (flash, request, render_template, redirect, url_for, abort, make_response, jsonify)
 from ..models import db, Place, Member
 from .. import forms
 from ..voterlib import voterdb
@@ -33,6 +33,16 @@ def add_volunteer(place):
         return redirect(url_for(".volunteers", key=place.key))
     return render_template("add_volunteer.html", place=place, form=form)
 
+
+@plugin.place_view("/volunteers/autocomplete", methods=['GET'], permission="write")
+def volunteers_autocomplete(place):
+    q = request.args.get('q')
+    if q:
+        matches = place.search_members(q)
+        matches = [dict(name=m.name, email=m.email, phone=m.phone, id=m.id) for m in matches]
+    else:
+        matches = []
+    return jsonify({"matches": matches})
 
 @plugin.place_view("/volunteers.xls", permission="write")
 def download_volunteer(place):
