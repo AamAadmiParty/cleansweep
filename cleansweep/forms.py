@@ -71,7 +71,13 @@ class AddVolunteerForm(Form):
             raise validators.ValidationError('it should be 10 digit only')
 
         phone = field.data.strip()
-        if phonenumbers.is_valid_number(phonenumbers.parse(phone, "IN")) == False:
+
+        try:
+            number = phonenumbers.parse(phone, "IN")
+        except Exception:
+            raise validators.ValidationError('Please enter number only')
+
+        if phonenumbers.is_valid_number(number) == False:
             raise validators.ValidationError('Invalid Phone number')
 
         if models.Member.find(phone=phone):
