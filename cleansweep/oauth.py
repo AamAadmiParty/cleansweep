@@ -16,6 +16,8 @@ def get_oauth_service(provider, redirect_uri):
         return Facebook(redirect_uri)
     elif provider == 'google':
         return Google(redirect_uri)
+    elif provider == 'microsoft':
+        return Microsoft(redirect_uri)
 
 OAuthProvider = namedtuple("OAuthProvider", "name title")
 
@@ -31,6 +33,8 @@ def get_oauth_providers():
         yield OAuthProvider(name='facebook', title='Facebook')
     if 'GOOGLE_CLIENT_ID' in app.config:
         yield OAuthProvider(name='google', title='Google')
+    if 'MICROSOFT_CLIENT_ID' in app.config:
+        yield  OAuthProvider(name='microsoft', title='Microsoft')
 
 class Facebook(OAuth2Service):
     def __init__(self, redirect_uri):
@@ -56,9 +60,9 @@ class Facebook(OAuth2Service):
         return OAuth2Service.get_auth_session(self, **kwargs)
 
     def get_userdata(self, code):
-        """Returns the relevant userdata from github.
+        """Returns the relevant userdata from Facebook.
 
-        This function must be called from githun oauth callback
+        This function must be called from oauth callback
         and the auth code must be passed as argument.
         """
         try:
@@ -72,7 +76,7 @@ class Facebook(OAuth2Service):
                 thumbnail='http://graph.facebook.com/{}/picture?type=square'.format(d['id']),
                 service='Facebook')
         except KeyError, e:
-            app.logger.error("failed to get user data from facebook. Error: %s",
+            app.logger.error("Failed to get user data from Facebook. Error: %s",
                          str(e), exc_info=True)
 
 
@@ -101,9 +105,9 @@ class Google(OAuth2Service):
         return OAuth2Service.get_auth_session(self, **kwargs)
 
     def get_userdata(self, code):
-        """Returns the relevant userdata from github.
+        """Returns the relevant userdata from Google.
 
-        This function must be called from githun oauth callback
+        This function must be called from oauth callback
         and the auth code must be passed as argument.
         """
         try:
@@ -116,5 +120,43 @@ class Google(OAuth2Service):
                 google_id=d['id'],
                 service='Google')
         except KeyError, e:
-            app.logger.error("failed to get user data from google. Error: %s",
+            app.logger.error("Failed to get user data from Google. Error: %s",
+                         str(e), exc_info=True)
+
+class Microsoft(OAuth2Service):
+    def __init__(self, redirect_uri):
+        OAuth2Service.__init__(self,
+            client_id=app.config['MICROSOFT_CLIENT_ID'],
+            client_secret=app.config['MICROSOFT_CLIENT_SECRET'],
+            name='microsoft',
+            authorize_url='https://login.live.com/oauth20_authorize.srf',
+            access_token_url='https://login.live.com/oauth20_token.srf',
+            base_url='https://apis.live.net/v5.0/')
+        self.redirect_uri = redirect_uri
+
+    def get_authorize_url(self, **params):
+        params.setdefault('response_type', 'code')
+        params.setdefault('redirect_uri', self.redirect_uri)
+        params.setdefault('scope', 'wl.basic wl.emails')
+        return OAuth2Service.get_authorize_url(self, **params)
+
+
+    def get_auth_session(self, **kwargs):
+        if 'data' in kwargs and isinstance(kwargs['data'], dict):
+            kwargs['data'].setdefault('redirect_uri', self.redirect_uri)
+            kwargs['data'].setdefault('grant_type', 'authorization_code')
+        return OAuth2Service.get_auth_session(self, **kwargs)
+
+    def get_userdata(self, code):
+        try:
+            session = self.get_auth_session(data={'code': code},
+                                                decoder=json.loads)
+            d = session.get('me').json()
+            return dict(
+                name = d['name'],
+                email = d['emails']['account'],
+                microsoft_id = d['id'],
+                service = 'Microsoft')
+        except KeyError, e:
+            app.logger.error("Failed to get user data from Microsoft. Error: %s",
                          str(e), exc_info=True)
