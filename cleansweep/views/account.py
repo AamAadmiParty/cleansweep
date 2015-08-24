@@ -39,15 +39,15 @@ def logout():
     session.clear()
     return redirect(url_for("home"))
 
-def get_host():
-    # facebook doesn't seem to like 127.0.0.1
-    if request.host == '127.0.0.1:5000' and False:
-        return '0.0.0.0:5000'
+def get_host(provider):
+    # Microsoft doesn't allow 127.0.0.1 and Yahoo doesn't allow even localhost
+    if request.host == '127.0.0.1:5000' and provider == 'microsoft':
+        return 'localhost:5000'
     else:
         return request.host
 
 def get_redirect_uri(provider):
-    return 'http://{}/oauth/{}'.format(get_host(), provider)
+    return 'http://{}/oauth/{}'.format(get_host(provider), provider)
 
 @app.route("/oauth/redirect-<provider>/<view>")
 def oauth_redirect(provider, view):

@@ -1,4 +1,4 @@
-"""Default configuration, overwritten in production 
+"""Default configuration, overwritten in production
 by specifying CLEANSWEEP_SETTINGS env variable.
 """
 import os
@@ -28,6 +28,9 @@ FACEBOOK_CLIENT_SECRET = 'b1d73b0247d72dee407251ecac5efa5c'
 
 GOOGLE_CLIENT_ID = "563938957424-8sb0jqrkt9s8cp5hvs8lnsg66i3cq0ko.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "Qa-afy19Z9J6gqyqnpcHJjvQ"
+
+MICROSOFT_CLIENT_ID = '0000000048166B2A'
+MICROSOFT_CLIENT_SECRET = '52F1ZWq5upyUS9smpmQeb4LoLNa8zvnC'
 
 # Specify the list of admin users here.
 ADMIN_USERS = []
