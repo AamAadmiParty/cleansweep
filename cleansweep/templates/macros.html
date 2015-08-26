@@ -70,3 +70,55 @@
     {% endif %}
   {% endwith %}
 {% endmacro %}
+
+{# Renders the pagination UI. Takes a pagination object as argument. #}
+{% macro paginate(pagination) %}
+    <div class="text-center">
+        {#PREVIOUS BUTTON #}
+        <ul class="pagination">
+            <li {% if not pagination.has_previous %} class="disabled" {% endif %}>
+                <a {% if pagination.has_previous %} href="?page={{ pagination.current_page - 1 }}" {% endif %}
+                        aria-label="Previous">
+                    <span aria-hidden="true">&laquo; Prev</span>
+                </a>
+            </li>
+        </ul>
+
+        {# FIRST PAGE #}
+        <ul class="pagination">
+            {% if 1 not in pagination.page_numbers %}
+                <li>
+                    <a href="?page=1">1</a>
+                </li>
+            {% endif %}
+        </ul>
+
+        {# PAGE NUMBERS #}
+        <ul class="pagination">
+            {% for i in pagination.page_numbers %}
+                <li {% if pagination.current_page == i %} class="active" {% endif %}>
+                    <a href="?page={{i}}">{{i}}</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        {# LAST PAGE #}
+        <ul class="pagination">
+            {% if pagination.total_pages not in pagination.page_numbers %}
+                <li>
+                    <a href="?page={{ pagination.total_pages }}">{{ pagination.total_pages }}</a>
+                </li>
+            {% endif %}
+        </ul>
+
+        {# NEXT BUTTON #}
+        <ul class="pagination">
+            <li {% if not pagination.has_next %} class="disabled" {% endif %}>
+                <a {% if pagination.has_next %} href="?page={{ pagination.current_page + 1 }}" {% endif %}
+                        aria-label="Next">
+                    <span aria-hidden="true">Next &raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endmacro %}
