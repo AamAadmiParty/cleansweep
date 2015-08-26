@@ -5,6 +5,7 @@ from .. import forms
 from ..voterlib import voterdb
 from . import signals, notifications, audits, stats
 import tablib
+from ..pagination import Pagination
 
 plugin = Plugin("volunteers", __name__, template_folder="templates")
 
@@ -14,7 +15,13 @@ def init_app(app):
 
 @plugin.place_view("/volunteers", permission="view-volunteers")
 def volunteers(place):
-    return render_template("volunteers.html", place=place)
+    page = int(request.args.get('page', 1))
+    total_count = place.get_member_count()
+    limit = 50
+
+    pagination = Pagination(total_count, page, limit)
+
+    return render_template("volunteers.html", place=place, pagination=pagination)
 
 
 @plugin.place_view("/volunteers/add", methods=['GET', 'POST'], permission="write")

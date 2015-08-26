@@ -1,12 +1,18 @@
-{% set members = place.get_all_members() %}
-{% if members %}
-<div class="row">
-  {% for m in place.get_all_members() %}
-    <div class="col-md-6">
-        {{widget("VolunteerCard", volunteer=m)}}
+{% from "macros.html" import paginate %}
+{% if pagination.total_results > 0 %}
+    <div class="row">
+      {% set limit = pagination.limit %}
+      {% for m in place.get_all_members(limit=limit, offset=(pagination.current_page - 1) * limit) %}
+        <div class="col-md-6">
+            {{widget("VolunteerCard", volunteer=m)}}
+        </div>
+      {% endfor %}
     </div>
-  {% endfor %}
-</div>
 {% else %}
-  <em>None found.</em>
+    <div class="text-center">
+        <em>None found.</em>
+    </div>
 {% endif %}
+
+{# PAGINATION #}
+{{ paginate(pagination) }}
