@@ -2,12 +2,17 @@
 {% block content %}
 <div class="container">
   <h1>{{person.name}}</h1>
-  
-  <div class="well">
-  This is still work in progress.
-  </div>
 
-  <h2>Activity</h2>
-  TODO
+  Joined on {{ person.created | naturaltime }}.
+
+  {% if "admin" in permissions %}
+	<br/>
+	<br/>
+	<form method="POST">
+	  <input type="hidden" name="action" value="delete"/>
+	  <button type="submit" class="btn btn-danger">Delete this volunteer</button>
+	</form>
+  {% endif %}
+
 </div>
 {% endblock %}

@@ -71,6 +71,30 @@ def is_phone_valid(phone):
     phone = BaseSMSProvider()._process_phone(phone)
     return phone and len(phone) == 10
 
+@app.before_request
+def initiaze_default_permissions():
+    """Initializes the default permissions available for the current user.
+
+    Additional permissions based on the current location are set separately
+    when executing a place_view.
+    """
+    user = get_current_user()
+    if user:
+        g.permissions = get_permissions(user, None)
+    else:
+        g.permissions = []
+
+def get_permissions(user, place):
+    """Returns the list of permissions the user has at the given place.
+    """
+    # ADMIN_USERS have all the permissions
+    if user.email in app.config['ADMIN_USERS']:
+        return ['read', 'write', 'admin', 'view-volunteers']
+    elif place is None:
+        return []
+    else:
+        return user.get_permissions(place)
+
 @app.context_processor
 def helpers():
     return {

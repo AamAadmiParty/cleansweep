@@ -11,9 +11,18 @@ def on_add_new_volunteer(volunteer):
         data=volunteer.dict())
 
 
+@signals.delete_volunteer.connect
+def on_delete_volunteer(volunteer, place):
+    record_audit(
+        action="volunteer.deleted",
+        timestamp=None,
+        place=place,
+        person=None,
+        data=volunteer.dict())
+
+
 @signals.download_volunteers_list.connect
 def on_download_volunteers_list(place):
-
     record_audit(
         action="volunteers.downloaded",
         timestamp=None,

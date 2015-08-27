@@ -19,16 +19,6 @@ def init_app(_app):
     app.url_map.converters['place'] = PlaceConverter
 
 
-def get_permissions(user, place):
-    """Returns the list of permissions the user has at the given place.
-    """
-    # ADMIN_USERS have all the permissions
-    if user.email in app.config['ADMIN_USERS']:
-        return ['read', 'write', 'admin', 'view-volunteers']
-    else:
-        return user.get_permissions(place)
-
-
 def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=None, *args, **kwargs):
     """Decorator to simplify all views that work on places.
 
@@ -65,7 +55,7 @@ def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=N
         if not user:
             return render_template("permission_denied.html")
 
-        perms = get_permissions(user, place)
+        perms = h.get_permissions(user, place)
         # Put permissions in context globals, so that it can be added
         # to the template from helpers.py
         g.permissions = perms

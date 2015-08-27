@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="container">
-  <h1>Dashboard</h1>
 
+{% block content_head %}
+  <h1>Dashboard</h1>
+{% endblock %}
+
+{% block content_body %}
   Welcome {{user.name}}!
 
   <p>
   You are member of
   <a href="{{url_for('place', key=user.place.key)}}">{{user.place.name}}</a>.
   </p>
-</div>
 {% endblock %}

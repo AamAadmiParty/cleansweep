@@ -66,9 +66,28 @@ def download_volunteer(place):
     return response
 
 
-@plugin.route("/people/<id>-<hash>")
+@plugin.route("/people/<id>-<hash>", methods=["GET", "POST"])
 def profile(id, hash):
     m = Member.find(id=id)
     if not m or m.get_hash() != hash:
         abort(404)
-    return render_template("profile.html", person=m)
+
+    if request.method == "POST":
+        action = request.form.get('action')
+        if action == 'delete':
+            place = m.place
+            # TODO: Make sure the member is not part of any committee
+
+            # Delete all audit records.
+            # XXX: This is very bad. We should never delete any audit records.
+            # this is only added as a quick fix. We should find a better way to handle this.
+            from ..audit.models import Audit
+            Audit.query.filter_by(person_id=m.id).delete()
+            Audit.query.filter_by(user_id=m.id).delete()
+            db.session.delete(m)
+            db.session.commit()
+            signals.delete_volunteer.send(m, place=place)
+            flash(u"Deleted {} as volunteer.".format(m.name))
+            return redirect(url_for("dashboard"))
+    else:
+        return render_template("profile.html", person=m)
