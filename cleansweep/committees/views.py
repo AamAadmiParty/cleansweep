@@ -48,9 +48,9 @@ def edit_committee(place, slug):
                 flash("Invalid input", category='error')
         elif action == 'remove':
             role_id = request.form['role']
-            email = request.form['person-id']
+            member_id = request.form['person-id']
             role = CommitteeRole.query.filter_by(id=role_id).first()
-            member = Member.find(email=email)
+            member = Member.find(id=member_id)
             committee.remove_member(role, member)
             signals.committee_remove_member.send(committee, member=member, role=role)
             db.session.commit()
