@@ -1,14 +1,35 @@
 {% extends "base.html" %}
-
-{% block content_head %}
+{% block content %}
+<div class="container">
   <h1>Dashboard</h1>
-{% endblock %}
 
-{% block content_body %}
   Welcome {{user.name}}!
 
   <p>
   You are member of
   <a href="{{url_for('place', key=user.place.key)}}">{{user.place.name}}</a>.
   </p>
+
+  <p>
+  <br>
+  <h4>Pending Member request for you : {{user.place.get_pending_members_count()}}</h4 >
+  <br>
+  </p>
+
+<table class="table">
+      <tr>
+        <th>Today</th>
+        <th>Yesterday</th>
+        <th>This Week</th>
+        <th>This Month</th>
+      </tr>
+      <tr>
+        <th>{{user.place.get_stats_member_daily()}}</th>
+        <th>{{user.place.get_stats_member_yesterday()}}</th>
+        <th>{{user.place.get_stats_member_weekly()}}</th>
+        <th>{{user.place.get_stats_member_monthly()}}</th>        
+      </tr>
+    </table>
+
+</div>
 {% endblock %}

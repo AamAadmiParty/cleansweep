@@ -313,6 +313,9 @@ class Place(db.Model, Mixable):
                 .offset(offset)
                 .all())
 
+    def get_pending_members_count(self):
+        return len(self.get_pending_members())
+        
     def add_contacts(self, data):
         phones = [row[2].strip() for row in data if row[2] and row[2].strip()]
         emails = [row[1].strip() for row in data if row[1] and row[1].strip()]
@@ -369,6 +372,39 @@ class Place(db.Model, Mixable):
             .order_by(Stats.date)
             .limit(limit))
         return q.all()
+
+    def get_stats_member_daily(self):
+        q = (db.session.query(Member.id)
+            .filter(
+                place_parents.c.parent_id==self.id,
+                place_parents.c.child_id==Member.place_id,
+                func.to_char(Member.created,'dd/mm/yyyy') == func.to_char(func.current_date(),'dd/mm/yyyy')))
+        return q.count()
+
+    def get_stats_member_yesterday(self):
+        q = (db.session.query(Member.id)
+            .filter(
+                place_parents.c.parent_id==self.id,
+                place_parents.c.child_id==Member.place_id,
+                func.to_char(Member.created,'dd/mm/yyyy') == 
+                func.to_char(func.current_date()-1,'dd/mm/yyyy')))
+        return q.count()
+
+    def get_stats_member_weekly(self):
+        q = (db.session.query(Member.id)
+            .filter(
+                place_parents.c.parent_id==self.id,
+                place_parents.c.child_id==Member.place_id,
+                func.to_char(Member.created,'dd/mm/yyyy') > func.to_char(func.date_trunc('week',func.current_date()),'dd/mm/yyyy')))
+        return q.count()
+
+    def get_stats_member_monthly(self):
+        q = (db.session.query(Member.id)
+            .filter(
+                place_parents.c.parent_id==self.id,
+                place_parents.c.child_id==Member.place_id,
+                func.to_char(Member.created,'dd/mm/yyyy') > func.to_char(func.date_trunc('month',func.current_date()),'dd/mm/yyyy')))
+        return q.count()
 
 class Stats(db.Model):
     """Model for storing stats for a place.
