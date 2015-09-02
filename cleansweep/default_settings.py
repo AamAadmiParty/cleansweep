@@ -64,6 +64,10 @@ def _load_from_config():
         if k in os.environ:
             g[k] = os.environ[k]
 
+    # Allow specifying custom plugins from enviroment (for Heroku)
+    if 'PLUGINS' in os.environ:
+        g['PLUGINS'] = os.environ['PLUGINS'].split()
+
     # Allow ADMIN_USERS setting to be specified in the env as string
     if isinstance(g['ADMIN_USERS'], str):
         g['ADMIN_USERS'] = g['ADMIN_USERS'].split(",")
