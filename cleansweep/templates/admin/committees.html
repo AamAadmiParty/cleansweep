@@ -1,0 +1,34 @@
+{% extends "admin/index.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="committees") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Committees</h2>
+  {% set committees = place.get_committees() %}
+  {% if committees %}
+    <ul class="list-group committees">
+      {% for c in place.get_committees() %}
+        <li class="list-group-item"><a href="{{ url_for('committees.view_committee', key=place.key, slug=c.type.slug) }}">{{c.type.name}}</a></li>
+
+        <div class="committee-members">
+          {% for role, members in c.get_members() %}
+            {% if members %}
+              <div class="committee-role">
+                <h4>{{role.role}}</h4>
+                {% for m in members %}
+                  {{widget("VolunteerCard", volunteer=m)}}
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+
+      {% endfor %}
+    </ul>
+  {% else %}
+    <em>No committes are available at {{place.type.name}} level.</em>
+  {% endif %}
+{% endblock %}

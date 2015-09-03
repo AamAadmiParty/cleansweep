@@ -346,6 +346,18 @@ class CommitteePlaceMixin:
             return type.committees.filter_by(place_id=self.id).first() or Committee(self, type)
         return [get_committee(type) for type in committee_types]
 
+    def get_incharges(self):
+        """Returns incharge at a given place.
+        """
+        committee_slug = u'incharges'
+        incharges = []
+        c = self.get_committee(committee_slug)
+
+        if c and c.committee_members:
+          incharges = filter(lambda m: m.role.role == u'Incharges', c.committee_members)
+        return incharges
+
+
     def get_committee(self, slug, _create=True):
         """Returns a committee with given slug.
 
