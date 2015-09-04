@@ -1,10 +1,11 @@
 from ..plugin import Plugin
-from ..models import db, Member
+from ..models import db, Member, PlaceType
 from .models import CommitteeRole, CommitteeType
-from flask import (flash, request, render_template, redirect, url_for, abort)
+from flask import (flash, request, make_response, render_template, redirect, url_for, abort)
 from . import forms
 from . import signals, notifications, audits
-
+from collections import defaultdict
+import tablib
 
 plugin = Plugin("committees", __name__, template_folder="templates")
 
@@ -17,6 +18,47 @@ def init_app(app):
 def committees(place):
     return render_template("admin/committees.html", place=place)
 
+
+def export_committees_as_dataset(committees, title="Committee Members"):
+    """Exports the given list of committees to a tablib dataset.
+    """
+    place_types = PlaceType.all()
+    place_levels = [t.name for t in place_types]
+
+    def get_locations(place):
+        """Returns all locations in the hierarchy to identify this location.
+        """
+        d = place.get_parent_names_by_type()
+        return [d.get(t.short_name, '-') for t in place_types]
+
+    headers = place_levels + ['Committee Name', 'Role', 'Name', "Phone", 'Email']
+    dataset = tablib.Dataset(headers=headers, title=title)
+    for c in committees:
+        row0 = get_locations(c.place)
+        for role, members in c.get_members():
+            for m in members:
+                row = row0 + [c.type.name, role.role, m.name, m.email, m.phone]
+                dataset.append(row)
+    return dataset
+
+
+def export_committees_as_response(committees, title, filename):
+    dataset = export_committees_as_dataset(committees, title=title)
+    response = make_response(dataset.xls)
+    response.headers['content_type'] = 'application/vnd.ms-excel;charset=utf-8'
+    response.headers['Content-Disposition'] = "attachment; filename='{0}'".format(filename)
+    return response
+
+
+@plugin.place_view("/committees/<slug>.xls", methods=["GET"], permission="read")
+def download_committee(place, slug):
+    committee = place.get_committee(slug)
+    if not committee:
+        abort(404)
+
+    title = committee.type.name
+    filename = "{}--{}.xls".format(place.key.replace("/", "-"), title.replace(" ", "-"))
+    return export_committees_as_response([committee], title=title, filename=filename)
 
 @plugin.place_view("/committees/<slug>", methods=["GET"], permission="read")
 def view_committee(place, slug):
