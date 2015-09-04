@@ -9,6 +9,7 @@ SITE_TITLE = "Cleansweep"
 SECRET_KEY = "uXRlssdhCjiVyDZYiQlMFOYdmEvUoKHf"
 
 SQLALCHEMY_DATABASE_URI = "postgresql:///cleansweep"
+TEST_DATABASE_URI = "postgresql:///cleansweep_test"
 SQLALCHEMY_ECHO = False
 
 # This picks the right database on Heroku
@@ -58,7 +59,8 @@ def _load_from_config():
         'MAIL_DEFAULT_SENDER',
         'ERROR_EMAIL_RECIPIENTS',
         'SQLALCHEMY_ECHO',
-        'ADMIN_USERS'
+        'ADMIN_USERS',
+        'TEST_DATABASE_URI'
     ]
     for k in keys:
         if k in os.environ:
@@ -73,3 +75,6 @@ def _load_from_config():
         g['ADMIN_USERS'] = g['ADMIN_USERS'].split(",")
 
 _load_from_config()
+
+if os.getenv("CLEANSWEEP_TEST"):
+    SQLALCHEMY_DATABASE_URI = TEST_DATABASE_URI
