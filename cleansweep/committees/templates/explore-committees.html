@@ -1,0 +1,53 @@
+{% extends "place.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="committees") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Explore Committees</h2>
+
+  <div class="committees-list">
+
+  {% for level in levels %}
+    <h3>{{level}} Level</h3>
+    {% for ct in committee_types[level] %}
+      <div class="committee-info"><strong>{{ct.name}}</strong>
+      <div>
+        <span class="numroles small">{{len(ct.roles)}} roles</span> &bull;
+        <span class="numroles small fixme">XX members</span> &bull;
+        <a class="small fixme" href="#">Download All Members</a>
+      </div>
+      </div>
+    {% else %}
+      <em>No committees defined at this level.</em>
+    {% endfor %}
+  {% endfor %}
+  </div>
+  <style type="text/css">
+    .committees-list h3 {
+      text-transform: uppercase;
+      color: #666;
+      font-size: 1.0em;
+    }
+    .committees-list ol, .committees-list ul {
+      padding-left: 0px;
+    }
+    .committees-list li {
+      list-style: none;
+      margin-left: 0px;
+      padding-left: 0px;
+    }
+    .committee-link {
+      font-size: 1.2em;
+    }
+
+    .committee-info {
+      background: #eee;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+  </style>
+{% endblock %}

@@ -7,14 +7,6 @@ class DBTestCase(TestCase):
     setup_place_types = False
     setup_places = False
 
-    def setUp(self):
-        with app.app_context():
-            db.create_all()
-
-    def tearDown(self):
-        with app.app_context():
-            db.drop_all()
-
     def create_app(self):     
         return app
 
@@ -214,6 +206,23 @@ class CommitteeTypeTest(DBTestCase):
 
         c = self.AC001.get_committee("pac")
         self.assertTrue(c is None)
+
+    def test_find_all(self):
+        t1 = CommitteeType(self.KA, self.LC, "Test LC committee", "xxx", "test-lc")
+        db.session.add(t1)
+
+        t2 = CommitteeType(self.KA, self.AC, "Test AC Committee", "xxx", "test-ac")
+        db.session.add(t2)
+        db.session.commit()
+
+        x = CommitteeType.find_all(self.KA, all_levels=True)
+        self.assertEquals(x, [t1, t2])
+
+        x = CommitteeType.find_all(self.LC01, all_levels=True)
+        self.assertEquals(x, [t1, t2])
+
+        x = CommitteeType.find_all(self.AC001, all_levels=True)
+        self.assertEquals(x, [t2])
 
 if __name__ == '__main__':
     import unittest

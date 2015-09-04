@@ -18,6 +18,22 @@ def init_app(app):
 def committees(place):
     return render_template("admin/committees.html", place=place)
 
+@plugin.place_view("/committees/explore", permission="write")
+def explore_committees(place):
+    committee_types = CommitteeType.find_all(place, all_levels=True)
+
+    d = defaultdict(list)
+    for spec in committee_types:
+        d[spec.place_type.name].append(spec)
+
+    place_types = [place.type] + place.type.get_subtypes()
+    levels = [t.name for t in place_types]
+
+    return render_template("explore-committees.html",
+                            place=place,
+                            levels = levels,
+                            committee_types=d)
+
 
 def export_committees_as_dataset(committees, title="Committee Members"):
     """Exports the given list of committees to a tablib dataset.

@@ -60,6 +60,15 @@ class CommitteeType(db.Model):
                 return role
 
     @staticmethod
+    def find_all(place, all_levels=False):
+        """Returns all CommitteeTypes defined for all levels at this place.
+
+        If all_levels is True, also includes all CommitteeType and below.
+        """
+        q = CommitteeType.query_by_place(place, recursive=True, all_levels=all_levels)
+        return q.all()
+
+    @staticmethod
     def find(place, slug, level=None, recursive=False):
         """Returns CommitteeType defined at given place with given slug.
 
@@ -73,7 +82,7 @@ class CommitteeType(db.Model):
         return q.first()
 
     @staticmethod
-    def query_by_place(place, recursive=True):
+    def query_by_place(place, recursive=True, all_levels=False):
         """Returns a query object to query by place.
 
         If recursive=True, the returned query tries to find the committee_types
@@ -87,7 +96,14 @@ class CommitteeType(db.Model):
             # The right thing is to take the one the is nearest.
             # Will fix that later
             q = CommitteeType.query.filter(CommitteeType.place_id.in_(parent_ids))
-            q = q.filter_by(place_type_id=place.type_id)
+            if all_levels:
+                print "all_levels", all_levels
+                place_types = [place.type] + place.type.get_subtypes()
+                place_type_ids = [t.id for t in place_types]
+                print place_types
+                q = q.filter(CommitteeType.place_type_id.in_(place_type_ids))
+            else:
+                q = q.filter_by(place_type_id=place.type_id)
         else:
             q = CommitteeType.query.filter_by(place_id=place.id)
         return q
