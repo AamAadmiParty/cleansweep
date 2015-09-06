@@ -1,10 +1,9 @@
 {% from "macros.html" import paginate %}
-{% if pagination.total_results > 0 %}
+{% if volunteers|length > 0 %}
     <div class="row">
-      {% set limit = pagination.limit %}
-      {% for m in place.get_all_members(limit=limit, offset=(pagination.current_page - 1) * limit) %}
+      {% for volunteer in volunteers %}
         <div class="col-md-6">
-            {{widget("VolunteerCard", volunteer=m)}}
+            {{widget("VolunteerCard", volunteer=volunteer)}}
         </div>
       {% endfor %}
     </div>
@@ -15,4 +14,6 @@
 {% endif %}
 
 {# PAGINATION #}
-{{ paginate(pagination) }}
+<div class="text-center">
+    {{ pagination.links }}
+</div>
