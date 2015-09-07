@@ -1,0 +1,109 @@
+{% extends "place.html" %}
+
+{% block subnav %}
+    {{ subnav(place, tab="volunteers") }}
+{% endblock %}
+
+{% block page_container %}
+    {{ self.two_column_layout() }}
+{% endblock %}
+
+{% block page_content %}
+    <div id="flash-alert"></div>
+    <h2>Add volunteers</h2>
+    <span id="validated_label"></span>
+    <div id="table" style="width: 100%;">
+    </div>
+    <div class="" style="margin: 20px 0px;">
+        <a href="#" id="add-volunteers-btn" class="btn btn-primary">Add Volunteers</a>
+    </div>
+    <form name="volunteers" method="POST">
+        <input id="action" type="hidden" name="action" value="add-contacts"/>
+        <input id="input-data" type="hidden" name="data"/>
+    </form>
+
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.js') }}"></script>
+    <script>
+        $(function () {
+            var data = [
+                        ["", "", "", "", ""]
+                    ],
+                    settings,
+                    email_validator,
+                    phone_number_regex,
+            //voter_id_len_regex;
+
+                    email_validator = function (value, callback) {
+                        setTimeout(function () {
+                            if (/.+@.+/.test(value))
+                                callback(true);
+                            else
+                                callback(false);
+                        }, 1);
+                    };
+
+            phone_number_regex = /^([0-9]{10})$/;
+            //voter_id_len_regex = /^([A-Za-z0-9]{10})$/;
+
+            settings = {
+                data: data,
+                colHeaders: ["Name", "E-mail", "Phone", "Voter ID", "Location"],
+                colWidths: [170, 200, 125, 125, 150],
+                minSpareRows: 1,
+                fixedRowsTop: 0,
+                columns: [
+                    {data: 0},
+                    {data: 1, validator: email_validator},
+                    {data: 2, validator: phone_number_regex},
+                    {data: 3},
+                    {data: 4}
+                ]
+            };
+
+            $('#table').handsontable(settings);
+
+            $("#add-volunteers-btn").click(function (e) {
+                var handsontable = $("#table").handsontable('getInstance');
+                var tableData = handsontable.getData();
+                var filteredData = [];
+
+                $.each(tableData, function (rowKey, object) {
+                    if (!handsontable.isEmptyRow(rowKey))
+                        filteredData.push(object);
+                });
+                var data = JSON.stringify(filteredData);
+                $.ajax({
+                    url: "",
+                    dataType: "json",
+                    type: "POST",
+                    data: {"data": data},
+
+                    success: function (response) {
+                        var failed_length = response['len_failed'];
+                        var imported_length = response['len_volunteer'];
+
+                        if (failed_length > 0) {
+                            handsontable.loadData(response['failed']);
+                            handsontable.validateCells(function () {
+                                handsontable.render();
+                            });
+                        } else
+                            handsontable.clear();
+                        $('#flash-alert').addClass("alert alert-info").html("<p>Imported " + imported_length + " out of " +
+                                (imported_length + failed_length) + " volunteers.</p>");
+                    },
+                    error: function (response) {
+                        console.log("error", response);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='handsontable/jquery.handsontable.full.min.css') }}">
+    <style type="text/css">
+    </style>
+{% endblock %}
