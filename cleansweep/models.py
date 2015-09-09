@@ -411,9 +411,10 @@ class Member(db.Model):
 
     @staticmethod
     def find(email=None, **kw):
+        q = Member.query.filter_by(**kw)
         if email:
-            kw['email'] = email
-        return Member.query.filter_by(**kw).first()
+            q = q.filter(func.lower(Member.email) == email.lower())
+        return q.first()
 
     def dict(self):
         return {
