@@ -1,6 +1,6 @@
 from flask.ext.testing import TestCase
 from ..main import app
-from ..models import db, Place, PlaceType
+from ..models import db, Place, PlaceType, Member
 from ..committees.models import CommitteeType
 
 class DBTestCase(TestCase):
@@ -139,12 +139,31 @@ class PlaceTest(DBTestCase):
 class MemberTest(DBTestCase):
     setup_place_types = True
 
-    def test_member_create(self):  
-        KA = self.add_place("KA", "Karnataka", self.STATE)
-        m = KA.add_member(name="Test User", email="test@example.com", phone="1234567890")
+    def setUp(self):
+        DBTestCase.setUp(self)
+        self.place = self.add_place("KA", "Karnataka", self.STATE)
+
+    def add_member(self, name, email, phone="1234567890"):
+        m = self.place.add_member(name=name, email=email, phone=phone)
         db.session.commit()
-        self.assertEquals(m.place, KA)
-        self.assertEquals(KA.members.all(), [m])
+        return m
+
+    def test_member_create(self):
+        m = self.add_member(name="Alice", email="alice@example.com")
+        self.assertEquals(m.place, self.place)
+        self.assertEquals(self.place.members.all(), [m])
+
+    def test_find(self):
+        m = self.add_member(name="Alice", email="alice@example.com")
+        m2 = Member.find(email='alice@example.com')
+        self.assertTrue(m2 is not None)
+        self.assertEquals(m, m2)
+
+    def test_find_case_sensitive(self):
+        m = self.add_member(name="Alice", email="alice@example.com")
+        m2 = Member.find(email='Alice@example.com')
+        self.assertTrue(m2 is not None)
+        self.assertEquals(m, m2)
 
 class CommitteeTypeTest(DBTestCase):
     setup_place_types = True
