@@ -1,13 +1,13 @@
 from flask.ext.testing import TestCase
 from ..main import app
-from ..models import db, Place, PlaceType
+from ..models import db, Place, PlaceType, Member
 from ..committees.models import CommitteeType
 
 class DBTestCase(TestCase):
     setup_place_types = False
     setup_places = False
 
-    def create_app(self):     
+    def create_app(self):
         return app
 
     def add_place_types(self):
@@ -223,6 +223,29 @@ class CommitteeTypeTest(DBTestCase):
 
         x = CommitteeType.find_all(self.AC001, all_levels=True)
         self.assertEquals(x, [t2])
+
+    def get_test_stats(self):
+        t1 = CommitteeType(self.KA, self.LC, "Test LC committee", "xxx", "test-lc")
+        db.session.add(t1)
+        db.session.commit()
+
+        LC02 = self.add_place("KA/LC02", "R T Nagar", self.LC, parent=self.KA)
+
+
+        self.assertEquals(t1.get_stats(self.KA), {
+            "num_roles": 0,
+            "committees_defined": 0,
+            "total_members": 0,
+            "total_places": 2
+            })
+
+        self.assertEquals(t1.get_stats(self.LC01), {
+            "num_roles": 0,
+            "committees_defined": 0,
+            "total_members": 0,
+            "total_places": 1
+            })
+
 
 if __name__ == '__main__':
     import unittest
