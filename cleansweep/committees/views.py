@@ -47,7 +47,7 @@ def export_committees_as_dataset(committees, title="Committee Members"):
         d = place.get_parent_names_by_type()
         return [d.get(t.short_name, '-') for t in place_types]
 
-    headers = place_levels + ['Committee Name', 'Role', 'Name', "Phone", 'Email']
+    headers = place_levels + ['Committee Name', 'Role', 'Name', 'E-mail', 'Phone']
     dataset = tablib.Dataset(headers=headers, title=title)
     for c in committees:
         row0 = get_locations(c.place)
