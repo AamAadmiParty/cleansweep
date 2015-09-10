@@ -12,12 +12,14 @@
   {% for level in levels %}
     <h3>{{level}} Level</h3>
     {% for ct in committee_types[level] %}
-      <div class="committee-info"><strong>{{ct.name}}</strong>
-      <div>
-        <span class="numroles small">{{len(ct.roles)}} roles</span> &bull;
-        <span class="numroles small fixme">XX members</span> &bull;
-        <a class="small fixme" href="#">Download All Members</a>
-      </div>
+      {% set stats = ct.get_stats(place) %}
+      <div class="committee-info">
+        <h4>{{ct.name}} <small>{{stats['committees_defined']}} / {{stats['total_places']}}</small></h4>
+        <div>
+          <span class="numroles small">{{len(ct.roles)}} roles</span> &bull;
+          <span class="numroles small">{{stats['total_members']}} members</span> &bull;
+          <a class="small" href="{{url_for('.download_members_of_committee_type', key=ct.place.key, level=ct.place_type.short_name, slug=ct.slug)}}">Download All Members</a>
+        </div>
       </div>
     {% else %}
       <em>No committees defined at this level.</em>

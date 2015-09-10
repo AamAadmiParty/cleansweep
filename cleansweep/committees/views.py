@@ -153,3 +153,20 @@ def edit_committee_structure(place, slug, level):
         if request.method != 'POST':
             form.load(committee_type)
         return render_template("edit_committee_structure.html", place=place, committee_type=committee_type, form=form)
+
+@plugin.place_view("/committee-structures/<level>.<slug>/dowload-members", permission="write")
+def download_members_of_committee_type(place, level, slug):
+    committee_type = CommitteeType.find(place, slug, level=level)
+
+    # using export_committees_as_dataset for exporting the data
+    # instead of using CommitteeType.get_all_members() as the earlier one
+    # already takes care of listing all place levels.
+    # The latter one is more effient.
+    # TODO: switch the implemenatation to use CommitteeType.get_all_members()
+    dataset = export_committees_as_dataset(committee_type.committees.all())
+    filename = "{}-{}-all-members.xls".format(level, slug)
+
+    response = make_response(dataset.xls)
+    response.headers['content_type'] = 'application/vnd.ms-excel;charset=utf-8'
+    response.headers['Content-Disposition'] = "attachment; filename='{0}'".format(filename)
+    return response
