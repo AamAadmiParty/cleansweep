@@ -1,0 +1,52 @@
+{% extends "place.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="committees") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Committees</h2>
+
+  <h3>{{place.type.name}} Level</h3>
+  {% set committees = place.get_committees() %}
+  {% if committees %}
+    <ul class="">
+      {% for c in place.get_committees() %}
+        <li class=""><a href="{{ url_for('committees.view_committee', key=place.key, slug=c.type.slug) }}">{{c.type.name}}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <em>No committes are available at {{place.type.name}} level.</em>
+  {% endif %}
+
+  <br/>
+  <br/>
+  <br/>
+
+  <div class="well">
+  <div><strong>Explore Committees</strong></div>
+  <p>Explore all the committees defined at this location and all the sub-locations.</p>
+
+  <a href="{{url_for('.explore_committees', key=place.key)}}" class="btn btn-primary">Explore Committees</a>
+  </div>
+
+  <style type="text/css">
+    .committees-list h3 {
+      text-transform: uppercase;
+      color: #666;
+      font-size: 1.0em;
+    }
+    .committees-list ol, .committees-list ul {
+      padding-left: 0px;
+    }
+    .committees-list li {
+      list-style: none;
+      margin-left: 0px;
+      padding-left: 0px;
+    }
+    .committee-link {
+      font-size: 1.2em;
+    }
+
+  </style>
+{% endblock %}

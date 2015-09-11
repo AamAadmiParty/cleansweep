@@ -16,7 +16,7 @@ def init_app(app):
 
 @plugin.place_view("/committees", permission="read")
 def committees(place):
-    return render_template("admin/committees.html", place=place)
+    return render_template("committees.html", place=place)
 
 @plugin.place_view("/committees/explore", permission="write")
 def explore_committees(place):
