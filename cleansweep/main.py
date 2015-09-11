@@ -28,6 +28,7 @@ def init_app(app):
         plugin.load_plugin(name)
 
     if app.debug:
+        app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
         toolbar = DebugToolbarExtension()
         toolbar.init_app(app)
 
