@@ -506,11 +506,9 @@ class PendingMember(db.Model):
 
     def reject(self):
         self.status = 'rejected'
-        db.session.add(self)
 
     def approve(self):
         self.status = 'approved'
-        db.session.add(self)
         return self.place.add_member(self.name, self.email, self.phone, self.voterid)
 
 class Contact(db.Model):
