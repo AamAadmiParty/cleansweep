@@ -5,15 +5,15 @@
 {% endblock %}
 
 {% block page_content %}
-  <h2>Volunteers</h2>
+    <h2>Volunteers</h2>
 
-  {% if "write" in permissions %}
-	  <div class="controls">
-		<a href="{{url_for('.add_volunteer', key=place.key)}}" class="btn btn-primary">Add New Volunteer</a>
+    {% if "write" in permissions %}
+        <div class="controls">
+            <a href="{{ url_for('.add_volunteer', key=place.key) }}" class="btn btn-primary">Add New Volunteer</a>
+            <a href="{{ url_for('.download_volunteer', key=place.key) }}" class="btn btn-primary">Export</a>
+            <a href="{{ url_for('.import_volunteers', key=place.key) }}" class="btn btn-primary">Import</a>
+        </div>
+    {% endif %}
 
-    <a href="{{url_for('.download_volunteer', key=place.key)}}" class="btn btn-primary">Export</a>
-	  </div>
-  {% endif %}
-
-  {{ widget("MemberList", place=place) }}
+    {{ widget("MemberList", place=place) }}
 {% endblock %}

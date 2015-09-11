@@ -1,3 +1,4 @@
+import phonenumbers
 from ..plugin import Plugin
 from flask import (flash, request, render_template, redirect, url_for, abort, make_response, jsonify)
 from ..models import db, Place, Member
@@ -5,8 +6,12 @@ from .. import forms
 from ..voterlib import voterdb
 from . import signals, notifications, audits, stats
 import tablib
-
+import json
+import re
 plugin = Plugin("volunteers", __name__, template_folder="templates")
+
+# Check if there's only one @ and at least one dot after @.
+EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 
 def init_app(app):
     plugin.init_app(app)
@@ -44,6 +49,7 @@ def volunteers_autocomplete(place):
         matches = []
     return jsonify({"matches": matches})
 
+
 @plugin.place_view("/volunteers.xls", permission="write")
 def download_volunteer(place):
     def get_location_columns():
@@ -64,6 +70,41 @@ def download_volunteer(place):
     response.headers['Content-Disposition'] = "attachment; filename='{0}-volunteers.xls'".format(place.key)
     signals.download_volunteers_list.send(place)
     return response
+
+
+@plugin.place_view("/import", methods=['GET', 'POST'], permission="write")
+def import_volunteers(place):
+    if request.method == "POST":
+        json_text = request.form['data']
+        data = json.loads(json_text)
+        added_volunteers = _add_volunteers(place, data)
+        # Here we convert lists to tuple first and then to sets and then the difference between them to a list
+        failed_imports = list(set(map(tuple, data)) - set(added_volunteers))
+        return jsonify(failed=failed_imports, len_volunteer=len(added_volunteers), len_failed=len(failed_imports))
+    return render_template("import_volunteers.html", place=place)
+
+
+def _add_volunteers(place, data):
+    # columns: name, email, phone, voterid, location
+    added_volunteers = []
+    for name, email, phone, voterid, location in data:
+        p = Place.find(key=location)
+        if not p or not p.has_parent(place):
+            continue
+        if not email or EMAIL_REGEX.match(email) is None or Member.find(email=email):
+            continue
+        if not phone or len(phone) != 10 or not phonenumbers.is_valid_number(phonenumbers.parse(phone, "IN")) \
+                or Member.find(phone=phone):
+            continue
+        p.add_member(name=name,
+                     email=email,
+                     phone=phone,
+                     voterid=voterid or None)
+        added_volunteers.append((name, email, phone, voterid, location))
+        # Let's commit one by one.
+        # In case if data contains duplicate emails the find check will fail because it's not there in database yet.
+        db.session.commit()
+    return added_volunteers
 
 
 @plugin.route("/people/<id>-<hash>", methods=["GET", "POST"])
