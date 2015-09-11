@@ -1,6 +1,7 @@
 """Models of committee related tables.
 """
-from ..models import db, Place, PlaceType, Member, Place
+from sqlalchemy import select, func
+from ..models import db, Place, place_parents, PlaceType, Member, Place
 from collections import defaultdict
 from flask import url_for
 
@@ -60,6 +61,15 @@ class CommitteeType(db.Model):
                 return role
 
     @staticmethod
+    def find_all(place, all_levels=False):
+        """Returns all CommitteeTypes defined for all levels at this place.
+
+        If all_levels is True, also includes all CommitteeType and below.
+        """
+        q = CommitteeType.query_by_place(place, recursive=True, all_levels=all_levels)
+        return q.all()
+
+    @staticmethod
     def find(place, slug, level=None, recursive=False):
         """Returns CommitteeType defined at given place with given slug.
 
@@ -73,7 +83,7 @@ class CommitteeType(db.Model):
         return q.first()
 
     @staticmethod
-    def query_by_place(place, recursive=True):
+    def query_by_place(place, recursive=True, all_levels=False):
         """Returns a query object to query by place.
 
         If recursive=True, the returned query tries to find the committee_types
@@ -87,7 +97,14 @@ class CommitteeType(db.Model):
             # The right thing is to take the one the is nearest.
             # Will fix that later
             q = CommitteeType.query.filter(CommitteeType.place_id.in_(parent_ids))
-            q = q.filter_by(place_type_id=place.type_id)
+            if all_levels:
+                print "all_levels", all_levels
+                place_types = [place.type] + place.type.get_subtypes()
+                place_type_ids = [t.id for t in place_types]
+                print place_types
+                q = q.filter(CommitteeType.place_type_id.in_(place_type_ids))
+            else:
+                q = q.filter_by(place_type_id=place.type_id)
         else:
             q = CommitteeType.query.filter_by(place_id=place.id)
         return q
@@ -115,6 +132,60 @@ class CommitteeType(db.Model):
 
     def get_level(self):
         return self.place_type.short_name
+
+    def get_stats(self, parent_place=None):
+        """Returns a dictionary containing various stats about this committee type.
+
+        If parent_place is specified, the stats will be limited
+        to all places at and below that place.
+
+        The stats include the following keys:
+
+            num_roles - The number of available roles in this committee type
+            committees_defined - The total number of committees of this type defined
+            total_members - Total number of members in all committees of this type
+            total_places - Total number of places that can have this committee.
+        """
+        place = parent_place or self.place
+        num_roles = len(self.roles)
+        committees_defined = self.committees.count()
+        total_members = self._get_all_member_count(place)
+        total_places = dict(place.get_counts())[self.place_type.short_name]
+        return {
+            "num_roles": num_roles,
+            "committees_defined": committees_defined,
+            "total_members": total_members,
+            "total_places": total_places
+        }
+
+    def _get_all_member_count(self, place):
+        q = self._get_members_query(place)
+        q = q.with_only_columns([func.count()])
+        row = db.engine.execute(q).fetchone()
+        return row[0]
+
+    def _get_members_query(self, place):
+        columns = [Place.key, Place.name, CommitteeType.name, CommitteeRole.role, Member.name, Member.email, Member.phone]
+        where = []
+        tables = [Place, ]
+        q = select(columns)
+        q = (q
+            .where(place_parents.c.child_id==Place.id)
+            .where(place_parents.c.parent_id==place.id)
+            .where(Committee.place_id==Place.id)
+            .where(Committee.type_id==self.id)
+            .where(CommitteeRole.committee_type_id==self.id)
+            .where(CommitteeMember.committee_id==Committee.id)
+            .where(CommitteeMember.role_id==CommitteeRole.id)
+            .where(CommitteeMember.member_id==Member.id)
+            )
+        return q
+
+    def get_all_members(self, place):
+        """Returns members of all committees of this type at and below the given place.
+        """
+        q = self._get_members_query(place)
+        return db.engine.execute(q).fetchall()
 
 
 class CommitteeRole(db.Model):

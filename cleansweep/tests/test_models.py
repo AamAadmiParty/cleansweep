@@ -7,15 +7,7 @@ class DBTestCase(TestCase):
     setup_place_types = False
     setup_places = False
 
-    def setUp(self):
-        with app.app_context():
-            db.create_all()
-
-    def tearDown(self):
-        with app.app_context():
-            db.drop_all()
-
-    def create_app(self):     
+    def create_app(self):
         return app
 
     def add_place_types(self):
@@ -233,6 +225,46 @@ class CommitteeTypeTest(DBTestCase):
 
         c = self.AC001.get_committee("pac")
         self.assertTrue(c is None)
+
+    def test_find_all(self):
+        t1 = CommitteeType(self.KA, self.LC, "Test LC committee", "xxx", "test-lc")
+        db.session.add(t1)
+
+        t2 = CommitteeType(self.KA, self.AC, "Test AC Committee", "xxx", "test-ac")
+        db.session.add(t2)
+        db.session.commit()
+
+        x = CommitteeType.find_all(self.KA, all_levels=True)
+        self.assertEquals(x, [t1, t2])
+
+        x = CommitteeType.find_all(self.LC01, all_levels=True)
+        self.assertEquals(x, [t1, t2])
+
+        x = CommitteeType.find_all(self.AC001, all_levels=True)
+        self.assertEquals(x, [t2])
+
+    def get_test_stats(self):
+        t1 = CommitteeType(self.KA, self.LC, "Test LC committee", "xxx", "test-lc")
+        db.session.add(t1)
+        db.session.commit()
+
+        LC02 = self.add_place("KA/LC02", "R T Nagar", self.LC, parent=self.KA)
+
+
+        self.assertEquals(t1.get_stats(self.KA), {
+            "num_roles": 0,
+            "committees_defined": 0,
+            "total_members": 0,
+            "total_places": 2
+            })
+
+        self.assertEquals(t1.get_stats(self.LC01), {
+            "num_roles": 0,
+            "committees_defined": 0,
+            "total_members": 0,
+            "total_places": 1
+            })
+
 
 if __name__ == '__main__':
     import unittest
