@@ -1,4 +1,5 @@
 import os
+from flask_debugtoolbar import DebugToolbarExtension
 from . import utils, view_helpers
 from .app import app
 from .models import db
@@ -25,6 +26,10 @@ def init_app(app):
     plugins = app.config['DEFAULT_PLUGINS'] + app.config['PLUGINS']
     for name in plugins:
         plugin.load_plugin(name)
+
+    if app.debug:
+        toolbar = DebugToolbarExtension()
+        toolbar.init_app(app)
 
     app.logger.info("Starting cleansweep app")
 

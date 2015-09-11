@@ -16,6 +16,7 @@ class Plugin(Blueprint):
 
     def init_app(self, app):
         app.register_blueprint(self)
+        self.logger = app.logger
 
 
 def load_plugin(modname):
