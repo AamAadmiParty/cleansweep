@@ -75,6 +75,8 @@ def profile(id, hash):
     if request.method == "POST":
         action = request.form.get('action')
         if action == 'delete':
+            from ..models import PendingMember
+            pending_member = PendingMember.find(email=m.email)
             place = m.place
             # TODO: Make sure the member is not part of any committee
 
@@ -84,6 +86,7 @@ def profile(id, hash):
             from ..audit.models import Audit
             Audit.query.filter_by(person_id=m.id).delete()
             Audit.query.filter_by(user_id=m.id).delete()
+            db.session.delete(pending_member)
             db.session.delete(m)
             db.session.commit()
             signals.delete_volunteer.send(m, place=place)

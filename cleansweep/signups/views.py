@@ -27,11 +27,10 @@ def signup():
             session['user'] = user.email
             return redirect(url_for("dashboard"))
 
-        # is already a member?
+        # is a pending member?
         pending_member = PendingMember.find(email=userdata['email'])
-        if pending_member:
+        if pending_member and not pending_member.status == 'approved':
             return render_template("signup.html", userdata=None, pending_member=pending_member)
-
     # show the form
     form = forms.SignupForm()
     if request.method == "GET":

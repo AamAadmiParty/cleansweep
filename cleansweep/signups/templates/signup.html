@@ -6,9 +6,15 @@
 
 {% block content_body %}
   {% if pending_member %}
-      <div class="well">
-        You have already applied as volunteer. You'll hear from us shortly.
-      </div>
+    {% if pending_member.status == 'pending' %}
+        <div class="alert alert-warning">
+            You have already applied as volunteer. You'll hear from us shortly.
+        </div>
+    {% elif pending_member.status == 'rejected' %}
+        <div class="alert alert-danger">
+            Your request to sign up as volunteer has been rejected. Please contact administrator.
+        </div>
+     {% endif %}
   {% elif userdata %}
     <div class="row">
       <div class="col-md-4">
@@ -55,7 +61,7 @@
   {% else %}
     <p>Please authenticate yourself using the following services to continue with the sign up process.</p>
     <p>
-      {% for provider in get_oauth_providers() %}      
+      {% for provider in get_oauth_providers() %}
         <a href="{{ url_for('oauth_redirect', view='signups.signup', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
       {% endfor %}
     </p>
