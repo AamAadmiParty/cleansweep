@@ -95,6 +95,28 @@ def get_permissions(user, place):
     else:
         return user.get_permissions(place)
 
+def safeint(strvalue, default=0, minvalue=None, maxvalue=None):
+    """Returns the int of strvalue or default.
+
+    Tries to convert the given string value to int.
+    Returns that value if conversion is successful.
+    If the given string is not a valid string the default value is returned.
+    If the converted number is not within specified minvalue and maxvalue,
+    the value get truncated to minvalue or maxvalue.
+    """
+    try:
+        value = int(strvalue)
+    except ValueError:
+        return default
+
+    if minvalue is not None and value < minvalue:
+        return minvalue
+
+    if maxvalue is not None and value > maxvalue:
+        return maxvalue
+
+    return value
+
 @app.context_processor
 def helpers():
     return {

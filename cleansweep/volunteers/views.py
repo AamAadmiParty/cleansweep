@@ -2,6 +2,7 @@ from flask.ext.paginate import Pagination
 from ..plugin import Plugin
 from flask import (flash, request, render_template, redirect, url_for, abort, make_response, jsonify)
 from ..models import db, Place, Member
+from .. import helpers as h
 from .. import forms
 from ..voterlib import voterdb
 from . import signals, notifications, audits, stats
@@ -15,11 +16,7 @@ def init_app(app):
 
 @plugin.place_view("/volunteers", permission="view-volunteers")
 def volunteers(place):
-    try:
-        page_arg_value = int(request.args.get('page', 1))
-        page = page_arg_value if page_arg_value > 0 else 1  # You never know...
-    except ValueError:
-        page = 1
+    page = h.safeint(request.args.get('page', 1), default=1, minvalue=1)
     total_count = place.get_member_count()
     limit = 50
 
