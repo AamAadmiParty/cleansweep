@@ -1,3 +1,4 @@
+from flask.ext.paginate import Pagination
 from ..plugin import Plugin
 from flask import (flash, request, render_template, redirect, url_for, abort, make_response, jsonify)
 from ..models import db, Place, Member
@@ -14,7 +15,18 @@ def init_app(app):
 
 @plugin.place_view("/volunteers", permission="view-volunteers")
 def volunteers(place):
-    return render_template("volunteers.html", place=place)
+    try:
+        page_arg_value = int(request.args.get('page', 1))
+        page = page_arg_value if page_arg_value > 0 else 1  # You never know...
+    except ValueError:
+        page = 1
+    total_count = place.get_member_count()
+    limit = 50
+
+    pagination = Pagination(total=total_count, page=page, per_page=limit,
+                            bs_version=3, prev_label="&laquo; Prev", next_label="Next &raquo;")
+    volunteers_per_page = place.get_all_members(limit=limit, offset=(page - 1) * limit)
+    return render_template("volunteers.html", place=place, pagination=pagination, volunteers=volunteers_per_page)
 
 
 @plugin.place_view("/volunteers/add", methods=['GET', 'POST'], permission="write")
