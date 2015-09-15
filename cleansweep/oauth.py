@@ -137,7 +137,7 @@ class Microsoft(OAuth2Service):
     def get_authorize_url(self, **params):
         params.setdefault('response_type', 'code')
         params.setdefault('redirect_uri', self.redirect_uri)
-        params.setdefault('scope', 'wl.basic wl.emails')
+        params.setdefault('scope', 'wl.emails')
         return OAuth2Service.get_authorize_url(self, **params)
 
 
