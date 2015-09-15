@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>{% block title %}{{ site_title }}{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/flot/jquery.flot.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/flot/jquery.flot.time.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+
+    {% block extrahead %}
+    {% endblock %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  </head>
+  {% set body_class = body_class|default('home') -%}
+  <body class="{{body_class}}">
+    {% block navbar %}
+      <nav class="navbar navbar-default" role="navigation">
+        <div class="container">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">{{ site_title }}</a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                  {% if user %}
+                    <li class="hidden-sm hidden-xs"><div style="padding: 15px 0px; color: ">Welcome <strong>{{user.name}}</strong></div></li>
+                    <li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
+                    <li>
+                      <form name="logout" action="{{url_for('logout')}}" method="POST" style="display: none;">
+                      </form>
+                      <a class="logout" href="{{url_for('logout')}}" onclick="document.forms.logout.sumit();">Log Out</a>
+                    </li>
+                  {% else %}
+                    <li><a class="login" href="{{url_for('login')}}">Log In</a></li>
+                    <li><a class="login" href="{{url_for('signups.signup')}}">Sign Up</a></li>
+                  {% endif %}
+                </ul>
+              </li>
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+    {% endblock %}
+
+    {% block content %}
+      <div class="container">
+        {% block content_head %}
+        {% endblock %}
+
+        {% block content_body %}
+        {% endblock %}
+      </div>
+    {% endblock %}
+
+    <footer>
+    <div class="container">
+    {% block footer %}
+    {% endblock %}
+    </div>
+    </footer>
+  </body>
+</html>

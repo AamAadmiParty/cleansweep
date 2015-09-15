@@ -1,0 +1,5 @@
+site_title: Cleansweep Mockups
+user:
+    name: {{fake.name()}}
+
+contents: {{fake.text()}}

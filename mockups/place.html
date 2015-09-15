@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content_body %}
+<h2>{{place.master_committee.name}}</h2>
+
+<div class="row">
+<div class="col-md-6">
+	<table class="table table-bordered">
+	  <thead>
+	  	<tr>
+	  	  <th>Role</th>
+	  	  <th>Name</th>
+	  	</tr>
+	  </thead>
+	  <tbody>
+	  	{% for role in place.master_committee.roles %}
+	  	  <tr>
+	  	  	<td>{{role}}</td>
+	  	  	<td>{{fake.name()}}</td>
+	  	  </tr>
+	  	{% endfor %}
+	  </tbody>
+	</table>
+</div>
+</div>
+
+<h2>Districts</h2>
+<table class="table table-bordered">
+  <thead>
+  	<tr>
+  	  <th>#</th>
+  	  <th>Name</th>
+  	  <th>District Coordinator</th>
+  	</tr>
+  </thead>
+  <tbody>
+  	{% for i in range(1, 11) %}
+  	  <tr>
+  	  	<td>{{i}}</td>
+  	  	<td><a href="/place.html">{{"AC{:03d}".format(i)}} - Narela</a></td>
+  	  	<td>{{fake.name()}}</td>
+  	  </tr>
+  	{% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+
+{% macro render_member(member) %}
+<div class="member-card">
+  {% if volunteer.get_detail("facebook_id") %}
+    <div style="width: 75px; height: 75px;"><a href="{{url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash())}}"><img src="http://graph.facebook.com/{{volunteer.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></a></div>
+  {% else %}
+    <div style="width: 75px; height: 75px;"><a href="{{url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash())}}"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></a></div>
+  {% endif %}
+  <div style="margin-top: -75px; margin-left: 75px; padding-left: 10px;">
+    <a href="{{url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash())}}"><strong>{{volunteer.name}}</strong></a>
+    <div>{{volunteer.email or ""}}</div>
+    <div>{{volunteer.phone}}</div>
+    <div class="small"><a href="{{url_for('place', key=volunteer.place.key)}}">{{volunteer.place.key}}</a></div>
+  </div>
+</div>
+{% endmacro %}

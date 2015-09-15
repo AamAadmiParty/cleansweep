@@ -1,0 +1,21 @@
+place:
+    name: Delhi
+    key: DL
+    master_committee:
+        name: State Committee
+        roles:
+            - Coordinators
+            - Secretary
+            - Joint Secretary
+            - Treasurer
+
+    subtype:
+        name: District
+        short_name: DISTRICT
+
+    child_places:
+        - name: AC061 - Gandhi Nagar
+          key: DL/AC061
+        - name: AC062 - Shahdara
+          key: DL/AC062
+
