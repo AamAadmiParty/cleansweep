@@ -13,3 +13,5 @@ env:
 
 notifications:
   slack: cleansweep:XCwDDECYJgCmWyyrH7fSyNfI
+
+sudo: false
