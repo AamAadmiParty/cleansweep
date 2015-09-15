@@ -33,6 +33,8 @@ GOOGLE_CLIENT_SECRET = "Qa-afy19Z9J6gqyqnpcHJjvQ"
 MICROSOFT_CLIENT_ID = '0000000048166B2A'
 MICROSOFT_CLIENT_SECRET = '52F1ZWq5upyUS9smpmQeb4LoLNa8zvnC'
 
+ENABLE_MOCKDOWN = False
+
 # Specify the list of admin users here.
 ADMIN_USERS = []
 
@@ -60,7 +62,8 @@ def _load_from_config():
         'ERROR_EMAIL_RECIPIENTS',
         'SQLALCHEMY_ECHO',
         'ADMIN_USERS',
-        'TEST_DATABASE_URI'
+        'TEST_DATABASE_URI',
+        'ENABLE_MOCKDOWN'
     ]
     for k in keys:
         if k in os.environ:

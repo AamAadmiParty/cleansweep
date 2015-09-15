@@ -32,6 +32,7 @@ def init_app(app):
         toolbar = DebugToolbarExtension()
         toolbar.init_app(app)
 
+    if app.debug or app.config.get("ENABLE_MOCKDOWN") == "true":
         import mockdown
         app.register_blueprint(mockdown.mockdown_app, url_prefix="/mockups")
         mockdown._mockdown.set_root("mockups")
