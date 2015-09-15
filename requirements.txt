@@ -37,3 +37,4 @@ tablib==0.10.0
 phonenumbers==7.0.9
 Flask-DebugToolbar==0.10.0
 flask-paginate==0.3.2
+-e git+git://github.com/anandology/mockdown.git#egg=mockdown

@@ -32,6 +32,10 @@ def init_app(app):
         toolbar = DebugToolbarExtension()
         toolbar.init_app(app)
 
+        import mockdown
+        app.register_blueprint(mockdown.mockdown_app, url_prefix="/mockups")
+        mockdown._mockdown.set_root("mockups")
+
     app.logger.info("Starting cleansweep app")
 
 # must be done before loading view
