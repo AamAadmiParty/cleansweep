@@ -1,4 +1,4 @@
-"""empty message
+"""Initial Schema
 
 Revision ID: 47d71663e96d
 Revises: None
