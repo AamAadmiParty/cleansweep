@@ -10,13 +10,16 @@
 	  	<tr>
 	  	  <th>Role</th>
 	  	  <th>Name</th>
+        <th>Phone</th>
 	  	</tr>
 	  </thead>
 	  <tbody>
 	  	{% for role in place.master_committee.roles %}
+        {% set phone = fake.numerify("%#########") %}
 	  	  <tr>
 	  	  	<td>{{role}}</td>
 	  	  	<td>{{fake.name()}}</td>
+          <td><a href="tel:{{phone}}">{{phone}}</a></td>
 	  	  </tr>
 	  	{% endfor %}
 	  </tbody>
