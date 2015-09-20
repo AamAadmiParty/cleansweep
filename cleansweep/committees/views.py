@@ -1,7 +1,7 @@
 from ..plugin import Plugin
 from ..models import db, Member, PlaceType
 from .models import CommitteeRole, CommitteeType
-from flask import (flash, request, make_response, render_template, redirect, url_for, abort)
+from flask import (flash, request, Response, make_response, render_template, redirect, url_for, abort)
 from . import forms
 from . import signals, notifications, audits
 from collections import defaultdict
@@ -60,8 +60,7 @@ def export_committees_as_dataset(committees, title="Committee Members"):
 
 def export_committees_as_response(committees, title, filename):
     dataset = export_committees_as_dataset(committees, title=title)
-    response = make_response(dataset.xls)
-    response.headers['content_type'] = 'application/vnd.ms-excel;charset=utf-8'
+    response = Response(dataset.xls, content_type='application/vnd.ms-excel; charset=utf-8')
     response.headers['Content-Disposition'] = "attachment; filename='{0}'".format(filename)
     return response
 
@@ -166,7 +165,6 @@ def download_members_of_committee_type(place, level, slug):
     dataset = export_committees_as_dataset(committee_type.committees.all())
     filename = "{}-{}-all-members.xls".format(level, slug)
 
-    response = make_response(dataset.xls)
-    response.headers['content_type'] = 'application/vnd.ms-excel;charset=utf-8'
+    response = Response(dataset.xls, content_type='application/vnd.ms-excel;charset=utf-8')
     response.headers['Content-Disposition'] = "attachment; filename='{0}'".format(filename)
     return response
