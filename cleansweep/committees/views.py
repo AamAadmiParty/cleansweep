@@ -61,7 +61,7 @@ def export_committees_as_dataset(committees, title="Committee Members"):
 def export_committees_as_response(committees, title, filename):
     dataset = export_committees_as_dataset(committees, title=title)
     response = Response(dataset.xls, content_type='application/vnd.ms-excel; charset=utf-8')
-    response.headers['Content-Disposition'] = "attachment; filename='{0}'".format(filename)
+    response.headers['Content-Disposition'] = "attachment; filename='{0}'".format(filename.encode('utf-8'))
     return response
 
 
@@ -72,7 +72,7 @@ def download_committee(place, slug):
         abort(404)
 
     title = committee.type.name
-    filename = "{}--{}.xls".format(place.key.replace("/", "-"), title.replace(" ", "-"))
+    filename = u"{}--{}.xls".format(place.key.replace("/", "-"), title.replace(" ", "-"))
     return export_committees_as_response([committee], title=title, filename=filename)
 
 @plugin.place_view("/committees/<slug>", methods=["GET"], permission="read")
