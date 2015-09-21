@@ -35,6 +35,8 @@ MICROSOFT_CLIENT_SECRET = '52F1ZWq5upyUS9smpmQeb4LoLNa8zvnC'
 
 ENABLE_MOCKDOWN = False
 
+LOGGER_NAME = "cleansweep"
+
 # Specify the list of admin users here.
 ADMIN_USERS = []
 
