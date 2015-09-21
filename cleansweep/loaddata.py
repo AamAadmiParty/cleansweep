@@ -218,7 +218,7 @@ def init():
         add_member("DL/AC061/PB0001", name, email, phone)
 
     with open("production.cfg", "w") as f:
-        f.write('ADMINS = ["{}"]'.format(email))
+        f.write('ADMIN_USERS = ["{}"]'.format(email))
 
     print "\nDONE!\n"
     print "{} have been setup as admin".format(email)
