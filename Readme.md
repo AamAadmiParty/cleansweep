@@ -50,7 +50,7 @@ How to Setup
 * Init the app by adding you as admin. It'll prompt you for your name, email 
   and phone number.
 
-        $ python run.py --init
+        $ python manage.py init
         ...
         Your Name: ______
         E-mail address: ______
@@ -58,7 +58,7 @@ How to Setup
     
 * run the webapp
 
-        python run.py
+        python manage.py runserver
 
 Visit the website at:
 <http://localhost:5000/>
