@@ -7,6 +7,7 @@ from cleansweep.models import db
 migrate = Migrate(app, db)
 
 manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 
 @manager.command
@@ -30,7 +31,7 @@ def loadfile(filename):
     "Loads data from the specified file."
 
     from cleansweep.loaddata import main_loadfiles
-    main_loadfiles(filename)
+    main_loadfiles([filename])
 
 
 @manager.command
@@ -49,13 +50,5 @@ def runworker():
     run_worker()
 
 
-@manager.command
-def update_parents(place):
-    "Updates parents of all places below the specified key."
-
-    from cleansweep.loaddata import update_parents
-    update_parents(place)
-
-
 if __name__ == '__main__':
-    manager.run({'db': MigrateCommand})
+    manager.run()
