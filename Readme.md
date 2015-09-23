@@ -1,7 +1,7 @@
 Cleansweep
 ==========
 
-[![Build Status](https://travis-ci.org/anandology/cleansweep.svg?branch=master)](https://travis-ci.org/anandology/cleansweep)
+[![Build Status](https://travis-ci.org/AamAadmiParty/cleansweep.svg?branch=master)](https://travis-ci.org/AamAadmiParty/cleansweep)
 [![Slack](http://cleansweep-slack.herokuapp.com/badge.svg)](http://cleansweep-slack.herokuapp.com)
 
 Requirements
