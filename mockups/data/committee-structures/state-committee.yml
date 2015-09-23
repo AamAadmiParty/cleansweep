@@ -1,0 +1,11 @@
+name: State Committee
+roles:
+    - Coordinator
+    - Secretary
+    - Joint Secretary
+    - Treasurer
+
+stats:
+    total_places: 1
+    committees_defined: 1
+    total_members: 2

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content_body %}
+  <h2>Explore Committees</h2>
+
+  <div class="committees-list">
+
+  {% for level in levels %}
+    <h3>{{level}} Level</h3>
+    {% for ct in committee_types.get(level, []) %}
+      <div class="committee-info">
+        <h4>{{ct.name}} <small>{{ct.stats['committees_defined']}} / {{ct.stats['total_places']}}</small></h4>
+      <div>
+        <span class="numroles small">{{ct.roles | length}} roles</span> &bull;
+        <span class="numroles small">{{ct.stats['total_members']}} members</span> &bull;
+        <a class="small" href="#">Download All Members</a>
+      </div>
+      <br/>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="progress" style="margin-bottom: 5px;">
+            {% set pval = ct.stats['committees_defined'] %}
+            {% set pmax = ct.stats['total_places'] %}
+            {% set percent = pval * 100.0 / pmax %}
+            {% set klass = ["danger", "warning", "success", "success"][(3*pval)//pmax] %}
+            <div class="progress-bar progress-bar-{{klass}}" role="progressbar" aria-valuenow="{{pval}}" aria-valuemin="0" aria-valuemax="{{pmax}}" style="width: {{percent}}%;"></div>
+          </div>
+          <p class="text-{{klass}}"><strong>{{pval}}</strong> of <strong>{{pmax}}</strong> committees defined (<strong>{{(pval*100)//pmax}}</strong>%)</p>
+        </div>
+        <div class="col-md-6">
+        </div>
+      </div>
+      </div>
+    {% else %}
+      <em>No committees defined at this level.</em>
+    {% endfor %}
+  {% endfor %}
+  </div>
+  <style type="text/css">
+    .committees-list h3 {
+      text-transform: uppercase;
+      color: #666;
+      font-size: 1.0em;
+    }
+    .committees-list ol, .committees-list ul {
+      padding-left: 0px;
+    }
+    .committees-list li {
+      list-style: none;
+      margin-left: 0px;
+      padding-left: 0px;
+    }
+    .committee-link {
+      font-size: 1.2em;
+    }
+
+    .committee-info {
+      background: #eee;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+  </style>
+{% endblock %}

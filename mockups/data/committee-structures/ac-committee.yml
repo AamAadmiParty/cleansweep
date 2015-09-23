@@ -1,0 +1,11 @@
+name: AC Committee
+roles:
+    - Coordinator
+    - Secretary
+    - Joint Secretary
+    - Treasurer
+
+stats:
+    total_places: 70
+    committees_defined: 15
+    total_members: 20

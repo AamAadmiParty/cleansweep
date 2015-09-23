@@ -1,0 +1,13 @@
+levels:
+    - State
+    - District
+    - Assembly Constituency
+    - Ward
+    - Polling Center
+    - Polling Booth
+
+committee_types:
+    State:
+        - {{include("data/committee-structures/state-committee.yml")}}
+    Assembly Constituency:
+        - {{include("data/committee-structures/ac-committee.yml")}}
