@@ -65,7 +65,8 @@ def _load_from_config():
         'SQLALCHEMY_ECHO',
         'ADMIN_USERS',
         'TEST_DATABASE_URI',
-        'ENABLE_MOCKDOWN'
+        'ENABLE_MOCKDOWN',
+        'DEBUG'
     ]
     for k in keys:
         if k in os.environ:
