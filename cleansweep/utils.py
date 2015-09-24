@@ -26,4 +26,11 @@ def setup_error_emails(app):
 
 def setup_logging(app):
     app.logger.setLevel(logging.INFO)
-    app.logger.addHandler(StreamHandler())
+
+    formatter = logging.Formatter(
+    "%(asctime)s [%(levelname)s] [%(name)s] - %(message)s")
+
+    handler = StreamHandler()
+    handler.setFormatter(formatter)
+    app.logger.handlers = []
+    app.logger.addHandler(handler)
