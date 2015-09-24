@@ -24,6 +24,22 @@
           <span class="numroles small">{{stats['total_members']}} members</span> &bull;
           <a class="small" href="{{url_for('.download_members_of_committee_type', key=ct.place.key, level=ct.place_type.short_name, slug=ct.slug)}}">Download All Members</a>
         </div>
+        <br/>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="progress" style="margin-bottom: 5px;">
+              {% set pval = stats['committees_defined'] %}
+              {% set pmax = stats['total_places'] %}
+              {% set percent = pval * 100.0 / pmax %}
+              {% set klass = ["danger", "warning", "success", "success"][(3*pval)//pmax] %}
+              <div class="progress-bar progress-bar-{{klass}}" role="progressbar" aria-valuenow="{{pval}}" aria-valuemin="0" aria-valuemax="{{pmax}}" style="width: {{percent}}%;"></div>
+            </div>
+            <p class="text-{{klass}}"><strong>{{pval}}</strong> of <strong>{{pmax}}</strong> committees defined (<strong>{{(pval*100)//pmax}}</strong>%)</p>
+          </div>
+          <div class="col-md-6">
+          </div>
+        </div>
+
       </div>
     {% else %}
       <em>No committees defined at this level.</em>
@@ -49,10 +65,14 @@
     }
 
     .committee-info {
-      background: #eee;
+      background: #e8e8e8;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 5px;
+    }
+
+    .progress {
+      border: 1px solid #ddd;
     }
 
   </style>
