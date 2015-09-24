@@ -37,17 +37,17 @@ def init_app(app):
         app.register_blueprint(mockdown.mockdown_app, url_prefix="/mockups")
         mockdown._mockdown.set_root("mockups")
 
+    # load all helpers
+    from . import helpers
+
+    # load all the views
+    from . import views
+
     app.logger.info("Starting cleansweep app")
+
 
 # must be done before loading view
 init_app(app)
-
-# load all helpers
-from . import helpers
-
-# load all the views
-from . import views
-
 
 
 def main(port=5000):
