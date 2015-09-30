@@ -1,7 +1,7 @@
 from flask.ext.script import Manager, Command
 from flask.ext.migrate import Migrate, MigrateCommand
 
-from cleansweep.main import app
+from cleansweep.main import app, init_app
 from cleansweep.models import db
 
 migrate = Migrate(app, db)
@@ -10,6 +10,14 @@ migrate = Migrate(app, db)
 class CleansweepManager(Manager):
     """Flask Script Manager with some customizations.
     """
+    def __init__(self):
+        Manager.__init__(self, self.create_app)
+        self.add_option("-c", "--config", dest="config", required=False)
+
+    def create_app(self, config=None):
+        config = config or "config/development.cfg"
+        return init_app(config)
+
     def command(self, func=None, name=None):
         """Variant of @manager.command decorator provided by flask-script.
 
@@ -21,7 +29,7 @@ class CleansweepManager(Manager):
         self.add_command(name, command)
         return func
 
-manager = CleansweepManager(app)
+manager = CleansweepManager()
 manager.add_command('db', MigrateCommand)
 
 
