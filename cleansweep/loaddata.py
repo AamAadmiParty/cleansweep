@@ -1,6 +1,6 @@
 """Script to load data in the database.
 
-This loads all places in a state. It expects path to a directory with the 
+This loads all places in a state. It expects path to a directory with the
 following files as input.
 
 * state.json - JSON file containing key and name of the state.
@@ -72,7 +72,7 @@ class Loader:
     def group(self, it, n):
         def take(it, n):
             return list(it.next() for i in range(n))
-        it = iter(it)            
+        it = iter(it)
         while True:
             x = take(it, n)
             if not x:
@@ -202,7 +202,7 @@ def init():
     # create database tables
     db.create_all()
 
-    print "=" * 20    
+    print "=" * 20
 
     # load places
     print "loading places..."
@@ -217,15 +217,15 @@ def init():
     else:
         add_member("DL/AC061/PB0001", name, email, phone)
 
-    with open("production.cfg", "w") as f:
+    with open("config/development.cfg", "w") as f:
         f.write('ADMIN_USERS = ["{}"]'.format(email))
 
     print "\nDONE!\n"
     print "{} have been setup as admin".format(email)
-    print 
+    print
     print "Run the app using:"
     print "python run.py"
-    print 
+    print
     print "The website will be accessible at http://localhost:5000/"
 
 if __name__ == '__main__':
