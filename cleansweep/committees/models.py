@@ -9,7 +9,7 @@ class CommitteeType(db.Model):
     """Specification of a Committee.
     """
     __tablename__ = "committee_type"
-    __table_args__ = (db.UniqueConstraint('place_id', 'place_type_id', 'slug'), {})
+    __table_args__ = (db.UniqueConstraint('place_id', 'slug'), {})
 
     id = db.Column(db.Integer, primary_key=True)
 

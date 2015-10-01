@@ -37,9 +37,8 @@ class NewCommitteeForm(Form):
             if ct.slug == field.data:
                 return
 
-        level = self.level.data
-        if CommitteeType.find(self.place, field.data, level=level):
-            raise validators.ValidationError("There is already a committee structure at {} level with the same slug.".format(level))
+        if CommitteeType.find(self.place, field.data):
+            raise validators.ValidationError("There is already a committee in {} with same slug.".format(self.place.key))
 
     def ensure_empty_slots(self, n=5):
         # Ensure that there are at least 5 empty slots
