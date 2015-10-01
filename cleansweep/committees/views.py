@@ -132,15 +132,15 @@ def new_committee_structure(place):
 def committee_structures(place):
     return render_template("committee_structures.html", place=place)
 
-@plugin.place_view("/committee-structures/<level>.<slug>", permission="write")
-def view_committee_structure(place, slug, level):
-    committee_type = CommitteeType.find(place, slug, level=level)
+@plugin.place_view("/committee-structures/<slug>", permission="write")
+def view_committee_structure(place, slug):
+    committee_type = CommitteeType.find(place, slug)
     return render_template("view_committee_structure.html", place=place, committee_type=committee_type)
 
-@plugin.place_view("/committee-structures/<level>.<slug>/edit", methods=['GET', 'POST'], permission="write")
-def edit_committee_structure(place, slug, level):
+@plugin.place_view("/committee-structures/<slug>/edit", methods=['GET', 'POST'], permission="write")
+def edit_committee_structure(place, slug):
     form = forms.NewCommitteeForm(place)
-    committee_type = CommitteeType.find(place, slug, level=level)
+    committee_type = CommitteeType.find(place, slug)
     if request.method == "POST" and form.validate():
         d1 = committee_type.dict()
         form.save(committee_type)
@@ -153,9 +153,9 @@ def edit_committee_structure(place, slug, level):
             form.load(committee_type)
         return render_template("edit_committee_structure.html", place=place, committee_type=committee_type, form=form)
 
-@plugin.place_view("/committee-structures/<level>.<slug>/dowload-members", permission="write")
-def download_members_of_committee_type(place, level, slug):
-    committee_type = CommitteeType.find(place, slug, level=level)
+@plugin.place_view("/committee-structures/<slug>/dowload-members", permission="write")
+def download_members_of_committee_type(place, slug):
+    committee_type = CommitteeType.find(place, slug)
 
     # using export_committees_as_dataset for exporting the data
     # instead of using CommitteeType.get_all_members() as the earlier one
@@ -163,7 +163,7 @@ def download_members_of_committee_type(place, level, slug):
     # The latter one is more effient.
     # TODO: switch the implemenatation to use CommitteeType.get_all_members()
     dataset = export_committees_as_dataset(committee_type.committees.all())
-    filename = "{}-{}-all-members.xls".format(level, slug)
+    filename = "{}-{}-all-members.xls".format(place.key, slug)
 
     response = Response(dataset.xls, content_type='application/vnd.ms-excel;charset=utf-8')
     response.headers['Content-Disposition'] = "attachment; filename='{0}'".format(filename)
