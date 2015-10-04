@@ -9,7 +9,7 @@ class CommitteeType(db.Model):
     """Specification of a Committee.
     """
     __tablename__ = "committee_type"
-    __table_args__ = (db.UniqueConstraint('place_id', 'place_type_id', 'slug'), {})
+    __table_args__ = (db.UniqueConstraint('place_id', 'slug'), {})
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -128,7 +128,7 @@ class CommitteeType(db.Model):
         return c
 
     def url_for(self, endpoint):
-        return url_for(endpoint, key=self.place.key, slug=self.slug, level=self.get_level())
+        return url_for(endpoint, key=self.place.key, slug=self.slug)
 
     def get_level(self):
         return self.place_type.short_name

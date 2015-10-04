@@ -22,7 +22,7 @@
         <div>
           <span class="numroles small">{{len(ct.roles)}} roles</span> &bull;
           <span class="numroles small">{{stats['total_members']}} members</span> &bull;
-          <a class="small" href="{{url_for('.download_members_of_committee_type', key=ct.place.key, level=ct.place_type.short_name, slug=ct.slug)}}">Download All Members</a>
+          <a class="small" href="{{url_for('.download_members_of_committee_type', key=ct.place.key, slug=ct.slug)}}">Download All Members</a>
         </div>
         <br/>
         <div class="row">
