@@ -2,7 +2,7 @@
 {% extends "place.html" %}
 
 {% block page_content %}
-  <h2>Add a New Committee Struture</h2>
+  <h2>Add a new committee structure</h2>
 
 <form role="form" method="POST" style="width: 400px">
   {{ form.csrf_token }}
@@ -11,7 +11,7 @@
   {{ render_field(form.level) }}
   {{ render_field(form.description) }}
 
-  <h3>Roles</strong></h3>
+  <h3>Roles</h3>
   <table class="table table-borderless roles-table">
     <tr>
       <th>Role</th><th>#Members</th><th>Permissions</th>
@@ -26,7 +26,7 @@
       {% endfor %}
     </tbody>
     <tbody>
-      <tr><td><a href="javascript:;" id="add-more-roles">Add more roles</a></td</tr>
+      <tr><td><a href="javascript:;" id="add-more-roles">Add more roles</a></td></tr>
     </tbody>
   </table>
   <button type="submit" class="btn btn-default">Add</button>
