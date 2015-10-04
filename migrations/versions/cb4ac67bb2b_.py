@@ -1,4 +1,6 @@
-"""empty message
+"""Modified the unique constraint on committee_type table.
+
+See Issue#117
 
 Revision ID: cb4ac67bb2b
 Revises: 47d71663e96d
