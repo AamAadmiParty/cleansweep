@@ -53,10 +53,15 @@
                             </select>
                         </td>
                         <td style="width: 40%">
-                            <select class="form-control permission" id="roles-{{ i }}-permission" name="roles-{{ i }}-permission"
+                            <select class="form-control permission" id="roles-{{ i }}-permission"
+                                    name="roles-{{ i }}-permission"
                                     multiple>
-                                {% for permission in permissions %}
-                                    <option value="{{ permission }}">{{ permission }}</option>
+                                {% for group in permissions %}
+                                    <optgroup label="{{ group }}">
+                                        {% for permission in permissions[group] %}
+                                            <option value="{{ permission }}">{{ permission }}</option>
+                                        {% endfor %}
+                                    </optgroup>
                                 {% endfor %}
                             </select>
                         </td>
