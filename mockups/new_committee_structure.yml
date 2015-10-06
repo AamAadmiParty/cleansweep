@@ -1,0 +1,32 @@
+levels:
+    - Country
+    - Region
+    - State
+    - Zone
+    - District
+    - Assembly Constituency
+    - Local Body
+    - Polling Center
+    - Polling Booth
+values:
+    - COUNTRY
+    - REGION
+    - STATE
+    - ZONE
+    - DISTRICT
+    - AC
+    - LB
+    - PX
+    - PB
+
+permissions:
+    - send-sms
+    - send-email
+    - view-volunteers
+    - view-volunteer-contacts
+    - download-volunteers
+    - add-volunteer
+    - view-committees
+    - edit-committees
+    - download-committee-members
+    - view-audit-trail

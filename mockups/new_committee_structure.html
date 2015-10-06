@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{{ url_for('static', filename="chosen/bootstrap-chosen.css") }}"/>
+    <script type="text/javascript" src="{{ url_for('static', filename="chosen/chosen.jquery.min.js") }}"></script>
+{% endblock %}
+
+{% block content_body %}
+    <div class="col-md-7 col-sm-12">
+        <h2>Add a new committee structure</h2>
+
+        <form role="form" method="POST">
+            <div style="width: 400px;">
+                <div class="form-group  ">
+                    <label for="name">Name</label>
+                    <input class="form-control" id="name" name="name" type="text" value="">
+                </div>
+                <div class="form-group  ">
+                    <label for="slug">Slug</label>
+                    <input class="form-control" id="slug" name="slug" type="text" value="">
+                </div>
+                <div class="form-group  ">
+                    <label for="level">Level</label>
+                    <select class="form-control" id="level" name="level">
+                        {% for i in range(0, levels|length) %}
+                            <option value="{{ values[i] }}">{{ levels[i] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description"></textarea>
+                </div>
+            </div>
+            <h3>Roles</h3>
+            <table class="table table-borderless roles-table">
+                <tr>
+                    <th>Role</th>
+                    <th>#Members</th>
+                    <th>Permissions</th>
+                </tr>
+                <tbody id="tbody-roles">
+                {% for i in range(1, 6) %}
+                    <tr class="tr-role">
+                        <td style="width: 30%">
+                            <input class="form-control" id="roles-{{ i }}-name" name="roles-{{ i }}-name" type="text"
+                                   value="">
+                        </td>
+                        <td style="width: 30%">
+                            <select class="form-control" id="roles-{{ i }}-multiple" name="roles-{{ i }}-multiple">
+                                <option selected value="no">One Member</option>
+                                <option value="yes">Multiple Members</option>
+                            </select>
+                        </td>
+                        <td style="width: 40%">
+                            <select class="form-control permission" id="roles-{{ i }}-permission" name="roles-{{ i }}-permission"
+                                    multiple>
+                                {% for permission in permissions %}
+                                    <option value="{{ permission }}">{{ permission }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tbody>
+                <tr>
+                    <td><a href="javascript:;" id="add-more-roles">Add more roles</a></td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-default">Add</button>
+        </form>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $(".permission").chosen({
+                placeholder_text_multiple: "Select member permissions",
+                no_results_text: "No permissions found"
+            });
+            function add_role() {
+                var tr = $("#tbody-roles tr:last-child").clone();
+                var count = $("#tbody-roles tr").length;
+                var html = tr.html().replace(/roles-[0-9]+/g, "roles-" + count);
+                tr.html(html);
+                console.log(html);
+                $("#tbody-roles").append(tr);
+            }
+
+            $("#add-more-roles").click(function () {
+                add_role();
+            });
+        });
+    </script>
+
+
+{% endblock %}
