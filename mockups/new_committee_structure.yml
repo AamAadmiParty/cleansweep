@@ -20,13 +20,20 @@ values:
     - PB
 
 permissions:
-    - send-sms
-    - send-email
-    - view-volunteers
-    - view-volunteer-contacts
-    - download-volunteers
-    - add-volunteer
-    - view-committees
-    - edit-committees
-    - download-committee-members
-    - view-audit-trail
+    All permissions:
+        - all-permissions
+    Sms:
+        - send-sms
+    Email:
+        - send-email
+    Volunteers:
+        - view-volunteers
+        - view-volunteer-contacts
+        - download-volunteers
+        - add-volunteer
+    Committees:
+        - view-committees
+        - edit-committees
+        - download-committee-members
+    Others:
+        - view-audit-trail
