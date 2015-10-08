@@ -108,8 +108,8 @@ class Place(db.Model, Mixable):
 
     # List of parents
     # Required to list immediate children on the place page
-    _parents = db.relationship('Place', 
-        secondary=place_parents, 
+    _parents = db.relationship('Place',
+        secondary=place_parents,
         primaryjoin=(id==place_parents.c.child_id),
         secondaryjoin=(id==place_parents.c.parent_id),
         backref=db.backref('places', lazy='dynamic', order_by='Place.key'),
@@ -134,7 +134,7 @@ class Place(db.Model, Mixable):
         """
         return Place.query.filter_by(iparent_id=None).all()
 
-    @property 
+    @property
     def code(self):
         return self.key.split("/")[-1]
 
@@ -181,15 +181,16 @@ class Place(db.Model, Mixable):
         matching either name, email or phone number.
         """
         q = q.lower()
+        q = u"%{}%".format(q)
         # SQLAlchemy I hate you
         sql = text("""SELECT member.* FROM member
             JOIN place_parents ON place_parents.child_id = member.place_id
             JOIN place ON place.id = place_parents.parent_id
             WHERE member.place_id = place.id
                 AND
-                    (lower(member.name) LIKE :q || :percent
-                    OR lower(member.email) LIKE :q || :percent
-                    OR lower(member.phone) LIKE :q || :percent)
+                    (lower(member.name) LIKE :q
+                    OR lower(member.email) LIKE :q
+                    OR lower(member.phone) LIKE :q )
             LIMIT 10
             """)
         return db.engine.execute(sql, q=q, percent='%')
@@ -245,7 +246,7 @@ class Place(db.Model, Mixable):
     def add_place(self, place):
         """Addes a new place as direct child of this place.
 
-        This function takes care of setting parents for the 
+        This function takes care of setting parents for the
         new place.
         """
         # The place is being added as an immediate child of this node.
@@ -272,7 +273,7 @@ class Place(db.Model, Mixable):
             return Place.query.filter_by(type=self.type).all()
 
     def get_child_places_by_type(self):
-        """Returns an iterator over type and child-places of that type 
+        """Returns an iterator over type and child-places of that type
         for all the immediate child places.
         """
         places = self.child_places.all()
@@ -297,7 +298,7 @@ class Place(db.Model, Mixable):
         """
         member = Member(self, name, email, phone, voterid)
         db.session.add(member)
-        return member   
+        return member
 
 
     def get_pending_members(self, status='pending', limit=100, offset=0):
@@ -326,7 +327,7 @@ class Place(db.Model, Mixable):
         contacts = [
                 Contact(self, name, email, phone, voterid)
                 for name, email, phone, voterid in data
-                if name and name.strip() 
+                if name and name.strip()
                     and email not in dup_emails
                     and phone not in dup_phones]
         db.session.add_all(contacts)
@@ -517,7 +518,7 @@ class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
     place = db.relationship('Place', foreign_keys=place_id)
-    
+
     name = db.Column(db.Text, nullable=False)
     email = db.Column(db.Text, index=True)
     phone = db.Column(db.Text, index=True)
