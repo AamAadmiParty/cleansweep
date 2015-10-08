@@ -245,7 +245,9 @@
   margin: 0 0 0 0;
   padding: 0; }
 .chosen-container-multi .chosen-drop .result-selected {
-  display: none; }
+  display: list-item;
+  color: #ccc;
+  cursor: default; }
 
 .chosen-container-active .chosen-single {
   border: 1px solid #66afe9;
