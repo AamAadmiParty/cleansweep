@@ -2,7 +2,7 @@ from flask_wtf import Form
 import wtforms
 from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField
 from wtforms import validators
-from ..models import db, PlaceType
+from ..models import db
 from . models import CommitteeType, CommitteeRole
 
 class RoleForm(wtforms.Form):
@@ -26,7 +26,8 @@ class NewCommitteeForm(Form):
     def __init__(self, place, *a, **kw):
         Form.__init__(self, *a, **kw)
         self.place = place
-        self.level.choices = [(t.short_name, t.name) for t in PlaceType.all()]
+        place_types = [place.type] + place.type.get_subtypes()
+        self.level.choices = [(t.short_name, t.name) for t in place_types]
         self.ensure_empty_slots()
 
     def validate_slug(self, field):
