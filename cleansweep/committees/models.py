@@ -121,10 +121,8 @@ class CommitteeType(db.Model):
         db.session.add(c)
         for roledata in form.data['roles']:
             if roledata.get('name') and roledata['name'].strip():
-                c.add_role(
-                    roledata['name'],
-                    roledata['multiple'] == 'yes',
-                    roledata['permission'])
+                permissions = ",".join(roledata['permission'])  # comma separated permissions in a string
+                c.add_role(roledata['name'], roledata['multiple'] == 'yes', permissions)
         return c
 
     def url_for(self, endpoint):
