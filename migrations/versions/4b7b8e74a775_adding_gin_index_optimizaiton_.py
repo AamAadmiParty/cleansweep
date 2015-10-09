@@ -14,13 +14,24 @@ from alembic import op
 import sqlalchemy as sa
 connection = op.get_bind()
 
+def _create_index(table, column):
+    col_func = 'lower({})'.format(column)
+    # col_func = '{}'.format(column)
+    kwargs = {'postgresql_using': 'gin',
+              'postgresql_ops': {col_func: 'gin_trgm_ops'}}
+
+    op.create_index(op.f('ix_{}_{}'.format(table, column)), table, [sa.text(col_func)],
+                    **kwargs)
+
 
 
 def upgrade():
+    # def col_fun(column):
+    #     'unaccent(lower({}))'.format(column)
     op.execute('CREATE EXTENSION IF NOT EXISTS pg_trgm')
-    op.create_index(op.f('ix_member_name'), 'member', ['name'], postgresql_using='gin', postgresql_ops={'name': 'gin_trgm_ops'})
-    op.create_index(op.f('ix_member_email'), 'member', ['email'], postgresql_using='gin', postgresql_ops={'email': 'gin_trgm_ops'})
-    op.create_index(op.f('ix_member_phone'), 'member', ['phone'], postgresql_using='gin', postgresql_ops={'phone': 'gin_trgm_ops'})
+    _create_index('member', 'name')
+    _create_index('member', 'phone')
+    _create_index('member', 'email')
 
 
 def downgrade():
