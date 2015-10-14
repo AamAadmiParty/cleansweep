@@ -110,6 +110,9 @@ def can(user, action, resource):
     # place and all parents of the place
     place_keys = [place.key] + [p.key for p in place.parents]
 
+    # empty string is used to indicate any place
+    place_keys.append("")
+
     perms = get_user_permissions(user)
     return any(match_permission(p, action)
                 for p in perms

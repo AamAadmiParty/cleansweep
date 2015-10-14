@@ -1,4 +1,5 @@
 from ..plugin import Plugin
+from ..core import rbac
 from ..models import db, Member, PlaceType
 from .models import CommitteeRole, CommitteeType
 from flask import (flash, request, Response, make_response, render_template, redirect, url_for, abort)
@@ -13,6 +14,29 @@ plugin = Plugin("committees", __name__, template_folder="templates")
 def init_app(app):
     plugin.init_app(app)
 
+@rbac.role_provider
+def get_user_roles(user):
+    """Returns permission of a role.
+    """
+    committee_member_objects = user.committees.all()
+    for cm in committee_member_objects:
+        place = cm.committee.place
+        yield {
+            "place": place.key,
+            "role": cm.role.role,
+            "role-id": cm.role.id,
+            "committee": cm.committee.type.slug
+        }
+
+@rbac.permission_provider
+def get_role_permission(role):
+    """Returns permission of a role.
+    """
+    if 'role-id' not in role:
+        return []
+    roleobj = CommitteeRole.query.filter_by(id=role['role-id']).first()
+    perms = roleobj.permission.split(",")
+    return [{"place": role['place'], "permission": p} for p in perms]
 
 @plugin.place_view("/committees", permission="read")
 def committees(place):

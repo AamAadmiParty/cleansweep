@@ -7,6 +7,7 @@ from jinja2 import Markup
 import datetime
 import humanize
 from .app import app
+from .core import rbac
 from .widgets import render_widget
 from .models import Member, Place, PlaceType
 from . import oauth
@@ -93,7 +94,9 @@ def get_permissions(user, place):
     elif place is None:
         return []
     else:
-        return user.get_permissions(place)
+        place_keys = [place.key] + [p.key for p in place.parents]
+        perms = rbac.get_user_permissions(user)
+        return [p['permission'] for p in perms if p['place'] in place_keys]
 
 def safeint(strvalue, default=0, minvalue=None, maxvalue=None):
     """Returns the int of strvalue or default.

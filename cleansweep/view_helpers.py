@@ -3,6 +3,7 @@ import functools
 from flask import (abort, render_template, session, g)
 from werkzeug.routing import BaseConverter
 
+from .core import rbac
 from .models import Place, Member
 import helpers as h
 
@@ -11,12 +12,28 @@ app = None
 def init_app(_app):
     """Registeres the <place:xxx> converter with the app.
 
-    Also remembers the app in a global var so that it can be used in other 
+    Also remembers the app in a global var so that it can be used in other
     functions.
     """
     global app
     app = _app
     app.url_map.converters['place'] = PlaceConverter
+
+@rbac.role_provider
+def get_user_roles(user):
+    if user.email in app.config['ADMIN_USERS']:
+        yield {"place": "", "role": "admin"}
+    yield {"place": user.place.key, "role": "volunteer"}
+
+@rbac.permission_provider
+def get_role_perms(role):
+    if role.get('role') == 'volunteer':
+        perms = ['read', 'view-volunteers']
+    elif role.get('role') == 'admin':
+        perms = ['read', 'write', 'admin', 'view-volunteers']
+    else:
+        perms = []
+    return [{"place": role['place'], "permission": p} for p in perms]
 
 
 def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=None, *args, **kwargs):

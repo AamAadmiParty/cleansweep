@@ -445,37 +445,6 @@ class Member(db.Model):
         key = str(id) + app.config['SECRET_KEY']
         return md5.md5(key).hexdigest()[:7]
 
-    def get_permissions(self, place):
-        """Finds the permissions the user has at given place.
-
-        Every person will have read permission at his own place and the
-        permission that he gets by becoming member of one or more committees.
-        """
-        perms = set()
-        if self.place == place:
-            perms.add("read")
-            perms.add("view-volunteers")
-        elif self.place.has_parent(place):
-            perms.add("read")
-
-        for cm in self.committees.all():
-            committee_place = cm.committee.place
-            if committee_place == place or place.has_parent(committee_place):
-                perms.update(cm.role.permission.split(","))
-
-        from cleansweep.vistaar.models import MVRequest
-        status = MVRequest.get_request_status(self, place)
-        if status == 'approved':
-            perms.update(["read", "write", "view-volunteers"])
-
-        # quick hack to allow committee members to see all the volunteers
-        if 'write' in perms:
-            perms.add('view-volunteers')
-
-        return perms
-
-    def has_permission(self, place, permission):
-        return permission in self.get_permissions(place)
 
 class PendingMember(db.Model):
     __tablename__ = "pending_member"

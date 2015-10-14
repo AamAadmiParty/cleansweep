@@ -7,7 +7,7 @@ from ..app import app
 from ..models import Member, PendingMember, Place
 from .. import oauth
 from .. import forms
-from ..core import signals
+from ..core import signals, rbac
 from .. import helpers as h
 
 import random
@@ -147,7 +147,7 @@ def remoteauth_authorizarion():
                 code='error_invalid_input',
                 message='Invalid Place')
 
-    if not user.has_permission(place, 'write'):
+    if not rbac.can(user, 'write', 'place'):
         return jsonify(
                 status='failed',
                 code='error_permission_denied',
