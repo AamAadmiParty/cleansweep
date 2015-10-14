@@ -11,7 +11,9 @@ def home():
     if session.get('user'):
         return redirect(url_for("dashboard"))
     else:
-        return render_template("home.html")
+        # There's nothing on home page yet. Better redirect users straight to the login page.
+        return redirect(url_for("login"))
+        # return render_template("home.html")
 
 @place_view("")
 def place(place):
