@@ -50,7 +50,7 @@ def signup():
 
 @plugin.place_view("/signups/<status>", methods=['GET', 'POST'], permission="write")
 @plugin.place_view("/signups", methods=['GET', 'POST'], permission="write", sidebar_entry="Signups", endpoint="signups")
-def _signups(place, status=None):
+def signups(place, status=None):
     if status not in [None, 'approved', 'rejected']:
         return redirect(url_for(".signups", key=place.key))
     if status is None:
