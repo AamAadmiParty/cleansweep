@@ -290,12 +290,12 @@ class Place(db.Model, Mixable):
         q = q.order_by(Place.key)
         return q.all()
 
-    def add_member(self, name, email, phone, voterid=None):
+    def add_member(self, name, email, phone, voterid=None, details=None):
         """Adds a new member.
 
         The caller is responsible to call db.session.commit().
         """
-        member = Member(self, name, email, phone, voterid)
+        member = Member(self, name, email, phone, voterid, details)
         db.session.add(member)
         return member   
 
@@ -399,12 +399,13 @@ class Member(db.Model):
     details = db.Column(JSON)
     created = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, place, name, email, phone, voterid):
+    def __init__(self, place, name, email, phone, voterid, details=None):
         self.name = name
         self.email = email
         self.phone = phone
         self.place = place
         self.voterid = voterid
+        self.details = details
 
     def __repr__(self):
         return "<Member:{}>".format(self.email or self.name)
