@@ -1,6 +1,7 @@
 from flask_wtf import Form
 import wtforms
 from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField
+from wtforms_components import SelectMultipleField
 from wtforms import validators
 from ..models import db
 from . models import CommitteeType, CommitteeRole
@@ -13,7 +14,41 @@ class RoleForm(wtforms.Form):
     role_id = HiddenField()
     name = StringField('Name')
     multiple = SelectField('Multiple?', choices=[("no", "One Member"), ("yes", "Multiple Members")], default='no')
-    permission = SelectField('Permissions', choices=[("read", "Read"), ("read,write", "Read and Write")], default='read')
+
+    choices = (
+        ('Sms',
+         (
+             ('send-sms', 'Send sms'),
+         )
+         ),
+        ('Email',
+         (
+             ('send-email', 'Send email'),
+         )
+         ),
+        ('Volunteers',
+         (
+             ('view-volunteers', 'View volunteers'),
+             ('view-volunteer-contacts', 'View volunteers & contacts'),
+             ('download-volunteers', 'Download volunteers'),
+             ('add-volunteer', 'Add volunteer')
+         )
+         ),
+        ('Committees',
+         (
+             ('view-committees', 'View committees'),
+             ('edit-committees', 'Edit committees'),
+             ('download-committee-members', 'Download committee members')
+         )
+         ),
+        ('Others',
+         (
+             ('view-audit-trail', 'View audit trail'),
+             ('all-permissions', 'All permissions')
+         )
+         )
+    )
+    permission = SelectMultipleField('Permissions', choices=choices)
 
 class NewCommitteeForm(Form):
     committee_type_id = HiddenField()
@@ -54,7 +89,8 @@ class NewCommitteeForm(Form):
         self.slug.data = c.slug
         self.level.data = c.place_type.short_name
         self.description.data = c.description
-        roles = [dict(role_id=role.id, name=role.role, multiple=['no', 'yes'][role.multiple], permission=role.permission) for role in c.roles]
+        roles = [dict(role_id=role.id, name=role.role, multiple=['no', 'yes'][role.multiple],
+                      permission=role.permission.split(',')) for role in c.roles]
         self.roles.process(None, roles)
         self.ensure_empty_slots()
 
@@ -69,12 +105,10 @@ class NewCommitteeForm(Form):
                 role = CommitteeRole.query.filter_by(id=roledata['role_id']).first()
                 role.role = roledata['name']
                 role.multiple = roledata['multiple'] == 'yes'
-                role.permission = roledata['permission']
+                role.permission = ",".join(roledata['permission'])  # comma separated permissions in a string
                 db.session.add(role)
             elif roledata.get('name') and roledata.get('name').strip():
-                c.add_role(
-                    roledata['name'],
-                    roledata['multiple'] == 'yes',
-                    roledata['permission'])
+                permissions = ",".join(roledata['permission'])  # comma separated permissions in a string
+                c.add_role(roledata['name'], roledata['multiple'] == 'yes', permissions)
         db.session.add(c)
 

@@ -1,6 +1,11 @@
 {% from "macros.html" import render_field %}
 {% extends "place.html" %}
 
+{% block extrahead %}
+  <link rel="stylesheet" href="{{ url_for('static', filename="chosen/bootstrap-chosen.css") }}"/>
+  <script type="text/javascript" src="{{ url_for('static', filename="chosen/chosen.jquery.min.js") }}"></script>
+{% endblock %}
+
 {% block page_content %}
   <ul class="breadcrumb breadcrumb-collapse">
     <li><a href="{{url_for('.committee_structures', key=place.key)}}">Committee Structures</a></li>
@@ -8,15 +13,17 @@
   </ul>  
   <h2>Edit <a href="{{committee_type.url_for('.view_committee_structure')}}">{{committee_type.name}}</a></h2>
 
-<form role="form" method="POST" style="width: 400px">
-  {{ form.csrf_token }}
-  {{ form.committee_type_id() }}  
-  {{ render_field(form.name) }}
-  {{ render_field(form.slug) }}
-  {{ render_field(form.level, readonly="true") }}
-  {{ render_field(form.description) }}
+<form role="form" method="POST">
+  <div style="width: 400px">
+    {{ form.csrf_token }}
+    {{ form.committee_type_id() }}
+    {{ render_field(form.name) }}
+    {{ render_field(form.slug) }}
+    {{ render_field(form.level, readonly="true") }}
+    {{ render_field(form.description) }}
+  </div>
 
-  <h3>Roles</strong></h3>
+  <h3>Roles</h3>
   <table class="table table-borderless roles-table">
     <tr>
       <th>Role</th><th>#Members</th><th>Permissions</th>
@@ -25,9 +32,9 @@
       {% for role in form.roles %}
         <tr class="tr-role">
           {{ role.form.role_id() }}
-          <td>{{ role.form.name() }}</td>
-          <td>{{ role.form.multiple() }}</td>
-          <td>{{ role.form.permission() }}</td>
+          <td style="width: 30%">{{ role.form.name(class_="form-control") }}</td>
+          <td style="width: 30%">{{ role.form.multiple(class="form-control") }}</td>
+          <td style="width: 40%">{{ role.form.permission(class_="form-control permissions") }}</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -40,6 +47,10 @@
 
 <script type="text/javascript">
   $(function() {
+    $(".permissions").chosen({
+        placeholder_text_multiple: "Select member permissions",
+        no_results_text: "No permissions found",
+    });
     function add_role() {
       var tr = $("#tbody-roles tr:last-child").clone();
       var count = $("#tbody-roles tr").length;

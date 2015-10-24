@@ -1,15 +1,22 @@
 {% from "macros.html" import render_field %}
 {% extends "place.html" %}
 
+{% block extrahead %}
+  <link rel="stylesheet" href="{{ url_for('static', filename="chosen/bootstrap-chosen.css") }}"/>
+  <script type="text/javascript" src="{{ url_for('static', filename="chosen/chosen.jquery.min.js") }}"></script>
+{% endblock %}
+
 {% block page_content %}
   <h2>Add a new committee structure</h2>
 
-<form role="form" method="POST" style="width: 400px">
-  {{ form.csrf_token }}
-  {{ render_field(form.name) }}
-  {{ render_field(form.slug) }}
-  {{ render_field(form.level) }}
-  {{ render_field(form.description) }}
+<form role="form" method="POST">
+  <div style="width: 400px">
+    {{ form.csrf_token }}
+    {{ render_field(form.name) }}
+    {{ render_field(form.slug) }}
+    {{ render_field(form.level) }}
+    {{ render_field(form.description) }}
+  </div>
 
   <h3>Roles</h3>
   <table class="table table-borderless roles-table">
@@ -19,9 +26,9 @@
     <tbody id="tbody-roles">
       {% for role in form.roles %}
         <tr class="tr-role">
-          <td>{{ role.form.name }}</td>
-          <td>{{ role.form.multiple }}</td>
-          <td>{{ role.form.permission }}</td>
+          <td style="width: 30%">{{ role.form.name(class_="form-control") }}</td>
+          <td style="width: 30%">{{ role.form.multiple(class="form-control") }}</td>
+          <td style="width: 40%">{{ role.form.permission(class_="form-control permissions") }}</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -34,6 +41,10 @@
 
 <script type="text/javascript">
   $(function() {
+    $(".permissions").chosen({
+        placeholder_text_multiple: "Select member permissions",
+        no_results_text: "No permissions found",
+    });
     function add_role() {
       var tr = $("#tbody-roles tr:last-child").clone();
       var count = $("#tbody-roles tr").length;
