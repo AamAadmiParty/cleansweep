@@ -62,7 +62,7 @@ def oauth_redirect(provider, view):
     if not client:
         abort(404)
     url = client.get_authorize_url()
-    session['next'] = url_for(view)
+    session['next'] = url_for(view, **request.args)
     return redirect(url)
 
 @app.route("/oauth/reset")
