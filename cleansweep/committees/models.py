@@ -4,6 +4,8 @@ from sqlalchemy import select, func
 from ..models import db, Place, place_parents, PlaceType, Member, Place
 from collections import defaultdict
 from flask import url_for
+from ..app import app
+
 
 class CommitteeType(db.Model):
     """Specification of a Committee.
@@ -345,6 +347,43 @@ class CommitteePlaceMixin:
         def get_committee(type):
             return type.committees.filter_by(place_id=self.id).first() or Committee(self, type)
         return [get_committee(type) for type in committee_types]
+
+    # Current there is no way to identify primary committee
+    # So we are predecting it as follows
+    # For a place, at it level, if any slug is defined in app config, we try to get a valid committe from it.
+    # else get the first defined committee for that place.
+
+    def get_primary_committee(self):
+        """Returns primary commitee for a place.
+        """
+        committee_slug = app.config.get("%s_MASTER_COMMITTEE" % self.type.short_name.upper(), '')
+        c = self.get_committee(committee_slug)
+
+        # If stale committee or not found, get first committee
+        if not c or not c.committee_members:
+          all_committees = self.committees.all()
+
+          if len(all_committees) > 0:
+              c = all_committees[0]
+          else:
+              c = None
+
+        return c
+
+
+    def get_incharges(self):
+        """Returns incharge at a given place.
+        """
+        incharges = []
+
+        com = self.get_primary_committee()
+
+        if com:
+            committee_role_slug = app.config.get("%s_MASTER_COMMITTEE_ROLE" % self.type.short_name.upper(), com.type.roles.pop().role)
+            incharges = [m for m in com.committee_members if m.role.role == committee_role_slug]
+
+        return incharges
+
 
     def get_committee(self, slug, _create=True):
         """Returns a committee with given slug.

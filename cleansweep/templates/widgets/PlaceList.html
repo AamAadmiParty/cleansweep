@@ -4,7 +4,27 @@
     <h3>{{ subtype.name | pluralize }}</h3>
       <ul class="list-group">
         {% for p in places %}
-          <li class="list-group-item"><a href="{{ url_for('place', key=p.key) }}">{{ p.name }}</a></li>
+          <li class="list-group-item">
+            <a href="{{ url_for('place', key=p.key) }}">
+              {{ p.name }}
+            </a>
+
+            <div class="incharges pull-right">
+              {% set incharges = p.get_incharges() %}
+              {% if incharges %}
+                {% for i in  incharges%}
+                {% set member = i.member %}
+                  <a href="{{ url_for('volunteers.profile', id=member.id , hash=member.get_hash())}}" target="_blank">
+                    {{member.name}}
+                  </a>
+                {% endfor %}
+              {% else %}
+                <em>None</em>
+              {% endif %}
+            </div>
+
+
+          </li>
         {% endfor %}
       </ul>
   {% endfor %}
