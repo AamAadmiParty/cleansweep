@@ -2,9 +2,12 @@ from flask import (request, Response, jsonify)
 import json
 import requests
 from ..app import app
-from ..models import Place, Member
+from ..models import Place, Member, db
+from ..core import rbac, smslib
+from ..audit import record_audit
+from admin import get_sms_config
 from flask_cors import CORS
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 
 cors = CORS(app, resources={r"/api/*": {"origins": "*", "headers": "accept, x-requested-with"}})
 
@@ -100,3 +103,52 @@ def authorize():
             token = s.dumps(signed_data)
 
             return jsonify(token=token, scope=scope_as_str), 200, {'Cache-Control': 'no-store'}
+
+
+@app.route("/api/send-sms", methods=['POST'])
+def send_sms():
+    token = request.form['token']
+    place_key = request.form['place']
+    message = request.form['message']
+
+    s = Serializer(app.config['SECRET_KEY'])
+    try:
+        data = s.loads(token)
+    except SignatureExpired:
+        return jsonify(error="Token expired: %s" % token), 400
+    except BadSignature:
+        return jsonify(error="Invalid token: %s" % token), 400
+    scope_in_list = data['scope']  # Get scope from token
+
+    if 'send-sms' not in scope_in_list:  # TODO Implement a better way to handle this?
+        return jsonify(error="This token can not be used to send sms."), 403
+
+    place = Place.find(key=place_key)
+    if not place:
+        return jsonify(error="Invalid place: '%s'" % place_key), 400
+
+    phone = data['phone']  # Get phone number of the user who sent the sms to init this request.
+    user = Member.find(phone=phone)
+    if user is None:  # This is never going to happen. We already checked this in authorize. But still.
+        return jsonify(error="No user found with %s." % phone), 404
+
+    has_permission = rbac.can(user, "write", place)  # TODO Change the action to 'send-sms' when its added.
+    if not has_permission:
+        return jsonify(error="User does not have permission on '%s'" % place_key)
+
+    config = get_sms_config(place)
+    sms_provider = config and smslib.get_sms_provider(**config)
+    if sms_provider is None:
+        return jsonify(error="SMS is not configured for place '%s'" % place_key), 404
+
+    people = place.get_all_members_iter()
+    phone_numbers = [p.phone for p in people]
+    sms_provider.send_sms_async(phone_numbers, message)
+    record_audit(
+        action="send-sms",
+        timestamp=None,
+        place=place,
+        data=dict(message=message, place=place_key)
+    )
+    db.session.commit()
+    return jsonify({'feedback': "Your message has been sent to all the volunteers of '%s'." % place_key})
