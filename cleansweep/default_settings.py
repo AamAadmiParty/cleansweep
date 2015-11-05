@@ -33,6 +33,17 @@ GOOGLE_CLIENT_SECRET = "Qa-afy19Z9J6gqyqnpcHJjvQ"
 MICROSOFT_CLIENT_ID = '0000000048166B2A'
 MICROSOFT_CLIENT_SECRET = '52F1ZWq5upyUS9smpmQeb4LoLNa8zvnC'
 
+TRUSTED_APPS = [
+    {
+        'app-name': 'cleansweep-sms-bridge',
+        'client-id': 'xSbAMFEJlFrZUFyV',
+        'client-secret': 'VEmleukjCvpNoVnmeIIGFaCuIJckjTBR',
+        'scope': ['send-sms'],
+        'ips': ['']
+
+    }
+]
+
 ENABLE_MOCKDOWN = False
 
 LOGGER_NAME = "cleansweep"
