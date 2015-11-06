@@ -49,31 +49,52 @@ class BaseSMSProvider:
         else:
             self.send_sms(phone_numbers, message)
 
-class PinacleSMSProvider(BaseSMSProvider):
-    BASE_URL = "http://www.smsjust.com/blank/sms/user/urlsms.php?username={username}&pass={password}&senderid={senderid}&message={message}&dest_mobileno={phone_numbers}&response=Y"
+class GenericSMSProvider(BaseSMSProvider):
+    URL_TEMPLATE = None
 
-    def __init__(self, username, password, senderid):
-        self.username = username
-        self.password = password
-        self.senderid = senderid
+    def __init__(self, **kwargs):
+        self.parameters = kwargs
+
+    def get_url_template(self):
+        # take URL template from the object or from the parameters
+        return self.URL_TEMPLATE or self.parameters['url']
 
     def send_sms(self, phone_numbers, message):
         phone_numbers = ["91" + p for p in self.process_phone_numbers(phone_numbers)]
-        logger.info("sending sms to {} phone numbers.", len(phone_numbers))
+        logger.info("sending sms to %s phone numbers.", len(phone_numbers))
+
+        url_template = self.get_url_template()
+
         for chunk in group(phone_numbers, 300):
             phone_numbers_txt = ",".join(chunk)
-            url = self.BASE_URL.format(
-                username=self.username,
-                password=self.password,
-                senderid=self.senderid,
-                phone_numbers=urllib.quote_plus(phone_numbers_txt),
-                message=urllib.quote_plus(message))
+            d = dict(self.parameters,
+                phone_numbers=phone_numbers_txt,
+                message=message)
+            d = {k: urllib.quote_plus(v) for k, v in d.items()}
+            url = url_template.format(**d)
             logger.info("sending sms using URL: %s", url)
             response = urllib.urlopen(url)
             logger.info("sms response\n%s", response.read())
         return len(phone_numbers)
 
+class PinacleSMSProvider(GenericSMSProvider):
+    URL_TEMPLATE = "http://www.smsjust.com/blank/sms/user/urlsms.php?username={username}&pass={password}&senderid={senderid}&message={message}&dest_mobileno={phone_numbers}&response=Y"
+
+class SMSCuppaProvider(GenericSMSProvider):
+    TRANS_URL_TEMPLATE = "http://trans.smscuppa.com/sendsms.jsp?user={username}&password={password}&mobiles={phone_numbers}&sms={message}&senderid={senderid}&version=3"
+    PROMO_URL_TEMPLATE = "http://mtrans.smscuppa.com/sendsms.jsp?user={username}&password={password}&mobiles={phone_numbers}&sms={message}&senderid={senderid}&version=3"
+
+    def get_url_template(self):
+        if self.parameters.get("mode") == "transactional":
+            return self.TRANS_URL_TEMPLATE
+        else:
+            return self.PROMO_URL_TEMPLATE
+
 def get_sms_provider(provider, **kwargs):
     if provider == 'pinacle':
         return PinacleSMSProvider(**kwargs)
+    elif provider == 'smscuppa':
+        return SMSCuppaProvider(**kwargs)
+    else:
+        return GenericSMSProvider(**kwargs)
 
