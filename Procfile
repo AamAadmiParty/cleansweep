@@ -1,2 +1,2 @@
 
-web: gunicorn cleansweep.main:app
+web: gunicorn cleansweep.wsgiapp:app

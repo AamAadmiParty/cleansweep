@@ -11,21 +11,21 @@ import logging
 logger = logging.getLogger(__name__)
 
 def init_app(config_file, create_tables=False):
-    # take the absolute path, otherwise Flask looks for file relative to the app
-    # insted of PWD.
-    config_path = os.path.abspath(config_file)
-
     app.config.from_object('cleansweep.default_settings')
 
-    # Hack to make it easier to specify production config
-    app.config.from_pyfile(config_path, silent=True)
+    if config_file:
+        # take the absolute path, otherwise Flask looks for file relative to the app
+        # insted of PWD.
+        config_path = config_file and os.path.abspath(config_file)
+
+        app.config.from_pyfile(config_path, silent=True)
+        logger.info("init_app %s", config_path)
 
     if os.getenv('CLEANSWEEP_SETTINGS'):
         app.config.from_envvar('CLEANSWEEP_SETTINGS')
 
     utils.setup_error_emails(app)
     utils.setup_logging(app)
-    logger.info("init_app %s", config_path)
 
     # Setup the view helpers
     view_helpers.init_app(app)
