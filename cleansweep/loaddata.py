@@ -224,7 +224,7 @@ def init():
     print "{} have been setup as admin".format(email)
     print
     print "Run the app using:"
-    print "python run.py"
+    print "python manage.py runserver"
     print
     print "The website will be accessible at http://localhost:5000/"
 
