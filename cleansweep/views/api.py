@@ -4,7 +4,7 @@ import requests
 from ..app import app
 from ..models import Place, Member, db
 from ..core import rbac, smslib
-from ..audit import record_audit
+from ..plugins.audit import record_audit
 from admin import get_sms_config
 from flask_cors import CORS
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired

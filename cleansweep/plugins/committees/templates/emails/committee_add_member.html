@@ -1,0 +1,30 @@
+{% extends "emails/base.html" %}
+
+{% block subject %}
+You've been added to {{committee.type.name}}
+{% endblock %}
+
+{% block content %}
+<p>Dear {{member.name}},</p>
+
+<p>This is to inform you that you have been added as <strong>{{role.role}}</strong> to the
+<strong>{{committee.type.name}}</strong> at <a href="{{url_for('place', key=committee.place.key, _external=True)}}">{{committee.place.name}}</a> unit.</p>
+
+<p>Please feel free to contact your administrator in case you have any queries:</p>
+
+<div class="quote">
+	<table class="noborder">
+		<tr><th>Name</th><td>{{user.name}}</td></tr>
+		<tr><th>Phone</th><td>{{user.phone}}</td></tr>
+		<tr><th>E-mail</th><td>{{user.email}}</td></tr>
+	</table>
+</div>
+
+<p>Welcome on board!!</p>
+
+<p>Together let us build a strong AAM AADMI PARTY that can deliver clean politics and good governance in the country.</p>
+<p>
+Jai Hind!<br/>
+AAM AADMI PARTY.
+</p>
+{% endblock %}

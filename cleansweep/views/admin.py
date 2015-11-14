@@ -10,7 +10,7 @@ from ..view_helpers import place_view
 from ..helpers import get_current_user
 from ..core import mailer, smslib
 from ..voterlib import voterdb
-from ..audit import record_audit
+from ..plugins.audit import record_audit
 import json
 from collections import defaultdict
 

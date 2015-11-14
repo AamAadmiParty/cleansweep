@@ -53,12 +53,12 @@ ADMIN_USERS = []
 
 # These plugins are loaded by default
 DEFAULT_PLUGINS = [
-    "cleansweep.volunteers",
-    "cleansweep.voters",
-    "cleansweep.signups",
-    "cleansweep.committees",
-    "cleansweep.vistaar",
-    "cleansweep.audit",
+    "cleansweep.plugins.volunteers",
+    "cleansweep.plugins.voters",
+    "cleansweep.plugins.signups",
+    "cleansweep.plugins.committees",
+    "cleansweep.plugins.vistaar",
+    "cleansweep.plugins.audit",
 ]
 
 # Specify any additional plugins that you may want to load here.

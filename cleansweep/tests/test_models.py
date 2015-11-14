@@ -1,7 +1,7 @@
 from flask.ext.testing import TestCase
 from ..main import app
 from ..models import db, Place, PlaceType, Member
-from ..committees.models import CommitteeType
+from ..plugins.committees.models import CommitteeType
 
 class DBTestCase(TestCase):
     setup_place_types = False
