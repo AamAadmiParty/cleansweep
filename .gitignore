@@ -2,3 +2,6 @@
 bin
 include
 lib
+
+config/development.cfg
+*.backup
