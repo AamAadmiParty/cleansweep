@@ -95,7 +95,8 @@ def profile(id, hash):
             from ..audit.models import Audit
             Audit.query.filter_by(person_id=m.id).delete()
             Audit.query.filter_by(user_id=m.id).delete()
-            db.session.delete(pending_member)
+            if pending_member is not None:
+                db.session.delete(pending_member)
             db.session.delete(m)
             db.session.commit()
             signals.delete_volunteer.send(m, place=place)
