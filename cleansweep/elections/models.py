@@ -1,5 +1,5 @@
 from ..models import db, Place, PlaceType, Member, place_parents
-from ..committees.models import Committee, CommitteeMember, CommitteeType, CommitteeRole
+from ..plugins.committees.models import Committee, CommitteeMember, CommitteeType, CommitteeRole
 from collections import defaultdict
 from sqlalchemy.sql.expression import func
 from sqlalchemy.dialects.postgresql import JSON
