@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="//octicons.github.com/components/octicons/octicons/octicons.css">
+
+<style type="text/css">
+.app {
+  float: left;
+  margin: 20px;
+}
+.app-icon {
+  padding: 20px 30px;
+  background: #eed;
+  border-radius: 5px;
+
+}
+.app-label {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.octicon {
+  font-size: 32px;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content_head %}
+  <h1>Dashboard</h1>
+{% endblock %}
+
+{% block content_body %}
+  Welcome {{user.name}}!
+
+  <p>
+  You are member of
+  <a href="{{url_for('place', key=user.place.key)}}">{{user.place.name}}</a>.
+  </p>
+
+  <div class="app-grid">
+
+    <div class="app">
+      <div class="app-icon">
+        <span class="octicon octicon-telescope"></span>
+      </div>
+      <div class="app-label">Explore</div>
+    </div>
+
+    <div class="app">
+      <div class="app-icon">
+        <span class="octicon octicon-person"></span>
+      </div>
+      <div class="app-label">Volunteers</div>
+    </div>
+
+    <div class="app">
+      <div class="app-icon">
+        <span class="octicon octicon-organization"></span>
+      </div>
+      <div class="app-label">Committees</div>
+    </div>
+
+    <div class="app">
+      <div class="app-icon">
+        <span class="octicon octicon-primitive-dot"></span>
+      </div>
+      <div class="app-label">Voters</div>
+    </div>
+
+
+    <div class="app">
+      <div class="app-icon">
+        <span class="octicon octicon-comment"></span>
+      </div>
+      <div class="app-label">SMS</div>
+    </div>
+
+    <div class="app">
+      <div class="app-icon">
+        <span class="octicon octicon-mail"></span>
+      </div>
+      <div class="app-label">E-Mail</div>
+    </div>
+
+    <div class="app">
+      <div class="app-icon">
+        <span class="octicon octicon-key"></span>
+      </div>
+      <div class="app-label">Admin</div>
+    </div>
+
+  </div>
+
+
+{% endblock %}
