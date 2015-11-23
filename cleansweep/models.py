@@ -393,7 +393,7 @@ class Member(db.Model):
     place = db.relationship('Place', backref=db.backref('members', lazy='dynamic'))
 
     name = db.Column(db.Text, nullable=False)
-    email = db.Column(db.Text, unique=True)
+    email = db.Column(db.Text)
     phone = db.Column(db.Text)
     voterid = db.Column(db.Text)
     details = db.Column(JSON)
