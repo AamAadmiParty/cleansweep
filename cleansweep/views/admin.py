@@ -6,7 +6,7 @@ from ..models import Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
 from ..voterlib import voterdb
-from ..view_helpers import place_view
+from ..view_helpers import place_view, require_permission
 from ..helpers import get_current_user
 from ..core import mailer, smslib
 from ..voterlib import voterdb
@@ -14,9 +14,10 @@ from ..plugins.audit import record_audit
 import json
 from collections import defaultdict
 
-@place_view("/admin", permission="write")
-def admin(place):
-    return render_template("admin/index.html", place=place)
+@require_permission("siteadmin")
+@app.route("/admin")
+def admin():
+    return render_template("admin/index.html")
 
 @place_view("/sendmail", methods=['GET', 'POST'], permission="write")
 def admin_sendmail(place):

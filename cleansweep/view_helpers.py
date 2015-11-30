@@ -83,6 +83,25 @@ def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=N
     f._place_view = func
     return f
 
+def require_permission(permission_name):
+    def require_permission_decorator(f):
+        @functools.wraps(f)
+        def wrapped(*a, **kw):
+            user = h.get_current_user()
+            if not user:
+                return render_template("permission_denied.html")
+
+            perms = h.get_permissions(user, None)
+            # Put permissions in context globals, so that it can be added
+            # to the template from helpers.py
+            g.permissions = perms
+            if permission and permission not in perms:
+                return render_template("permission_denied.html")
+
+            return f(*a, **kw)
+        return wrapped
+    return require_permission_decorator
+
 def admin_view(path, func=None, *args, **kwargs):
     return place_view(path, func=func, permission='write', *args, **kwargs)
 

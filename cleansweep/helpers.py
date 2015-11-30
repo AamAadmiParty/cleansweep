@@ -90,7 +90,7 @@ def get_permissions(user, place):
     """
     # ADMIN_USERS have all the permissions
     if user.email in app.config['ADMIN_USERS']:
-        return ['read', 'write', 'admin', 'view-volunteers']
+        return ['read', 'write', 'admin', 'siteadmin', 'view-volunteers']
     elif place is None:
         return []
     else:
