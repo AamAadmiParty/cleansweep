@@ -1,5 +1,7 @@
 from flask.ext.script import Manager, Command
+from flask.ext.script.commands import ShowUrls
 from flask.ext.migrate import Migrate, MigrateCommand
+
 
 from cleansweep.main import app, init_app
 from cleansweep.models import db
@@ -31,6 +33,7 @@ class CleansweepManager(Manager):
 
 manager = CleansweepManager()
 manager.add_command('db', MigrateCommand)
+manager.add_command('show-urls', ShowUrls)
 
 
 @manager.command
