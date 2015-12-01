@@ -1,6 +1,6 @@
 from flask.ext.testing import TestCase
 from ..main import app
-from ..models import db, Place, PlaceType, Member
+from ..models import db, Place, PlaceType, Member, Document
 from ..plugins.committees.models import CommitteeType
 
 class DBTestCase(TestCase):
@@ -264,6 +264,45 @@ class CommitteeTypeTest(DBTestCase):
             "total_members": 0,
             "total_places": 1
             })
+
+class DocumentTest(DBTestCase):
+    def new_doc(self, _key, type, **kw):
+        doc = Document(_key, type)
+        doc.update(**kw)
+        db.session.add(doc)
+        db.session.commit()
+        return doc
+
+    def test_new_document(self):
+        data = {
+            "name": "foo",
+            "email": "foo@example.com",
+            "list": [1, 2, 3]
+        }
+        doc = self.new_doc("foo", type="test-type", **data)
+
+        assert doc.key == "foo"
+        assert doc.type == "test-type"
+
+        doc2 = Document.find("foo")
+        assert doc2.key == "foo"
+        assert doc2.type == "test-type"
+        assert doc2.data == data
+
+    def test_search(self):
+        a1 = self.new_doc("a1", type="a", name='a1')
+        a2 = self.new_doc("a2", type="a", name='a2')
+        b1 = self.new_doc("b1", type="b", name='b1')
+
+        docs = Document.search(type='a')
+        assert [doc.key for doc in docs] == ['a1', 'a2']
+
+        docs = Document.search(type='a', name='a1')
+        assert [doc.key for doc in docs] == ['a1']
+
+        docs = Document.search(type='b')
+        assert [doc.key for doc in docs] == ['b1']
+
 
 
 if __name__ == '__main__':

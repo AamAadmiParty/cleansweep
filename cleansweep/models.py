@@ -521,3 +521,42 @@ class Unsubscribe(db.Model):
         u = Unsubscribe(email)
         db.session.add(u)
         db.session.commit()
+
+class Document(db.Model):
+    """Simple document storage.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.Text, nullable=False, unique=True)
+    type = db.Column(db.Text, nullable=False)
+
+    # TODO: switch to JSONB and index on this column
+    data = db.Column(JSON)
+
+    def __init__(self, key, type):
+        self.key = key
+        self.type = type
+        self.revision = 0
+        self.data = {}
+
+    def update(self, **kw):
+        self.data.update(**kw)
+        # trick to mark the object dirty
+        self.data = self.data
+
+    @staticmethod
+    def find(key):
+        """Find the document with the specified key.
+        """
+        return Document.query.filter_by(key=key).first()
+
+    @staticmethod
+    def search(type, **kw):
+        """Searchs for all documents of specified type matching all the optional constraints
+        specified by keyword arguments.
+
+            Document.search("user", email="alice@example.com")
+        """
+        q = Document.query.filter_by(type=type)
+        for name, value in kw.items():
+            q = q.filter(Document.data[name].astext == value)
+        return q.all()
