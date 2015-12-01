@@ -10,7 +10,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def init_app(config_file, create_tables=False):
+def init_app(config_file, create_tables=None):
     app.config.from_object('cleansweep.default_settings')
 
     if config_file:
@@ -34,6 +34,10 @@ def init_app(config_file, create_tables=False):
     plugins = app.config['DEFAULT_PLUGINS'] + app.config['PLUGINS']
     for name in plugins:
         plugin.load_plugin(name)
+
+    # enable create_tables if a value is not speficied and the app is running in debug mode
+    if create_tables is None and app.config['DEBUG']:
+        create_tables = True
 
     if create_tables:
         db.create_all()
