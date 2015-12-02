@@ -3,6 +3,7 @@
 from flask import Blueprint
 from . import view_helpers
 from .app import app
+from .core import permissions
 
 class Plugin(Blueprint):
     def place_view(self, path, func=None, permission=None, sidebar_entry=None, *args, **kwargs):
@@ -17,6 +18,14 @@ class Plugin(Blueprint):
     def init_app(self, app):
         app.register_blueprint(self)
         self.logger = app.logger
+
+    def define_permission(self, name, description):
+        """Defines a new permission with given name and description.
+
+        Delegates the calls to a function with same name in core.permissions module.
+        Added here to avoid hassle of impoerting permissions in every plugin.
+        """
+        permissions.define_permission(name, description)
 
 
 def load_plugin(modname):
