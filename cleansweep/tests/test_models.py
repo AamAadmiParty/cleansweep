@@ -303,6 +303,14 @@ class DocumentTest(DBTestCase):
         docs = Document.search(type='b')
         assert [doc.key for doc in docs] == ['b1']
 
+    def test_save(self):
+        a1 = self.new_doc("a1", type="a", name='a1')
+        a1.update(name="aa11")
+        db.session.add(a1)
+        db.session.commit()
+
+        doc = Document.find("a1")
+        assert a1.data['name'] == "aa11"
 
 
 if __name__ == '__main__':

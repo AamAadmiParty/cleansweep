@@ -5,6 +5,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.sql.expression import func
 from sqlalchemy import text
+from sqlalchemy.orm.attributes import flag_modified
 from .app import app
 import md5
 
@@ -541,7 +542,7 @@ class Document(db.Model):
     def update(self, **kw):
         self.data.update(**kw)
         # trick to mark the object dirty
-        self.data = self.data
+        flag_modified(self, "data")
 
     @staticmethod
     def find(key):
