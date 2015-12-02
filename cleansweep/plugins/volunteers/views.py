@@ -10,9 +10,43 @@ import tablib
 
 plugin = Plugin("volunteers", __name__, template_folder="templates")
 
+plugin.define_permission(
+    name='volunteers.view',
+    description='Permission to view volunteers at a place'
+)
+
+plugin.define_permission(
+    name='volunteers.edit',
+    description='Permission to edit details of a volunteer'
+)
+
+plugin.define_permission(
+    name='volunteers.add',
+    description='Permission to add new volunteers'
+)
+
+plugin.define_permission(
+    name='volunteers.delete',
+    description='Permission to delete a volunteer'
+)
+
+plugin.define_permission(
+    name='volunteers.view-contact-details',
+    description='Permission to view contact details of volunteers',
+)
+
+plugin.define_permission(
+    name='volunteers.download',
+    description='Permission to download volunteer details',
+)
+
+plugin.define_permission(
+    name='volunteers.bulk-import',
+    description='Permission to bulk import volunteers',
+)
+
 def init_app(app):
     plugin.init_app(app)
-
 
 @plugin.place_view("/volunteers", permission="view-volunteers")
 def volunteers(place):

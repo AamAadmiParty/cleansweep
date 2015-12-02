@@ -10,6 +10,20 @@ import tablib
 
 plugin = Plugin("committees", __name__, template_folder="templates")
 
+plugin.define_permission(
+    name="committees.view",
+    description="Permission to view committees and committee members"
+)
+
+plugin.define_permission(
+    name="committees.edit",
+    description="Permission to edit committees"
+)
+
+plugin.define_permission(
+    name="committees.view-contact-details",
+    description="Permission to view contact details of committee members",
+)
 
 def init_app(app):
     plugin.init_app(app)
