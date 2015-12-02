@@ -4,13 +4,13 @@
   <ul class="breadcrumb breadcrumb-collapse">
     <li><a href="{{url_for('admin')}}">Admin Center</a></li>
     <li><a href="{{url_for('admin_permission_groups')}}">Permission Groups</a></li>
-    <li><a href="{{url_for('admin_view_permission_group', key=group.key)}}">{{group.data.name}}</a></li>
+    <li><a href="{{url_for('admin_view_permission_group', key=group.key)}}">{{group.name}}</a></li>
     <li></li>
   </ul>
   {% if new %}
     <h2>New Permission Group</h2>
   {% else %}
-    <h2>Edit {{group.data.name}}</h2>
+    <h2>Edit {{group.name}}</h2>
   {% endif %}
 </div>  
 {% endblock %}
@@ -19,17 +19,21 @@
   <form method="POST">
     <div class="form-group">
       <label for="name">Name</label>
-      <input type="text" class="form-control" name="name" id="name" placeholder="Name" value="{{group.data.name}}">
+      <input type="text" class="form-control" name="name" id="name" placeholder="Name" value="{{group.name}}">
     </div>
     <div class="form-group">
       <label for="description">Description</label>
-      <textarea class="form-control" name="description" id="description">{{group.data.description}}</textarea>
+      <textarea class="form-control" name="description" id="description">{{group.description}}</textarea>
     </div>
+
+  <ul class="list-group">
     <h3>Permissions</h3>
     {% for p in all_permissions %}
+      <li class="list-group-item">
       <div class="checkbox">
         <label>
-          <input type="checkbox" name="permissions" value="{{p.name}}" {{ 'checked="checked"' if p.name in group.data.permissions else ""}}> <strong>{{p.name}}</strong><br/><span class="small">{{p.description}}</span>
+          <h4><input type="checkbox" name="permissions" value="{{p.name}}" {{ 'checked="checked"' if p.name in group.data.permissions else ""}}> {{p.name}}</h4>
+          <div class="small">{{p.description}}</div>
         </label>
       </div>
     {% endfor %}

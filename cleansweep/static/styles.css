@@ -170,3 +170,8 @@ a.header {
     color: black !important;
     text-decoration: none;
 }
+
+.list-group-item .checkbox {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}

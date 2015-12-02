@@ -6,17 +6,20 @@
     <li><a href="{{url_for('.admin_permission_groups')}}">Permission Groups</a></li>
     <li></li>
   </ul>
-  <h2>{{ group.data.name }}</h2>
+  <h2>{{ group.name }}</h2>
 </div>  
 {% endblock %}
 
 {% block content_body %}
-  <div><i>{{group.data.description}}</i></div>
+  <div><i>{{group.description}}</i></div>
 
   <h3>Permissions</h3>
   <ul class="list-group">
-  {% for p in group.data.permissions %}
-      <li class="list-group-item">{{p}}</li>
+  {% for p in group.permissions %}
+      <li class="list-group-item">
+        <h4>{{p.name}}</h4>
+        <div>{{p.description}}</div>
+      </li>
   {% endfor %}
   </ul>
 
