@@ -58,7 +58,7 @@ class PermissionGroup(object):
 
 	@property
 	def permissions(self):
-		plist = self.doc.data['properties']
+		plist = self.doc.data['permissions']
 		return [_permission_registry[p] for p in plist if p in _permission_registry]
 
 	def update(self, name, description, permissions):
@@ -79,7 +79,7 @@ class PermissionGroup(object):
 		"""Returns a new PermissionGroup object.
 		"""
 		doc = Document(None, "permission-group")
-		doc.update(name="", description="", properties=[])
+		doc.update(name="", description="", permissions=[])
 		return PermissionGroup(doc)
 
 	@staticmethod
