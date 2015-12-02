@@ -269,8 +269,7 @@ class DocumentTest(DBTestCase):
     def new_doc(self, _key, type, **kw):
         doc = Document(_key, type)
         doc.update(**kw)
-        db.session.add(doc)
-        db.session.commit()
+        doc.save()
         return doc
 
     def test_new_document(self):
@@ -306,11 +305,27 @@ class DocumentTest(DBTestCase):
     def test_save(self):
         a1 = self.new_doc("a1", type="a", name='a1')
         a1.update(name="aa11")
-        db.session.add(a1)
-        db.session.commit()
+        a1.save()
 
         doc = Document.find("a1")
         assert a1.data['name'] == "aa11"
+
+    def test_delete(self):
+        a1 = self.new_doc("a1", type="a", name='a1')
+        a2 = self.new_doc("a2", type="a", name='a2')
+        a1.delete()
+
+        assert Document.find("a1") is None
+
+        docs = Document.search(type="a")
+        assert [doc.key for doc in docs] == ['a2']
+
+    def test_new_key(self):
+        a1 = self.new_doc(None, type="a", name='a1')
+        a1.save()
+
+        assert a1.key is not None
+        assert Document.find(a1.key) is not None
 
 
 if __name__ == '__main__':

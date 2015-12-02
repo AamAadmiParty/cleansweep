@@ -8,6 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.orm.attributes import flag_modified
 from .app import app
 import md5
+import uuid
 
 db = SQLAlchemy(app)
 
@@ -524,7 +525,33 @@ class Unsubscribe(db.Model):
         db.session.commit()
 
 class Document(db.Model):
-    """Simple document storage.
+    """Simple document storage to escape from ORM hell.
+
+    API
+    ---
+
+    CREATE
+
+        doc = Document(key="alice", type="person", data={"email": "alice@example.com})
+        print doc.key
+        print doc.type
+        print doc.data["email"]
+
+    READ
+
+        doc = Document.find("alice")
+        people = Document.search(type="person")
+        managers = Document.search(type="person", role="manager")
+
+    UPDATE:
+
+        doc.update(email="alice@new-domain.com")
+        doc.save()
+
+    DELETE:
+
+        doc.delete()
+
     """
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.Text, nullable=False, unique=True)
@@ -533,22 +560,42 @@ class Document(db.Model):
     # TODO: switch to JSONB and index on this column
     data = db.Column(JSON)
 
-    def __init__(self, key, type):
-        self.key = key
+    def __init__(self, key, type, data=None):
+        """Creates a new Document with specified key and type.
+
+        If key is None, a unique key is automatically generated.
+        """
+        self.key = key or self._generate_unique_key()
         self.type = type
         self.revision = 0
-        self.data = {}
+        self.data = data or {}
+
+    def _generate_unique_key(self):
+        """Generates a unique random key using UUID.
+        """
+        return uuid.uuid4().hex
 
     def update(self, **kw):
         self.data.update(**kw)
         # trick to mark the object dirty
         flag_modified(self, "data")
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     @staticmethod
-    def find(key):
-        """Find the document with the specified key.
+    def find(key, type=None):
+        """Find the document with the specified key and optionally type.
         """
-        return Document.query.filter_by(key=key).first()
+        q = Document.query.filter_by(key=key)
+        if type:
+            q = q.filter_by(type=type)
+        return q.first()
 
     @staticmethod
     def search(type, **kw):
@@ -561,3 +608,6 @@ class Document(db.Model):
         for name, value in kw.items():
             q = q.filter(Document.data[name].astext == value)
         return q.all()
+
+    def __repr__(self):
+        return "<Document({!r})>".format(self.key)
