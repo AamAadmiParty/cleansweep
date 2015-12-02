@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% block content_head %}
+<div class="page-content">
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.admin')}}">Admin Center</a></li>
+    <li><a href="{{url_for('.admin_permission_groups')}}">Permission Groups</a></li>
+    <li></li>
+  </ul>
+  <h2>{{ group.data.name }}</h2>
+</div>  
+{% endblock %}
+
+{% block content_body %}
+  <div><i>{{group.data.description}}</i></div>
+
+  <h3>Permissions</h3>
+  <ul class="list-group">
+  {% for p in group.data.permissions %}
+      <li class="list-group-item">{{p}}</li>
+  {% endfor %}
+  </ul>
+
+  <div>
+    <a href="{{url_for('.admin_edit_permission_group', key=group.key)}}" class="btn btn-primary">Edit</a>
+    <a href="#" class="btn btn-danger pull-right">Delete</a>
+  </div>
+
+{% endblock %}

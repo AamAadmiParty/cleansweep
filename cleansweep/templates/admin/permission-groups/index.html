@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block content_head %}
+<div class="page-content">
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.admin')}}">Admin Center</a></li>
+    <li></li>
+  </ul>
+  <h2>Permission Groups</h2>
+</div>  
+{% endblock %}
+
+{% block content_body %}
+  <p><i>A Permission Group is a set of permssions. An organization typically have a handful of permission groups and they are used to assign permissions to various roles.</i></p>
+  <ul class="list-group">
+    {% for group in groups %}
+      <li class="list-group-item">
+      	<h4><a href="{{url_for('admin_view_permission_group', key=group.key)}}">{{group.data.name}}</a></h4>
+      	<div>{{group.data.description}}</div>
+      </li>
+    {% endfor %}
+  </ul>
+  <div>
+    <a class="btn btn-primary" href="{{url_for('admin_new_permission_group')}}" title="Define new permission group"><span class="glyphicon glyphicon-plus"></span></a>
+  </div>  
+{% endblock %}

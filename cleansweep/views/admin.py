@@ -9,6 +9,7 @@ from ..voterlib import voterdb
 from ..view_helpers import place_view, require_permission
 from ..helpers import get_current_user
 from ..core import mailer, smslib
+from ..core.permissions import get_all_permissions, PermissionGroup
 from ..voterlib import voterdb
 from ..plugins.audit import record_audit
 import json
@@ -18,6 +19,64 @@ from collections import defaultdict
 @app.route("/admin")
 def admin():
     return render_template("admin/index.html")
+
+
+@require_permission("siteadmin")
+@app.route("/admin/permission-groups")
+def admin_permission_groups():
+    groups = PermissionGroup.all()
+    return render_template("admin/permission-groups/index.html", groups=groups)
+
+
+@require_permission("siteadmin")
+@app.route("/admin/permission-groups/<key>")
+def admin_view_permission_group(key):
+    group = PermissionGroup.find(key)
+    if not group:
+        abort(404)
+    return render_template("admin/permission-groups/view.html", group=group)
+
+
+@require_permission("siteadmin")
+@app.route("/admin/permission-groups/<key>/edit", methods=["GET", "POST"])
+def admin_edit_permission_group(key):
+    group = PermissionGroup.find(key)
+    all_permissions = get_all_permissions()
+    if not group:
+        abort(404)
+
+    if request.method == "POST":
+        # TODO: form validation
+        group.update(
+            name=request.form.get("name"),
+            description=request.form.get("description"),
+            permissions=request.form.getlist("permissions"))
+        group.save()
+        return redirect(url_for("admin_view_permission_group", key=key))
+    return render_template("admin/permission-groups/edit.html",
+                group=group,
+                all_permissions=all_permissions)
+
+
+@require_permission("siteadmin")
+@app.route("/admin/permission-groups/_new", methods=["GET", "POST"])
+def admin_new_permission_group():
+    group = PermissionGroup.new()
+    all_permissions = get_all_permissions()
+
+    if request.method == "POST":
+        # TODO: form validation
+        group.update(
+            name=request.form.get("name"),
+            description=request.form.get("description"),
+            permissions=request.form.getlist("permissions"))
+        group.save()
+        return redirect(url_for("admin_view_permission_group", key=group.key))
+    return render_template("admin/permission-groups/edit.html",
+                group=group,
+                all_permissions=all_permissions,
+                new=True)
+
 
 @place_view("/sendmail", methods=['GET', 'POST'], permission="write")
 def admin_sendmail(place):
