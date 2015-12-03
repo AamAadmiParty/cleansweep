@@ -1,7 +1,7 @@
 """Views of the admin panel.
 """
 
-from flask import (render_template, abort, url_for, redirect, request, flash, jsonify)
+from flask import (render_template, abort, url_for, redirect, request, session, flash, jsonify)
 from ..models import Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
@@ -15,21 +15,22 @@ from ..plugins.audit import record_audit
 import json
 from collections import defaultdict
 
-@require_permission("siteadmin")
 @app.route("/admin")
+@require_permission("siteadmin")
 def admin():
+    print "ADMIN"
     return render_template("admin/index.html")
 
 
-@require_permission("siteadmin")
 @app.route("/admin/permission-groups")
+@require_permission("siteadmin")
 def admin_permission_groups():
     groups = PermissionGroup.all()
     return render_template("admin/permission-groups/index.html", groups=groups)
 
 
-@require_permission("siteadmin")
 @app.route("/admin/permission-groups/<key>")
+@require_permission("siteadmin")
 def admin_view_permission_group(key):
     group = PermissionGroup.find(key)
     if not group:
@@ -37,8 +38,8 @@ def admin_view_permission_group(key):
     return render_template("admin/permission-groups/view.html", group=group)
 
 
-@require_permission("siteadmin")
 @app.route("/admin/permission-groups/<key>/edit", methods=["GET", "POST"])
+@require_permission("siteadmin")
 def admin_edit_permission_group(key):
     group = PermissionGroup.find(key)
     all_permissions = get_all_permissions()
@@ -58,8 +59,8 @@ def admin_edit_permission_group(key):
                 all_permissions=all_permissions)
 
 
-@require_permission("siteadmin")
 @app.route("/admin/permission-groups/_new", methods=["GET", "POST"])
+@require_permission("siteadmin")
 def admin_new_permission_group():
     group = PermissionGroup.new()
     all_permissions = get_all_permissions()
@@ -76,6 +77,20 @@ def admin_new_permission_group():
                 group=group,
                 all_permissions=all_permissions,
                 new=True)
+
+
+@app.route("/admin/sudo")
+@require_permission("siteadmin")
+def admin_sudo():
+    if not app.config.get('DEBUG'):
+        abort(404)
+    email = request.args.get('email')
+    if Member.find(email=email):
+        session['user'] = email
+        return redirect("/")
+    else:
+        flash('Unable to find user with email %r.' % email, category='error')
+        return redirect("/")
 
 
 @place_view("/sendmail", methods=['GET', 'POST'], permission="write")
