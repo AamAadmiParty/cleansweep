@@ -98,7 +98,7 @@ margin-bottom: 0px;">
           <a href="{{url_for('committees.committees', key=place.key)}}">Committees</a>
         </li>
       {% endif %}
-      {% if "view-volunteers" in permissions %}
+      {% if "volunteers.view" in permissions %}
         <li class="list-group-item {{'active' if tab=='volunteers' }}">
           <a href="{{url_for('volunteers.volunteers', key=place.key)}}">Volunteers <span class="badge pull-right">{{place.get_member_count()}}</span></a>
         </li>
