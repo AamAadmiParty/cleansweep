@@ -48,7 +48,7 @@ plugin.define_permission(
 def init_app(app):
     plugin.init_app(app)
 
-@plugin.place_view("/volunteers", permission="view-volunteers")
+@plugin.place_view("/volunteers", permission="volunteers.view")
 def volunteers(place):
     page = h.safeint(request.args.get('page', 1), default=1, minvalue=1)
     total_count = place.get_member_count()
@@ -60,7 +60,7 @@ def volunteers(place):
     return render_template("volunteers.html", place=place, pagination=pagination, volunteers=volunteers_per_page)
 
 
-@plugin.place_view("/volunteers/add", methods=['GET', 'POST'], permission="write")
+@plugin.place_view("/volunteers/add", methods=['GET', 'POST'], permission="volunteers.add")
 def add_volunteer(place):
     form = forms.AddVolunteerForm(place, request.form)
     if request.method == "POST" and form.validate():
@@ -77,7 +77,7 @@ def add_volunteer(place):
     return render_template("add_volunteer.html", place=place, form=form)
 
 
-@plugin.place_view("/volunteers/autocomplete", methods=['GET'], permission="write")
+@plugin.place_view("/volunteers/autocomplete", methods=['GET'], permission="volunteers.view")
 def volunteers_autocomplete(place):
     q = request.args.get('q')
     if q:
@@ -87,7 +87,7 @@ def volunteers_autocomplete(place):
         matches = []
     return jsonify({"matches": matches})
 
-@plugin.place_view("/volunteers.xls", permission="write")
+@plugin.place_view("/volunteers.xls", permission="volunteers.download")
 def download_volunteer(place):
     def get_location_columns():
         return ['State', 'District', 'Assembly Constituency', 'Ward', 'Booth']
