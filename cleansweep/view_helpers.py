@@ -83,7 +83,7 @@ def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=N
     f._place_view = func
     return f
 
-def require_permission(permission_name):
+def require_permission(permission):
     def require_permission_decorator(f):
         @functools.wraps(f)
         def wrapped(*a, **kw):
