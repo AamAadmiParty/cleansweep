@@ -88,15 +88,19 @@ def initiaze_default_permissions():
 def get_permissions(user, place):
     """Returns the list of permissions the user has at the given place.
     """
+    perms = []
     # ADMIN_USERS have all the permissions
     if user.email in app.config['ADMIN_USERS']:
-        return ['read', 'write', 'admin', 'siteadmin', 'view-volunteers']
-    elif place is None:
-        return []
+        perms = ['read', 'write', 'admin', 'siteadmin', 'volunteers.view']
+
+
+    if place is None:
+        perms += []
     else:
         place_keys = [place.key] + [p.key for p in place.parents]
-        perms = rbac.get_user_permissions(user)
-        return [p['permission'] for p in perms if p['place'] in place_keys]
+        perm_dicts = rbac.get_user_permissions(user)
+        perms += [p['permission'] for p in perm_dicts if p['place'] in place_keys]
+    return perms
 
 def safeint(strvalue, default=0, minvalue=None, maxvalue=None):
     """Returns the int of strvalue or default.

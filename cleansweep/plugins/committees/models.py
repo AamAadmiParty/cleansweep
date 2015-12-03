@@ -2,6 +2,7 @@
 """
 from sqlalchemy import select, func
 from ...models import db, Place, place_parents, PlaceType, Member, Place
+from ...core.permissions import PermissionGroup
 from collections import defaultdict
 from flask import url_for
 
@@ -224,6 +225,9 @@ class CommitteeRole(db.Model):
             'multiple': self.multiple,
             'permission': self.permission
         }
+
+    def get_permission_group(self):
+        return PermissionGroup.find(self.permission)
 
     def __repr__(self):
         return "<Role:{}.{}>".format(self.committee_type.slug, self.role)

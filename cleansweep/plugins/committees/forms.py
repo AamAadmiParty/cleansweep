@@ -4,6 +4,7 @@ from wtforms import FieldList, FormField, SelectField, StringField, TextAreaFiel
 from wtforms import validators
 from ...models import db
 from . models import CommitteeType, CommitteeRole
+from ...core.permissions import PermissionGroup
 
 class RoleForm(wtforms.Form):
     # Extending from wtforms.Form instead of flask_wtf.Form as this adds
@@ -13,7 +14,12 @@ class RoleForm(wtforms.Form):
     role_id = HiddenField()
     name = StringField('Name')
     multiple = SelectField('Multiple?', choices=[("no", "One Member"), ("yes", "Multiple Members")], default='no')
-    permission = SelectField('Permissions', choices=[("read", "Read"), ("read,write", "Read and Write")], default='read')
+    permission = SelectField('Permissions', choices=[])
+
+    def __init__(self, *a, **kw):
+        wtforms.Form.__init__(self, *a, **kw)
+        groups = PermissionGroup.all()
+        self.permission.choices = [(g.key, g.name) for g in groups]
 
 class NewCommitteeForm(Form):
     committee_type_id = HiddenField()

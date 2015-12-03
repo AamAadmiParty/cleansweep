@@ -28,9 +28,9 @@ def get_user_roles(user):
 @rbac.permission_provider
 def get_role_perms(role):
     if role.get('role') == 'volunteer':
-        perms = ['read', 'view-volunteers']
+        perms = ['read', 'volunteers.view']
     elif role.get('role') == 'admin':
-        perms = ['read', 'write', 'admin', 'view-volunteers']
+        perms = ['read', 'write', 'admin', 'volunteers.view']
     else:
         perms = []
     return [{"place": role['place'], "permission": p} for p in perms]

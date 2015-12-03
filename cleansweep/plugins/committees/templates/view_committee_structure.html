@@ -14,10 +14,15 @@
   <div class="row">
     <div class="col-md-6">
       <table class="table">
+          <tr>
+            <th>Role</th>
+            <th>Permission</th>
+          </tr>
         {% for role in committee_type.roles %}
+          {% set group = role.get_permission_group() %}
           <tr>
             <td>{{role.role}} {{ "*" if role.multiple else "" }}</td>
-            <td>{{role.permission}}</td>
+            <td title="{{group.description}}">{{group.name}}</td>
           </tr>
         {% endfor %}
       </table>

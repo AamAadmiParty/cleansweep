@@ -49,8 +49,8 @@ def get_role_permission(role):
     if 'role-id' not in role:
         return []
     roleobj = CommitteeRole.query.filter_by(id=role['role-id']).first()
-    perms = roleobj.permission.split(",")
-    return [{"place": role['place'], "permission": p} for p in perms]
+    pgroup = roleobj.get_permission_group()
+    return [{"place": role['place'], "permission": p.name} for p in pgroup.permissions]
 
 @plugin.place_view("/committees", permission="read")
 def committees(place):
