@@ -76,7 +76,7 @@ def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=N
         # Put permissions in context globals, so that it can be added
         # to the template from helpers.py
         g.permissions = perms
-        if permission and permission not in perms:
+        if permission and not h.has_permission(permission):
             return render_template("permission_denied.html")
         
         return func(place, *a, **kw)

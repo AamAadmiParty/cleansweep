@@ -34,7 +34,7 @@
   	</ul>
   {% endif %}
 
-  {% if "write" in permissions and place.type == STATE %}
+  {% if has_permission("write") and place.type == STATE %}
 	  <div>
 	  <a href="{{url_for('.add_campaign', key=place.key)}}" class="btn btn-primary">Create a New Campaign</a>
 	  </div>
