@@ -154,7 +154,8 @@ def helpers():
         "get_site_title": get_site_title,
         "changeview": changeview,
         "is_phone_valid": is_phone_valid,
-        "get_user_permissions": rbac.get_user_permissions
+        "get_user_permissions": rbac.get_user_permissions,
+        "get_user_roles": rbac.get_user_roles
     }
 
 @app.context_processor

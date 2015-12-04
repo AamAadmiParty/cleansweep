@@ -18,6 +18,12 @@
 	<br><br>
 	<div class="well">
 	<h2>DEBUG INFO</h3>
+	<h3>Roles</h3>
+	<ul>
+		{% for role in get_user_roles(person) %}
+			<li>{{role | json_encode }}</li>
+		{% endfor %}
+	</ul>
 	<h3>Permissions</h3>
 	<ul>
 		{% for p in get_user_permissions(person) %}
