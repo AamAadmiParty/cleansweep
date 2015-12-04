@@ -77,7 +77,7 @@ def initiaze_default_permissions():
     """Initializes the default permissions available for the current user.
 
     Additional permissions based on the current location are set separately
-    when executing a place_view.
+    when executing a place_view. see view_helper.place_view for more details.
     """
     user = get_current_user()
     if user:
@@ -91,7 +91,7 @@ def get_permissions(user, place):
     perms = []
     # ADMIN_USERS have all the permissions
     if user.email in app.config['ADMIN_USERS']:
-        perms = ['read', 'write', 'admin', 'siteadmin', 'volunteers.view']
+        perms = ['*', 'read', 'write', 'admin', 'siteadmin', 'volunteers.view']
 
 
     if place is None:
@@ -101,6 +101,13 @@ def get_permissions(user, place):
         perm_dicts = rbac.get_user_permissions(user)
         perms += [p['permission'] for p in perm_dicts if p['place'] in place_keys]
     return perms
+
+def has_permission(permission):
+    """Checks if the current user has specified permission at the current place.
+    """
+    # g.permissions is set in view_helpers.place_view before executing the view function.
+    # * indicates all permissions
+    return permission in g.permissions or '*' in g.permissions
 
 def safeint(strvalue, default=0, minvalue=None, maxvalue=None):
     """Returns the int of strvalue or default.
@@ -137,6 +144,7 @@ def helpers():
         "get_config": app.config.get,
         "get_oauth_providers": oauth.get_oauth_providers,
         "permissions": getattr(g, "permissions", []),
+        "has_permission": has_permission,
         "voterdb": VoterDB(app.config["VOTERDB_URL"]),
         "sidebar_entries": sidebar_entries,
         "get_stats": stats.get_stats,
