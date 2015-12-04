@@ -14,5 +14,18 @@
 	</form>
   {% endif %}
 
+  {% if debug %}
+	<br><br>
+	<div class="well">
+	<h2>DEBUG INFO</h3>
+	<h3>Permissions</h3>
+	<ul>
+		{% for p in get_user_permissions(person) %}
+			<li>{{p | json_encode }}</li>
+		{% endfor %}
+	</ul>
+	</div>
+  {% endif %}
+
 </div>
 {% endblock %}

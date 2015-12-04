@@ -153,7 +153,8 @@ def helpers():
         "yesterday": datetime.datetime.today() - datetime.timedelta(days=1),
         "get_site_title": get_site_title,
         "changeview": changeview,
-        "is_phone_valid": is_phone_valid
+        "is_phone_valid": is_phone_valid,
+        "get_user_permissions": rbac.get_user_permissions
     }
 
 @app.context_processor

@@ -137,4 +137,5 @@ def profile(id, hash):
             flash(u"Deleted {} as volunteer.".format(m.name))
             return redirect(url_for("dashboard"))
     else:
-        return render_template("profile.html", person=m)
+        debug = request.args.get("debug") == "true"
+        return render_template("profile.html", person=m, debug=debug)
