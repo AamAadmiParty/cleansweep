@@ -108,16 +108,6 @@ margin-bottom: 0px;">
     {% if has_permission("write") %}
       <h4>Admin</h4>
       <ul class="list-group">
-        {% if place.type.short_name != "PB" %}
-          <li class="list-group-item {{'active' if tab=='mv-requests' }}">
-            <a href="{{url_for('vistaar.admin_mv_requests', key=place.key)}}">Mission Vistaar Requests</a>
-          </li>
-        {% endif %}
-        {% if place.type.short_name not in ["PB", "PX"] %}
-          <li class="list-group-item {{'active' if tab=='committee-structures' }}">
-            <a href="{{url_for('committees.committee_structures', key=place.key)}}">Committee Structures</a>
-          </li>
-        {% endif %}
         <li class="list-group-item {{'active' if tab=='contacts' }}">
           <a href="{{url_for('admin_contacts', key=place.key)}}">Contacts <span class="badge pull-right">{{place.get_contact_count()}}</span></a>
         </li>

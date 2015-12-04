@@ -1,8 +1,18 @@
 {% from "macros.html" import render_field %}
-{% extends "place.html" %}
 
-{% block page_content %}
+{% extends "admin/index.html" %}
+{% block content_head %}
+<div class="page-content">
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('admin')}}">Admin Center</a></li>
+    <li><a href="{{url_for('.committee_structures')}}">Committee Structures</a></li>
+    <li></li>
+  </ul>
   <h2>Add a new committee structure</h2>
+</div>
+{% endblock %}
+
+{% block content_body %}
 
 <form role="form" method="POST" style="width: 400px">
   {{ form.csrf_token }}

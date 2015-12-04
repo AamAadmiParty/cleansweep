@@ -1,10 +1,11 @@
 from ...plugin import Plugin
 from ...core import rbac
-from ...models import db, Member, PlaceType
+from ...models import db, Member, PlaceType, Place
 from .models import CommitteeRole, CommitteeType
 from flask import (flash, request, Response, make_response, render_template, redirect, url_for, abort)
 from . import forms
 from . import signals, notifications, audits
+from ...view_helpers import require_permission
 from collections import defaultdict
 import tablib
 
@@ -153,8 +154,10 @@ def edit_committee(place, slug):
 
     return render_template("edit_committee.html", place=place, committee=committee)
 
-@plugin.place_view("/committee-structures/new", methods=['GET', 'POST'], permission="write")
-def new_committee_structure(place):
+@plugin.route("/admin/committee-structures/new", methods=['GET', 'POST'])
+@require_permission("admin.committee-structures.new")
+def new_committee_structure():
+    place = Place.get_toplevel_place()
     form = forms.NewCommitteeForm(place)
     if request.method == "POST" and form.validate():
         committee_type = CommitteeType.new_from_formdata(place, form)
@@ -166,17 +169,23 @@ def new_committee_structure(place):
     else:
         return render_template("new_committee_structure.html", place=place, form=form)
 
-@plugin.place_view("/committee-structures", permission="write")
-def committee_structures(place):
+@plugin.route("/admin/committee-structures")
+@require_permission("admin.committee-structures.view")
+def committee_structures():
+    place = Place.get_toplevel_place()
     return render_template("committee_structures.html", place=place)
 
-@plugin.place_view("/committee-structures/<slug>", permission="write")
-def view_committee_structure(place, slug):
+@plugin.route("/admin/committee-structures/<slug>")
+@require_permission("admin.committee-structures.view")
+def view_committee_structure(slug):
+    place = Place.get_toplevel_place()
     committee_type = CommitteeType.find(place, slug)
     return render_template("view_committee_structure.html", place=place, committee_type=committee_type)
 
-@plugin.place_view("/committee-structures/<slug>/edit", methods=['GET', 'POST'], permission="write")
-def edit_committee_structure(place, slug):
+@plugin.route("/admin/committee-structures/<slug>/edit", methods=['GET', 'POST'])
+@require_permission("admin.committee-structures.edit")
+def edit_committee_structure(slug):
+    place = Place.get_toplevel_place()
     form = forms.NewCommitteeForm(place)
     committee_type = CommitteeType.find(place, slug)
     if request.method == "POST" and form.validate():
@@ -191,8 +200,10 @@ def edit_committee_structure(place, slug):
             form.load(committee_type)
         return render_template("edit_committee_structure.html", place=place, committee_type=committee_type, form=form)
 
-@plugin.place_view("/committee-structures/<slug>/dowload-members", permission="write")
-def download_members_of_committee_type(place, slug):
+@plugin.route("/admin/committee-structures/<slug>/dowload-members")
+@require_permission("admin.committee-structures.download-members")
+def download_members_of_committee_type(slug):
+    place = Place.get_toplevel_place()
     committee_type = CommitteeType.find(place, slug)
 
     # using export_committees_as_dataset for exporting the data

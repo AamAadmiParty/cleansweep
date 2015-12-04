@@ -136,6 +136,12 @@ class Place(db.Model, Mixable):
         """
         return Place.query.filter_by(iparent_id=None).all()
 
+    @staticmethod
+    def get_toplevel_place():
+        """Returns the first place without any parent.
+        """
+        return Place.query.filter_by(iparent_id=None).first()
+
     @property 
     def code(self):
         return self.key.split("/")[-1]

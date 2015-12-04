@@ -91,11 +91,12 @@ def require_permission(permission):
             if not user:
                 return render_template("permission_denied.html")
 
-            perms = h.get_permissions(user, None)
+            place = Place.get_toplevel_place()
+            perms = h.get_permissions(user, place)
             # Put permissions in context globals, so that it can be added
             # to the template from helpers.py
             g.permissions = perms
-            if permission and permission not in perms:
+            if permission and not h.has_permission(permission):
                 return render_template("permission_denied.html")
 
             return f(*a, **kw)

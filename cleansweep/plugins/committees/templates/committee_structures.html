@@ -1,15 +1,21 @@
-{% extends "place.html" %}
-{% block subnav %}
-  {{ subnav(place, tab="committee-structures") }}
+{% extends "admin/index.html" %}
+
+{% block content_head %}
+<div class="page-content">
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('admin')}}">Admin Center</a></li>
+    <li></li>
+  </ul>
+  <h2>Committee Structures</h2>
+</div>
 {% endblock %}
 
-{% block page_content %}
-  <h2>Committee Strutures</h2>
+{% block content_body %}
   {% set committee_types = place.committee_types.all() %}
   {% if committee_types %}
-    <ul class="list-unstyled committees">
+    <ul class="list-group">
       {% for c in place.committee_types.all() %}
-        <li><a href="{{ c.url_for('.view_committee_structure') }}">{{c.name}}</a></li>
+        <li class="list-group-item"><a href="{{ c.url_for('.view_committee_structure') }}">{{c.name}} <span class="small">{{c.place_type.name}} Level</span></a></li>
       {% endfor %}
     </ul>
     {% else %}
@@ -18,5 +24,4 @@
     <div style="margin-top: 20px;">
       <a class="btn btn-primary" href="{{ url_for('.new_committee_structure', key=place.key) }}">Add new committee structure</a></li>
     </div>
-
 {% endblock %}
