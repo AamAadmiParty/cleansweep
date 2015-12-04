@@ -3,7 +3,7 @@
     <div class="row">
       {% for volunteer in volunteers %}
         <div class="col-md-6">
-            {{widget("VolunteerCard", volunteer=volunteer)}}
+            {{widget("VolunteerCard", volunteer=volunteer, show_contact_details=has_permission("volunteers.view-contact-details"))}}
         </div>
       {% endfor %}
     </div>

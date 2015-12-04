@@ -26,7 +26,7 @@
         <div class="committee-role">
           <h4>{{role.role}}</h4>
           {% for m in members %}
-            {{widget("VolunteerCard", volunteer=m)}}
+            {{widget("VolunteerCard", volunteer=m, show_contact_details=has_permission("committees.view-contact-details"))}}
           {% endfor %}
         </div>
       {% endif %}
