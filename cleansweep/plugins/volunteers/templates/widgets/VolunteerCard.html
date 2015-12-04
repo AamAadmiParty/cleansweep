@@ -6,8 +6,10 @@
   {% endif %}
   <div style="margin-top: -75px; margin-left: 75px; padding-left: 10px;">
     <a href="{{url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash())}}"><strong>{{volunteer.name}}</strong></a>
-    <div>{{volunteer.email or ""}}</div>
-    <div>{{volunteer.phone}}</div>
+    {% if has_permission("volunteers.view-contact-details") %}
+        <div>{{volunteer.email or ""}}</div>
+        <div>{{volunteer.phone}}</div>
+    {% endif %}
     <div class="small"><a href="{{url_for('place', key=volunteer.place.key)}}">{{volunteer.place.key}}</a></div>
   </div>
 </div>

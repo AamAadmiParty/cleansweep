@@ -24,7 +24,7 @@
       </div>
     </div>
   </div>
-{% elif place.type.short_name != 'PB' and 'read' in permissions %}
+{% elif place.type.short_name != 'PB' and has_permission("read") %}
   <div class="widget widget-placelist">
     <div class="panel panel-primary">
       <div class="panel-heading">

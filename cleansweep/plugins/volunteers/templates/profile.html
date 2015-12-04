@@ -5,7 +5,7 @@
 
   Joined on {{ person.created | naturaltime }}.
 
-  {% if "admin" in permissions %}
+  {% if has_permission("volunteers.delete") %}
 	<br/>
 	<br/>
 	<form method="POST">

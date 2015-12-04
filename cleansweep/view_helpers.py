@@ -30,7 +30,7 @@ def get_role_perms(role):
     if role.get('role') == 'volunteer':
         perms = ['read', 'volunteers.view']
     elif role.get('role') == 'admin':
-        perms = ['read', 'write', 'admin', 'volunteers.view']
+        perms = ['*', 'read', 'write', 'admin', 'volunteers.view']
     else:
         perms = []
     return [{"place": role['place'], "permission": p} for p in perms]
