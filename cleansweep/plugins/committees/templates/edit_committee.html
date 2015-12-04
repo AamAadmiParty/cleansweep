@@ -1,4 +1,9 @@
-{% extends "admin/index.html" %}
+{% extends "place.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="committees") }}
+{% endblock %}
+
 {% block page_content %}
   <ul class="breadcrumb breadcrumb-collapse">
     <li><a href="{{url_for('.committees', key=place.key)}}">Committees</a></li>
