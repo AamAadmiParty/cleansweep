@@ -262,7 +262,10 @@ class Committee(db.Model):
         """
         d = defaultdict(list)
         for m in self.committee_members:
-            d[m.role.id].append(m.member)
+            # XXX-Anand: quick fix to handle the case where member is NULL for some entries.
+            # possibly caused by delete volunteer
+            if m.member:
+                d[m.role.id].append(m.member)
 
         for role in self.type.roles:
             yield role, d[role.id]
