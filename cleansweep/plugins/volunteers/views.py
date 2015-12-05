@@ -1,11 +1,13 @@
 from flask.ext.paginate import Pagination
 from ...plugin import Plugin
 from flask import (flash, request, render_template, redirect, url_for, abort, make_response, jsonify)
-from ...models import db, Place, Member
+from ...models import db, Place, Member, PendingMember
 from ... import helpers as h
 from ... import forms
 from ...voterlib import voterdb
 from . import signals, notifications, audits, stats
+from ..audit.models import Audit
+
 import tablib
 
 plugin = Plugin("volunteers", __name__, template_folder="templates")
@@ -118,7 +120,6 @@ def profile(id, hash):
     if request.method == "POST":
         action = request.form.get('action')
         if action == 'delete':
-            from ..models import PendingMember
             pending_member = PendingMember.find(email=m.email)
             place = m.place
             # TODO: Make sure the member is not part of any committee
@@ -126,7 +127,6 @@ def profile(id, hash):
             # Delete all audit records.
             # XXX: This is very bad. We should never delete any audit records.
             # this is only added as a quick fix. We should find a better way to handle this.
-            from ..audit.models import Audit
             Audit.query.filter_by(person_id=m.id).delete()
             Audit.query.filter_by(user_id=m.id).delete()
             if pending_member is not None:
