@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block content_head %}
+<div class="page-content">
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.admin')}}">Admin Center</a></li>
+    <li></li>
+  </ul>
+  <h2>Divisions</h2>
+</div>  
+{% endblock %}
+
+{% block content_body %}
+  <p><i>Divisions of the organization. The organization can be divided in to multiple divisions and each division will appear at every place in the place hierachy. Volunteers can be added to a particular division at a place.</i></p>
+  <ul class="list-group">
+    {% for d in divisions %}
+      <li class="list-group-item">
+      	<h4><a href="{{url_for('admin_edit_division', key=d.key)}}">{{d.name}}</a></h4>
+      	<div>{{d.description}}</div>
+      </li>
+    {% endfor %}
+  </ul>
+  <div>
+    <a class="btn btn-primary" href="{{url_for('admin_new_division')}}" title="Define new division"><span class="glyphicon glyphicon-plus"></span></a>
+  </div>  
+{% endblock %}

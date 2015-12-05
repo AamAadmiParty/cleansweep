@@ -10,6 +10,7 @@ from ..view_helpers import place_view, require_permission
 from ..helpers import get_current_user
 from ..core import mailer, smslib
 from ..core.permissions import get_all_permissions, PermissionGroup
+from ..core.divisions import Division
 from ..voterlib import voterdb
 from ..plugins.audit import record_audit
 import json
@@ -18,7 +19,6 @@ from collections import defaultdict
 @app.route("/admin")
 @require_permission("siteadmin")
 def admin():
-    print "ADMIN"
     return render_template("admin/index.html")
 
 
@@ -77,6 +77,47 @@ def admin_new_permission_group():
                 group=group,
                 all_permissions=all_permissions,
                 new=True)
+
+
+@app.route("/admin/divisions")
+@require_permission("siteadmin")
+def admin_divisions():
+    divisions = Division.all()
+    return render_template("admin/divisions/index.html", divisions=divisions)
+
+@app.route("/admin/divisions/_new", methods=["GET", "POST"])
+@require_permission("siteadmin")
+def admin_new_division():
+    division = Division.new()
+
+    if request.method == "POST":
+        # TODO: form validation
+        division.update(
+            name=request.form.get("name"),
+            description=request.form.get("description"))
+        division.save()
+        return redirect(url_for("admin_divisions"))
+    return render_template("admin/divisions/edit.html",
+                division=division,
+                new=True)
+
+
+@app.route("/admin/divisions/<key>", methods=["GET", "POST"])
+@require_permission("siteadmin")
+def admin_edit_division(key):
+    division = Division.find(key=key)
+    if not division:
+        abort(404)
+
+    if request.method == "POST":
+        # TODO: form validation
+        division.update(
+            name=request.form.get("name"),
+            description=request.form.get("description"))
+        division.save()
+        return redirect(url_for("admin_divisions"))
+    return render_template("admin/divisions/edit.html",
+                division=division)
 
 
 @app.route("/admin/sudo")
