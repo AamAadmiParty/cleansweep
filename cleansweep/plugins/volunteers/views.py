@@ -47,6 +47,20 @@ plugin.define_permission(
     description='Permission to bulk import volunteers',
 )
 
+# legacy permissions - defind here temporarily to fix the issues with production
+plugin.define_permission(
+    name='read',
+    description='Legacy Permission to read/view everything at a place'
+)
+
+plugin.define_permission(
+    name='write',
+    description='Legacy Permission to modify everything at a place'
+)
+
+
+
+
 def init_app(app):
     plugin.init_app(app)
 
