@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+
+{% block content_head %}
+<div class="page-content">
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('admin')}}">Admin Center</a></li>
+    <li><a href="{{url_for('.committee_structures')}}">Committee Structures</a></li>
+    <li></li>
+  </ul>
+  <h2>{{ place_type.name }}</h2>
+</div>
+{% endblock %}
+
+{% block content_body %}
+  <div class="list-group">
+    {% set committees = place.committee_types.filter_by(place_type=place_type).all() %}
+    {% if committees %}
+      <ul class="list-group">
+        {% for committee in committees %}
+          <li class="list-group-item">
+            <a href="{{ committee.url_for('.view_committee_structure') }}">{{ committee.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <em>No committee structures are defined at this level.</em>
+    {% endif %}
+  </div>
+
+  <div style="margin-top: 20px;">
+    <a class="btn btn-primary" href="{{ url_for('.new_committee_structure', key=place.key) }}">
+        Add new committee structure
+    </a>
+  </div>
+{% endblock %}
