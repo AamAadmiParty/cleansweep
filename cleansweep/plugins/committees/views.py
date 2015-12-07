@@ -178,10 +178,10 @@ def committee_structures():
 
 @plugin.route("/admin/committee-structures/at/<level>")
 @require_permission("admin.committee-structures.view")
-def committees_by_level(level):
+def committee_structures_by_level(level):
     place_type = PlaceType.get(level)
     place = Place.get_toplevel_place()
-    return render_template("view_committees_by_level.html", place_type=place_type, place=place)
+    return render_template("view_committee_structures_by_level.html", place_type=place_type, place=place)
 
 @plugin.route("/admin/committee-structures/<slug>")
 @require_permission("admin.committee-structures.view")

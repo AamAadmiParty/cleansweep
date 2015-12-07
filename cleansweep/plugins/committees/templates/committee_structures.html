@@ -16,7 +16,7 @@
     {% for p in place.type.all() %}
       {% set committees_count = place.committee_types.filter_by(place_type_id=p.id).count() %}
         <a {% if committees_count > 0 %}
-             href="{{ url_for(".committees_by_level", level=p.short_name)}}"
+             href="{{ url_for(".committee_structures_by_level", level=p.short_name)}}"
              class="list-group-item"
            {% else %}
              class="list-group-item disabled"
