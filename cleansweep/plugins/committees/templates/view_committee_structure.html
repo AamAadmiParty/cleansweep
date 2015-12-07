@@ -5,6 +5,9 @@
   <ul class="breadcrumb breadcrumb-collapse">
     <li><a href="{{url_for('admin')}}">Admin Center</a></li>
     <li><a href="{{url_for('.committee_structures')}}">Committee Structures</a></li>
+    <li><a href="{{url_for('.committees_by_level', level=committee_type.place_type.short_name)}}"
+        >{{ committee_type.place_type.name }}</a></li>
+
     <li></li>
   </ul>
   <h2>{{committee_type.name}}</h2>
