@@ -59,4 +59,4 @@ class AppTest(AppTestCase):
     def test_volunteers(self):
         self.assertResponseContains("/DL/volunteers", "Volunteers")
         self.assertResponseContains("/DL/volunteers", "test@example.com")
-        self.assertResponseContains("/DL/volunteers/add", "Add Volunteer")
+        self.assertResponseContains("/DL/volunteers/add", "Add New Volunteer")
