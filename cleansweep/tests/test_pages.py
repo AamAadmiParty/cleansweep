@@ -9,10 +9,12 @@ class AppTestCase(DBTestCase):
         DBTestCase.setUp(self)
         self.app = app.test_client()
 
-        t = PlaceType("STATE", "STATE", 10)
-        db.session.add(t)
+        STATE = PlaceType("STATE", "STATE", 10)
+        db.session.add(STATE)
+        AC = PlaceType("Assembly Constituency", "AC", 20)
+        db.session.add(AC)
 
-        p = Place("DL", "Delhi", t)
+        p = Place("DL", "Delhi", STATE)
         db.session.add(p)
         p.add_member('Test User', 'test@example.com', '9876500012')
         db.session.commit()
