@@ -12,17 +12,26 @@
 {% endblock %}
 
 {% block content_body %}
-  {% set committee_types = place.committee_types.all() %}
-  {% if committee_types %}
-    <ul class="list-group">
-      {% for c in place.committee_types.all() %}
-        <li class="list-group-item"><a href="{{ c.url_for('.view_committee_structure') }}">{{c.name}} <span class="small">{{c.place_type.name}} Level</span></a></li>
-      {% endfor %}
-    </ul>
-    {% else %}
-      <em>No committee structures are defined here.</em>
-    {% endif %}
-    <div style="margin-top: 20px;">
-      <a class="btn btn-primary" href="{{ url_for('.new_committee_structure', key=place.key) }}">Add new committee structure</a></li>
-    </div>
+  <div class="list-group">
+    {% for p in place.type.all() %}
+      {% set committees_count = place.committee_types.filter_by(place_type_id=p.id).count() %}
+        <a {% if committees_count > 0 %}
+             href="{{ url_for(".committee_structures_by_level", level=p.short_name)}}"
+             class="list-group-item"
+           {% else %}
+             class="list-group-item disabled"
+             title="No committees are defined at this level"
+           {% endif %}
+        >
+          {{ p.name }}
+          <span class="badge">{{ committees_count }}</span>
+        </a>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top: 20px;">
+    <a class="btn btn-primary" href="{{ url_for('.new_committee_structure', key=place.key) }}">
+        Add new committee structure
+    </a>
+  </div>
 {% endblock %}
