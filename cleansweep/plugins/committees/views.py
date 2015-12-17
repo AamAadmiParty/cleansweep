@@ -53,11 +53,13 @@ def get_role_permission(role):
     pgroup = roleobj.get_permission_group()
     return [{"place": role['place'], "permission": p.name} for p in pgroup.permissions]
 
-@plugin.place_view("/committees", permission="committees.view")
+@plugin.route("/<place:place>/committees")
+@require_permission("committees.view")
 def committees(place):
     return render_template("committees.html", place=place)
 
-@plugin.place_view("/committees/explore", permission="committees.view")
+@plugin.route("/<place:place>/committees/explore")
+@require_permission("committees.view")
 def explore_committees(place):
     committee_types = CommitteeType.find_all(place, all_levels=True)
 
@@ -104,7 +106,8 @@ def export_committees_as_response(committees, title, filename):
     return response
 
 
-@plugin.place_view("/committees/<slug>.xls", methods=["GET"], permission="committees.view-contact-details")
+@plugin.route("/<place:place>/committees/<slug>.xls", methods=["GET"])
+@require_permission("committees.view-contact-details")
 def download_committee(place, slug):
     committee = place.get_committee(slug)
     if not committee:
@@ -114,7 +117,8 @@ def download_committee(place, slug):
     filename = u"{}--{}.xls".format(place.key.replace("/", "-"), title.replace(" ", "-"))
     return export_committees_as_response([committee], title=title, filename=filename)
 
-@plugin.place_view("/committees/<slug>", methods=["GET"], permission="committees.view")
+@plugin.route("/<place:place>/committees/<slug>", methods=["GET"])
+@require_permission("committees.view")
 def view_committee(place, slug):
     committee = place.get_committee(slug)
     if not committee:
@@ -122,7 +126,8 @@ def view_committee(place, slug):
     return render_template("view_committee.html", place=place, committee=committee)
 
 
-@plugin.place_view("/committees/<slug>/edit", methods=["GET", "POST"], permission="committees.edit")
+@plugin.route("/<place:place>/committees/<slug>/edit", methods=["GET", "POST"])
+@require_permission("committees.edit")
 def edit_committee(place, slug):
     committee = place.get_committee(slug)
     if not committee:

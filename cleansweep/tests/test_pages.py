@@ -62,3 +62,15 @@ class AppTest(AppTestCase):
         self.assertResponseContains("/DL/volunteers", "Volunteers")
         self.assertResponseContains("/DL/volunteers", "test@example.com")
         self.assertResponseContains("/DL/volunteers/add", "Add New Volunteer")
+
+    def test_contacts(self):
+        self.assertResponseContains("/DL/admin/contacts", "Contacts")
+
+    def test_signups(self):
+        self.assertResponseContains("/DL/signups", "Volunteer Signups")
+
+    def test_voters(self):
+        self.assertResponseContains("/DL/voters", "Voters")
+
+    def test_committees(self):
+        self.assertResponseContains("/DL/committees", "Committees")

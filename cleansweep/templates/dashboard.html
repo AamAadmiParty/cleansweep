@@ -9,6 +9,6 @@
 
   <p>
   You are member of
-  <a href="{{url_for('place', key=user.place.key)}}">{{user.place.name}}</a>.
+  <a href="{{url_for('place', place=user.place)}}">{{user.place.name}}</a>.
   </p>
 {% endblock %}

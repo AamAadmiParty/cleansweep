@@ -10,6 +10,6 @@
         <div>{{volunteer.email or ""}}</div>
         <div>{{volunteer.phone}}</div>
     {% endif %}
-    <div class="small"><a href="{{url_for('place', key=volunteer.place.key)}}">{{volunteer.place.key}}</a></div>
+    <div class="small"><a href="{{url_for('place', place=volunteer.place)}}">{{volunteer.place.key}}</a></div>
   </div>
 </div>

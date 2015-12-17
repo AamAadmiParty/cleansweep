@@ -1,6 +1,6 @@
 import functools
 
-from flask import (abort, render_template, session, g)
+from flask import (abort, request, render_template, session, g)
 from werkzeug.routing import BaseConverter
 
 from .core import rbac
@@ -19,6 +19,16 @@ def init_app(_app):
     app = _app
     app.url_map.converters['place'] = PlaceConverter
 
+    app.before_request(register_place_hook)
+
+def register_place_hook():
+    """Hook to take the place from the view arguments and set it in context globals.
+
+    The place set in context globals is used by some legacy code.
+    """
+    if 'place' in request.view_args:
+        g.place = request.view_args['place']
+
 @rbac.role_provider
 def get_user_roles(user):
     if user.email in app.config['ADMIN_USERS']:
@@ -36,53 +46,6 @@ def get_role_perms(role):
     return [{"place": role['place'], "permission": p} for p in perms]
 
 
-def place_view(path, func=None, permission=None, blueprint=None, sidebar_entry=None, *args, **kwargs):
-    """Decorator to simplify all views that work on places.
-
-    Takes care of loading a place, permissions and 404 error if place is not found.
-
-    The path parameter specifies the suffix after the place key.
-    """
-    if func is None:
-        return functools.partial(place_view, path, permission=permission, blueprint=blueprint, sidebar_entry=sidebar_entry, *args, **kwargs)
-
-    _app = blueprint or app
-
-    # Handle the case of multiple view decorators
-    if hasattr(func, "_place_view"):
-        _app.route("/<place:key>" + path, *args, **kwargs)(func)
-        return func
-
-    if sidebar_entry:
-        endpoint = kwargs.get('endpoint', func.__name__)
-        if blueprint:
-            entrypoint = blueprint.name + "." + endpoint
-        else:
-            entrypoint = endpoint
-        h.sidebar_entries.append(dict(entrypoint=entrypoint, permission=permission, title=sidebar_entry, tab=func.__name__))
-
-    @_app.route("/<place:key>" + path, *args, **kwargs)
-    @functools.wraps(func)
-    def f(key, *a, **kw):
-        place = Place.find(key)
-        if not place:
-            abort(404)
-        g.place = place
-        user = h.get_current_user()
-        if not user:
-            return render_template("permission_denied.html")
-
-        perms = h.get_permissions(user, place)
-        # Put permissions in context globals, so that it can be added
-        # to the template from helpers.py
-        g.permissions = perms
-        if permission and not h.has_permission(permission):
-            return render_template("permission_denied.html")
-        
-        return func(place, *a, **kw)
-    f._place_view = func
-    return f
-
 def require_permission(permission):
     def require_permission_decorator(f):
         @functools.wraps(f)
@@ -91,7 +54,10 @@ def require_permission(permission):
             if not user:
                 return render_template("permission_denied.html")
 
-            place = Place.get_toplevel_place()
+            # Find the current place from the view args
+            # or use the top-level place
+            place = request.view_args.get("place") or Place.get_toplevel_place()
+
             perms = h.get_permissions(user, place)
             # Put permissions in context globals, so that it can be added
             # to the template from helpers.py
@@ -103,8 +69,6 @@ def require_permission(permission):
         return wrapped
     return require_permission_decorator
 
-def admin_view(path, func=None, *args, **kwargs):
-    return place_view(path, func=func, permission='write', *args, **kwargs)
 
 class PlaceConverter(BaseConverter):
     """Converter for place.
@@ -124,4 +88,14 @@ class PlaceConverter(BaseConverter):
         super(PlaceConverter, self).__init__(url_map)
         self.regex = '[A-Z0-9/]+'
 
+    def to_python(self, value):
+        place = Place.find(key=value)
+        if not place:
+            raise ValidationError()
+        return place
 
+    def to_url(self, value):
+        if isinstance(value, Place):
+            return value.key
+        else:
+            return value

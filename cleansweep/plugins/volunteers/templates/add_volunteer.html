@@ -11,7 +11,7 @@
 
 {% block page_content %}
   <ul class="breadcrumb breadcrumb-collapse">
-    <li><a href="{{url_for('.volunteers', key=place.key)}}">Volunteers</a></li>
+    <li><a href="{{url_for('.volunteers', place=place)}}">Volunteers</a></li>
     <li></li>
   </ul>
   <h2>Add New Volunteer</h2>
@@ -26,7 +26,7 @@
     {% endif %}
     <ul class="list-group">
     {% for p in place.get_places(subtype) %}
-      <li class="list-group-item"><a href="{{changeview(key=p.key)}}">{{p.name}}</a></li>
+      <li class="list-group-item"><a href="{{changeview(place=p)}}">{{p.name}}</a></li>
     {% endfor %}
     </ul>
   {% else %}

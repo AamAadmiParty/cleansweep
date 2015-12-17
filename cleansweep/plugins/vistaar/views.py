@@ -2,6 +2,7 @@ from ...plugin import Plugin
 from .models import db, MVRequest
 from flask import (flash, request, render_template, redirect, url_for)
 from ... import helpers
+from ...view_helpers import require_permission
 from . import signals, notifications, audits
 
 plugin = Plugin("vistaar", __name__, template_folder="templates")
@@ -9,7 +10,7 @@ plugin = Plugin("vistaar", __name__, template_folder="templates")
 def init_app(app):
     plugin.init_app(app)
 
-@plugin.place_view("/mv-request", methods=["POST"])
+@plugin.route("/<place:place>/mv-request", methods=["POST"])
 def mv_request(place):
     user = helpers.get_current_user()
     status = MVRequest.get_request_status(user, place)
@@ -32,8 +33,9 @@ def mv_request(place):
     else:
         return redirect(request.referrer)
 
-@plugin.place_view("/mv-requests/<status>", methods=['GET', 'POST'], permission="write")
-@plugin.place_view("/mv-requests", methods=['GET', 'POST'], permission="write")
+@plugin.route("/<place:place>/mv-requests/<status>", methods=['GET', 'POST'])
+@plugin.route("/<place:place>/mv-requests", methods=['GET', 'POST'])
+@require_permission("write")
 def admin_mv_requests(place, status=None):
     if status not in [None, 'approved', 'rejected']:
         return redirect(url_for(".admin_mv_requests", key=place.key))

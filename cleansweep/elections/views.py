@@ -3,6 +3,7 @@ from ..models import db, Member
 from .models import Campaign, CampaignStatusTable, CampaignDataTable, BoothAgentReport
 from flask import (render_template, abort, request, flash, redirect, url_for, make_response)
 from . import models, stats, forms
+from ...view_helpers import require_permission
 
 import json
 
@@ -10,12 +11,15 @@ plugin = Plugin("elections", __name__, template_folder="templates")
 
 def init_app(app):
     plugin.init_app(app)
+    plugin.add_sidebar_entry("Booth Agents", endpoint="booth_agents", permission="write")
 
-@plugin.place_view("/booths", permission='read')
+
+@plugin.route("/<place:place>/booths")
+@require_permission('read')
 def booth_report(place):
     return render_template("reports/booths.html", place=place)
 
-@plugin.place_view("/campaigns")
+@plugin.route("/<place:place>/campaigns")
 def campaigns(place):
     """Dashboard for campaigns.
     """
@@ -23,7 +27,8 @@ def campaigns(place):
     return render_template("campaigns/index.html", place=place, campaigns=campaigns)
 
 
-@plugin.place_view("/campaigns/add", permission='write', methods=['GET', 'POST'])
+@plugin.route("/<place:place>/campaigns/add", methods=['GET', 'POST'])
+@require_permission("write")
 def add_campaign(place):
     """Add new campaign.
     """
@@ -38,18 +43,19 @@ def add_campaign(place):
         db.session.add(c)
         db.session.commit()
         flash("{} has been created successfully.".format(name))        
-        return redirect(url_for(".campaigns", key=place.key))
+        return redirect(url_for(".campaigns", place=place))
     else:
         return render_template("campaigns/add.html", place=place, form=form)
 
 
-@plugin.place_view("/campaigns/<slug>")
+@plugin.route("/<place:place>/campaigns/<slug>")
 def view_campaign(place, slug):
     c = place.get_campaign(slug)
     status_table = CampaignStatusTable(place, c)
     return render_template("campaigns/view.html", place=place, campaign=c, status_table=status_table)
 
-@plugin.place_view("/campaigns/<slug>/status", permission='write', methods=['GET', 'POST'])
+@plugin.route("/<place:place>/campaigns/<slug>/status", methods=['GET', 'POST'])
+@require_permission("write")
 def campaign_status(place, slug):
     if place.type.short_name != "AC":
         abort(404)
@@ -68,7 +74,8 @@ def campaign_status(place, slug):
         return response
     return render_template("campaigns/status.html", place=place, campaign=c, status_table=status_table)
 
-@plugin.place_view("/campaigns/<slug>/data", permission='write', methods=['GET', 'POST'])
+@plugin.route("/<place:place>/campaigns/<slug>/data", methods=['GET', 'POST'])
+@require_permission("write")
 def campaign_data(place, slug):
     if place.type.short_name != "AC":
         abort(404)
@@ -88,20 +95,22 @@ def campaign_data(place, slug):
         return response
     return render_template("campaigns/data.html", place=place, campaign=c, data_table=data_table)
 
-@plugin.place_view("/booth-agents", permission='write', sidebar_entry="Booth Agents")
+@plugin.route("/<place:place>/booth-agents")
+@require_permission("write")
 def booth_agents(place):
     if place.type.short_name not in ["AC", "STATE", "LB", "PX"]:
-        return redirect(url_for("place", key=place.key), code=303)
+        return redirect(url_for("place", place=place), code=303)
     if place.type.short_name in ['AC', 'LB', 'PX']:
         report = BoothAgentReport(place)
     else:
         report = None
     return render_template("booth_agents.html", place=place, report=report)
 
-@plugin.place_view("/booth-agents/data", permission='write', methods=['GET', 'POST'])
+@plugin.route("/<place:place>/booth-agents/data", methods=['GET', 'POST'])
+@require_permission("write")
 def booth_agents_data(place):
     if place.type.short_name not in ["AC", "LB", "PX"]:
-        return redirect(url_for("place", key=place.key), code=303)
+        return redirect(url_for("place", place=place), code=303)
     report = BoothAgentReport(place)
 
     if request.method == 'POST':
@@ -116,10 +125,11 @@ def booth_agents_data(place):
     else:
         return render_template("booth_agents_data.html", place=place, report=report)
 
-@plugin.place_view("/booth-agents/data-sheet", permission='write', methods=['GET', 'POST'])
+@plugin.route("/<place:place>/booth-agents/data-sheet", methods=['GET', 'POST'])
+@require_permission("write")
 def booth_agents_data_sheet(place):
     if place.type.short_name not in ["AC", "LB", "PX"]:
-        return redirect(url_for("place", key=place.key), code=303)
+        return redirect(url_for("place", place=place), code=303)
     report = BoothAgentReport(place)
 
     if request.method == 'POST':

@@ -19,7 +19,7 @@ def init_app(app):
 
 # place_view is decorator that added a view for every place.
 # /DL/hello /DL/AC061/hello etc.
-@plugin.place_view("/hello", sidebar_entry="Hello World")
+@plugin.route("/<place:place>/hello")
 def hello(place):   
     # This function is calling the templates/hello.html template with place as argument.
     return render_template("hello.html", place=place)
@@ -27,7 +27,7 @@ def hello(place):
 # A plugin can also have more sophisticated views. 
 # Lets try building something for fun.
 
-@plugin.place_view("/add", methods=["GET", "POST"])
+@plugin.route("/<place:place>/add", methods=["GET", "POST"])
 def add(place):
     """This is fun view to add 2 numbers.
     """

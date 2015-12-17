@@ -6,7 +6,7 @@ from ..models import Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
 from ..voterlib import voterdb
-from ..view_helpers import place_view, require_permission
+from ..view_helpers import require_permission
 from ..helpers import get_current_user
 from ..core import mailer, smslib
 from ..core.permissions import get_all_permissions, PermissionGroup
@@ -15,6 +15,7 @@ from ..voterlib import voterdb
 from ..plugins.audit import record_audit
 import json
 from collections import defaultdict
+
 
 @app.route("/admin")
 @require_permission("siteadmin")
@@ -134,7 +135,8 @@ def admin_sudo():
         return redirect("/")
 
 
-@place_view("/sendmail", methods=['GET', 'POST'], permission="write")
+@app.route("/<place:place>/sendmail", methods=['GET', 'POST'])
+@require_permission("write")
 def admin_sendmail(place):
     form = forms.SendMailForm(request.form)
     if request.method == "POST" and form.validate():
@@ -159,7 +161,8 @@ def get_sms_config(place):
         return get_sms_config(place.iparent)
     return config
 
-@place_view("/sms", methods=['GET', 'POST'], permission="write")
+@app.route("/<place:place>/sms", methods=['GET', 'POST'])
+@require_permission("write")
 def admin_sms(place):
     config = get_sms_config(place)
     sms_provider = config and smslib.get_sms_provider(**config)
@@ -189,11 +192,13 @@ def admin_sms(place):
         return render_template("admin/sms.html", place=place, form=form, sent=True, is_sms_configured=is_sms_configured)
     return render_template("admin/sms.html", place=place, form=form, sent=False, is_sms_configured=is_sms_configured)
 
-@place_view("/admin/contacts", methods=['GET', 'POST'], permission="write")
+@app.route("/<place:place>/admin/contacts", methods=['GET', 'POST'])
+@require_permission("write")
 def admin_contacts(place):
     return render_template("admin/contacts.html", place=place)
 
-@place_view("/admin/contacts/add", methods=['GET', 'POST'], permission="write")
+@app.route("/<place:place>/admin/contacts/add", methods=['GET', 'POST'])
+@require_permission("write")
 def admin_add_contacts(place):
     if request.method == "POST":
         jsontext = request.form['data']

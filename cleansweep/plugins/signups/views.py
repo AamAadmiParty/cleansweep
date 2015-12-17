@@ -2,7 +2,7 @@ from ...plugin import Plugin
 from ...models import db, Member, PendingMember
 from flask import (flash, request, session, render_template, redirect, url_for)
 from ...core import signals
-
+from ...view_helpers import require_permission
 from . import signals, notifications, audits, forms, signups
 
 plugin = Plugin("signups", __name__, template_folder="templates")
@@ -10,6 +10,7 @@ plugin = Plugin("signups", __name__, template_folder="templates")
 
 def init_app(app):
     plugin.init_app(app)
+    plugin.add_sidebar_entry("Signups", endpoint="signups", permission="write")
 
 @plugin.route("/account/signup", methods=["GET", "POST"])
 def signup():
@@ -48,11 +49,12 @@ def signup():
     return render_template("signup.html", userdata=userdata, form=form)
 
 
-@plugin.place_view("/signups/<status>", methods=['GET', 'POST'], permission="write")
-@plugin.place_view("/signups", methods=['GET', 'POST'], permission="write", sidebar_entry="Signups", endpoint="signups")
+@plugin.route("/<place:place>/signups/<status>", methods=['GET', 'POST'])
+@plugin.route("/<place:place>/signups", methods=['GET', 'POST'])
+@require_permission("write")
 def signups(place, status=None):
     if status not in [None, 'approved', 'rejected']:
-        return redirect(url_for(".signups", key=place.key))
+        return redirect(url_for(".signups", place=place))
     if status is None:
         status = 'pending'
 
@@ -65,11 +67,11 @@ def signups(place, status=None):
                 db.session.commit()
                 signals.volunteer_signup_approved.send(pmember, member=m)
                 flash('Successfully approved {} as a volunteer.'.format(pmember.name))
-                return redirect(url_for(".signups", key=place.key))
+                return redirect(url_for(".signups", place=place))
             elif action == 'reject-member':
                 pmember.reject()
                 db.session.commit()
                 signals.volunteer_signup_rejected.send(pmember)
                 flash('Successfully rejected {}.'.format(pmember.name))
-                return redirect(url_for(".signups", key=place.key))
+                return redirect(url_for(".signups", place=place.place))
     return render_template("signups.html", place=place, status=status)

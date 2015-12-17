@@ -1,6 +1,7 @@
 from . import models
 from . import audit
 from ...plugin import Plugin
+from ...view_helpers import require_permission
 from flask import (request, render_template)
 
 # define the plugin
@@ -8,8 +9,9 @@ plugin = Plugin('audit', __name__, template_folder='templates')
 
 def init_app(app):
 	plugin.init_app(app)
+	plugin.add_sidebar_entry("Audir Trial", endpoint="audit_trail", permission="audit")
 
-
-@plugin.place_view("/audit", methods=['GET'], permission='admin', sidebar_entry='Audit Trail')
+@plugin.route("/<place:place>/audit", methods=['GET'])
+@require_permission("audit")
 def audit_trail(place):
 	return render_template("audit.html", place=place)

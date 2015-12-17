@@ -7,14 +7,14 @@
 {% block page_content %}
 
   <ul class="breadcrumb breadcrumb-collapse">
-    <li><a href="{{url_for('.committees', key=place.key)}}">Committees</a></li>
+    <li><a href="{{url_for('.committees', place=place)}}">Committees</a></li>
     <li></li>
   </ul>
 
   <h2>{{committee.type.name}}
     {% if has_permission("committees.edit") %}
-        <a class="small" href="{{url_for('.edit_committee', key=place.key, slug=committee.type.slug)}}">Edit</a>
-        <a class="small btn btn-default" href="{{url_for('.download_committee', key=place.key, slug=committee.type.slug)}}">Download</a>
+        <a class="small" href="{{url_for('.edit_committee', place=place, slug=committee.type.slug)}}">Edit</a>
+        <a class="small btn btn-default" href="{{url_for('.download_committee', place=place, slug=committee.type.slug)}}">Download</a>
     {% endif %}
   </h2>
   <div>{{committee.type.description}}</div>

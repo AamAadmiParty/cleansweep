@@ -4,7 +4,7 @@
     <h3>{{ subtype.name | pluralize }}</h3>
       <ul class="list-group">
         {% for p in places %}
-          <li class="list-group-item"><a href="{{ url_for('place', key=p.key) }}">{{ p.name }}</a></li>
+          <li class="list-group-item"><a href="{{ url_for('place', place=p) }}">{{ p.name }}</a></li>
         {% endfor %}
       </ul>
   {% endfor %}
