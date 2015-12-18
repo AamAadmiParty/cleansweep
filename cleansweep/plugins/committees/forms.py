@@ -21,19 +21,17 @@ class RoleForm(wtforms.Form):
         groups = PermissionGroup.all()
         self.permission.choices = [(g.key, g.name) for g in groups]
 
-class NewCommitteeForm(Form):
+
+class CommitteeForm(Form):
     committee_type_id = HiddenField()
     name = StringField('Name', [validators.Required()])
     slug = StringField('Slug', [validators.Required()])
-    level = SelectField('Level', choices=[])
     description = TextAreaField('Description', [])
     roles = FieldList(FormField(RoleForm), min_entries=0)
 
     def __init__(self, place, *a, **kw):
         Form.__init__(self, *a, **kw)
         self.place = place
-        place_types = [place.type] + place.type.get_subtypes()
-        self.level.choices = [(t.short_name, t.name) for t in place_types]
         self.ensure_empty_slots()
 
     def validate_slug(self, field):
@@ -52,6 +50,29 @@ class NewCommitteeForm(Form):
         empty_slots = sum(1 for role in self.data['roles'] if not role['name'].strip())
         for i in range(n-empty_slots):
             self.roles.append_entry()
+
+
+class NewCommitteeForm(CommitteeForm):
+    """
+    Creates a form for adding a new committee structure.
+    """
+    level = StringField('Level')  # Level field at which the committee structure is getting created.
+
+    def __init__(self, place, level, *a, **kw):
+        super(NewCommitteeForm, self).__init__(place, *a, **kw)
+        self.level.data = level
+
+
+class EditCommitteeForm(CommitteeForm):
+    """
+    Edit form for editing committee structures. Extends CommitteeForm.
+    """
+    level = SelectField('Level', choices=[])  # Select field for place level selection.
+
+    def __init__(self, place, *a, **kw):
+        super(EditCommitteeForm, self).__init__(place, *a, **kw)
+        place_types = [place.type] + place.type.get_subtypes()
+        self.level.choices = [(t.short_name, t.name) for t in place_types]
 
     def load(self, committee_structure):
         c = committee_structure
