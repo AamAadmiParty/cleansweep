@@ -164,9 +164,9 @@ def edit_committee(place, slug):
 def new_committee_structure(level):
     place = Place.get_toplevel_place()
     place_type = PlaceType.get(level)
-    form = forms.NewCommitteeForm(place, level)
+    form = forms.NewCommitteeForm(place)
     if request.method == "POST" and form.validate():
-        committee_type = CommitteeType.new_from_formdata(place, form)
+        committee_type = CommitteeType.new_from_formdata(place, place_type, form)
         db.session.commit()
         signals.new_committee_structure.send(committee_type)
 
@@ -200,7 +200,7 @@ def view_committee_structure(slug):
 @require_permission("admin.committee-structures.edit")
 def edit_committee_structure(slug):
     place = Place.get_toplevel_place()
-    form = forms.EditCommitteeForm(place)
+    form = forms.NewCommitteeForm(place)
     committee_type = CommitteeType.find(place, slug)
     if request.method == "POST" and form.validate():
         d1 = committee_type.dict()

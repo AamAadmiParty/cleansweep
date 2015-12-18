@@ -21,8 +21,7 @@ class RoleForm(wtforms.Form):
         groups = PermissionGroup.all()
         self.permission.choices = [(g.key, g.name) for g in groups]
 
-
-class CommitteeForm(Form):
+class NewCommitteeForm(Form):
     committee_type_id = HiddenField()
     name = StringField('Name', [validators.Required()])
     slug = StringField('Slug', [validators.Required()])
@@ -51,35 +50,11 @@ class CommitteeForm(Form):
         for i in range(n-empty_slots):
             self.roles.append_entry()
 
-
-class NewCommitteeForm(CommitteeForm):
-    """
-    Creates a form for adding a new committee structure.
-    """
-    level = StringField('Level')  # Level field at which the committee structure is getting created.
-
-    def __init__(self, place, level, *a, **kw):
-        super(NewCommitteeForm, self).__init__(place, *a, **kw)
-        self.level.data = level
-
-
-class EditCommitteeForm(CommitteeForm):
-    """
-    Edit form for editing committee structures. Extends CommitteeForm.
-    """
-    level = SelectField('Level', choices=[])  # Select field for place level selection.
-
-    def __init__(self, place, *a, **kw):
-        super(EditCommitteeForm, self).__init__(place, *a, **kw)
-        place_types = [place.type] + place.type.get_subtypes()
-        self.level.choices = [(t.short_name, t.name) for t in place_types]
-
     def load(self, committee_structure):
         c = committee_structure
         self.committee_type_id.data = c.id
         self.name.data = c.name
         self.slug.data = c.slug
-        self.level.data = c.place_type.short_name
         self.description.data = c.description
         roles = [dict(role_id=role.id, name=role.role, multiple=['no', 'yes'][role.multiple], permission=role.permission) for role in c.roles]
         self.roles.process(None, roles)
