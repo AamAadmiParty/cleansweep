@@ -6,6 +6,8 @@
   <ul class="breadcrumb breadcrumb-collapse">
     <li><a href="{{url_for('admin')}}">Admin Center</a></li>
     <li><a href="{{url_for('.committee_structures')}}">Committee Structures</a></li>
+    <li><a href="{{url_for('.committee_structures_by_level', level=place_type.short_name)}}"
+        >{{ place_type.name }}</a></li>
     <li></li>
   </ul>
   <h2>Add a new committee structure</h2>
@@ -18,7 +20,7 @@
   {{ form.csrf_token }}
   {{ render_field(form.name) }}
   {{ render_field(form.slug) }}
-  {{ render_field(form.level) }}
+  {{ render_field(form.level, disabled=True) }}
   {{ render_field(form.description) }}
 
   <h3>Roles</h3>
