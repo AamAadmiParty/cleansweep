@@ -129,7 +129,7 @@ class CommitteeType(db.Model):
         return c
 
     def url_for(self, endpoint):
-        return url_for(endpoint, key=self.place.key, slug=self.slug)
+        return url_for(endpoint, slug=self.slug)
 
     def get_level(self):
         return self.place_type.short_name
