@@ -26,7 +26,7 @@ def register_place_hook():
 
     The place set in context globals is used by some legacy code.
     """
-    if 'place' in request.view_args:
+    if request.view_args and 'place' in request.view_args:
         g.place = request.view_args['place']
 
         # initialize the permissions
@@ -104,3 +104,33 @@ class PlaceConverter(BaseConverter):
             return value.key
         else:
             return value
+
+class PlaceConverter(BaseConverter):
+    """Converter for place.
+
+    Places will have URLs like KA, KA/LC12, KA/AC123, KA/AC123/PB0123 etc.
+    We'll also have URLS for actions on places as KA/LC12/members etc. This
+    converter provide support for place converter, so that we can use routes
+    like:
+
+        @app.route(/<place:key>)
+        ...
+
+        @app.route(/<place:key>/members)
+        ...
+    """
+    def __init__(self, url_map, *items):
+        super(PlaceConverter, self).__init__(url_map)
+        self.regex = '[A-Z0-9/]+'
+
+    def to_python(self, value):
+        place = Place.find(key=value)
+        if not place:
+            raise ValidationError()
+        return place
+
+    def to_url(self, value):
+        if isinstance(value, Place):
+            return value.key
+        else:
+            return value            
