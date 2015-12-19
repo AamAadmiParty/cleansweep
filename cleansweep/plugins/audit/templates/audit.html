@@ -17,7 +17,7 @@
     {% for record in place.get_audit_records() %}
       <tr>
         <td>{{ record.timestamp | naturaltime }}</td>
-        <td><a href="{{url_for('place', key=record.place.key)}}">{{record.place.key}}</a></td>
+        <td><a href="{{url_for('place', place=record.place)}}">{{record.place.key}}</a></td>
         <td>
           {% if record.user %}
             <a href="{{url_for('volunteers.profile', id=record.user.id, hash=record.user.get_hash())}}"><strong>{{record.user.name}}</strong></a>
