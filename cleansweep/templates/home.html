@@ -6,7 +6,7 @@
 <ul class="list-unstyled">
   {% for place in get_toplevel_places() %}
     <li>
-      <a href="{{ url_for('place', key=place.key) }}">{{ place.name }}</a>
+      <a href="{{ url_for('place', place=place) }}">{{ place.name }}</a>
       <span class="small">{{ place.type.short_name }}</span>
     </li>
   {% endfor %}

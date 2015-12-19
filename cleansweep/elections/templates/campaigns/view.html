@@ -11,7 +11,7 @@
     {% if place.type == AC %}
       <ul class="nav nav-pills">
         <li role="presentation" class="active"><a href="#">Home</a></li>
-        <li role="presentation"><a href="{{url_for('.campaign_status', key=place.key, slug=campaign.slug)}}">Status</a></li>
+        <li role="presentation"><a href="{{url_for('.campaign_status', place=place, slug=campaign.slug)}}">Status</a></li>
       </ul>
       <br/>
     {% endif %}
@@ -19,7 +19,7 @@
     {% if place.type.short_name == "STATE" %}
       <ul class="list-group">
         {% for p in place.get_all_child_places(AC) %}
-          <li class="list-group-item"><a href="{{changeview(key=p.key)}}">{{p.name}}</a></li>
+          <li class="list-group-item"><a href="{{changeview(place=p)}}">{{p.name}}</a></li>
         {% endfor %}
       </ul>
     {% elif place.type.short_name == "AC" %}

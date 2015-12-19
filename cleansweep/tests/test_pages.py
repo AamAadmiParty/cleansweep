@@ -74,3 +74,6 @@ class AppTest(AppTestCase):
 
     def test_committees(self):
         self.assertResponseContains("/DL/committees", "Committees")
+
+    def test_signup(self):
+        self.assertResponseContains("/account/signup", "Sign Up")

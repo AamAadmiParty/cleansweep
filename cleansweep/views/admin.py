@@ -207,11 +207,11 @@ def admin_add_contacts(place):
         if action == 'add-contacts':
             contacts = _load_contacts(place, data)
             flash(u"Successfully imported {} contacts.".format(len(contacts)))
-            return redirect(url_for("admin_contacts", key=place.key))
+            return redirect(url_for("admin_contacts", place=place))
         elif action == "add-volunteers":
             volunteers = _add_volunteers(place, data)
             flash(u"Successfully imported {} volunteers.".format(len(volunteers)))
-            return redirect(url_for("volunteers.volunteers", key=place.key))
+            return redirect(url_for("volunteers.volunteers", place=place))
     return render_template("admin/add_contacts.html", place=place)
 
 def _add_volunteers(place, data):

@@ -5,7 +5,7 @@
   <div class="panel panel-default">
     {% for p in parents %}
       <div class="panel-heading panel-heading-{{p.type.name.lower()}}">
-        <strong><a href="{{ changeview(key=p.key) }}"> {{ p.name }}</a></strong><br/>
+        <strong><a href="{{ changeview(place=p) }}"> {{ p.name }}</a></strong><br/>
         <small>{{ p.type.name }}</small>
       </div>
     {% endfor %}        
@@ -17,7 +17,7 @@
             {% if p == place %}
               <li><strong>{{ p.name }}</strong></li>
             {% else %}
-              <li><a href="{{ changeview(key=p.key) }}"> {{ p.name }}</a></li>
+              <li><a href="{{ changeview(place=p) }}"> {{ p.name }}</a></li>
             {% endif %}
           {% endfor %}
         </ul>
@@ -35,7 +35,7 @@
         <div class="panel-body panel-body-{{type.name.lower()}}">
           <ul class="list-unstyled parents section-body">
             {% for p in places %}
-                <li><a href="{{ changeview(key=p.key) }}"> {{ p.name }}</a></li>
+                <li><a href="{{ changeview(place=p) }}"> {{ p.name }}</a></li>
             {% endfor %}
           </ul>
         </div>

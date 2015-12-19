@@ -8,7 +8,7 @@ You've been added to {{committee.type.name}}
 <p>Dear {{member.name}},</p>
 
 <p>This is to inform you that you have been added as <strong>{{role.role}}</strong> to the
-<strong>{{committee.type.name}}</strong> at <a href="{{url_for('place', key=committee.place.key, _external=True)}}">{{committee.place.name}}</a> unit.</p>
+<strong>{{committee.type.name}}</strong> at <a href="{{url_for('place', place=committee.place, _external=True)}}">{{committee.place.name}}</a> unit.</p>
 
 <p>Please feel free to contact your administrator in case you have any queries:</p>
 

@@ -29,14 +29,14 @@
   {% else %}
   	<ul class="list-group">
   	{% for c in campaigns %}
-  		<li class="list-group-item"><a href="{{url_for('.view_campaign', key=place.key, slug=c.slug)}}">{{c.name}}</a></li>
+		<li class="list-group-item"><a href="{{url_for('.view_campaign', place=place, slug=c.slug)}}">{{c.name}}</a></li>
   	{% endfor %}
   	</ul>
   {% endif %}
 
   {% if has_permission("write") and place.type == STATE %}
 	  <div>
-	  <a href="{{url_for('.add_campaign', key=place.key)}}" class="btn btn-primary">Create a New Campaign</a>
+	  <a href="{{url_for('.add_campaign', place=place)}}" class="btn btn-primary">Create a New Campaign</a>
 	  </div>
   {% endif %}
 {% endblock %}
@@ -50,7 +50,7 @@
   {% if place.type < STATE %}
     {% set p = place.get_parent(STATE) %}
     <li class="breadcrumb-{{p.type.short_name.lower()}}">
-      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
+      <a href="{{ changeview(place=p) }}">{{ p.name }}</a>
       <span class="divider"></span>
     </li>
   {% endif %}

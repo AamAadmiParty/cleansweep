@@ -31,7 +31,7 @@
         <tr>
           <td class="serial">{{voter.serial}}</td>
           <td class="voterid">
-              <a href="{{url_for('.voter_view', key=voter.get_place().key, voterid=voter.voterid)}}">{{voter.voterid}}</a>
+              <a href="{{url_for('.voter_view', place=voter.get_place(), voterid=voter.voterid)}}">{{voter.voterid}}</a>
           </td>
           <td class="name">{{voter.name or "-"}}</td>
           <td class="rel_name">{{voter.rel_name or "-"}}</td>
@@ -46,10 +46,10 @@
   <div class="nav">
     <ul class="pager">
       {% if page > 1 %}
-        <li><a href="{{url_for('.voters', key=place.key)}}?page={{page-1}}">Prev</a></li>
+        <li><a href="{{url_for('.voters', place=place)}}?page={{page-1}}">Prev</a></li>
       {% endif %}
       {% if len(voters) == 100 %}
-        <li><a href="{{url_for('.voters', key=place.key)}}?page={{page+1}}">Next</a></li>
+        <li><a href="{{url_for('.voters', place=place)}}?page={{page+1}}">Next</a></li>
       {% endif %}
     </ul>
   </div>

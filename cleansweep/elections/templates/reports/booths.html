@@ -21,14 +21,14 @@
 		<tr>
 			<td>
 				{% if px %}
-					<a href="{{url_for('place', key=px.key)}}" title="{{px.name}}">{{px.code}}</a>
+					<a href="{{url_for('place', place=px)}}" title="{{px.name}}">{{px.code}}</a>
 				{% endif %}
 			</td>				
 			<td>
 				<ul class="booths">
 				{% for b in booths %}
 					{% set count = counts.get(b.id, 0) %}
-					<li class="booth {{get_pb_class(count)}}" title="{{b.name}}"><a href="{{url_for('place', key=b.key)}}">{{b.code.lstrip("PB0")}}</a> - {{count}}</li>					
+					<li class="booth {{get_pb_class(count)}}" title="{{b.name}}"><a href="{{url_for('place', place=b)}}">{{b.code.lstrip("PB0")}}</a> - {{count}}</li>
 				{% endfor %}
 				</ul>
 			</td>

@@ -47,6 +47,6 @@ AAM AADMI PARTY.
 
 {% macro render_place(place) %}
 	{% if place.type.short_name not in ['COUNTRY', 'REGION'] %}
-		<a href="{{url_for('place', key=place.key, _external=True)}}">{{place.name}}</a> <span class="small">{{place.type.name}}</span><br/>
+		<a href="{{url_for('place', place=place, _external=True)}}">{{place.name}}</a> <span class="small">{{place.type.name}}</span><br/>
 	{% endif %}
 {% endmacro %}
