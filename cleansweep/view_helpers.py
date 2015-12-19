@@ -29,6 +29,11 @@ def register_place_hook():
     if 'place' in request.view_args:
         g.place = request.view_args['place']
 
+        # initialize the permissions
+        user = h.get_current_user()
+        if user:
+            g.permissions = h.get_permissions(user, g.place)
+
 @rbac.role_provider
 def get_user_roles(user):
     if user.email in app.config['ADMIN_USERS']:
