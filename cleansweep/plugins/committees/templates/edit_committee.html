@@ -6,10 +6,10 @@
 
 {% block page_content %}
   <ul class="breadcrumb breadcrumb-collapse">
-    <li><a href="{{url_for('.committees', key=place.key)}}">Committees</a></li>
+    <li><a href="{{url_for('.committees', place=place)}}">Committees</a></li>
     <li></li>
   </ul>
-  <h2>Edit <a href="{{url_for('.view_committee', key=place.key, slug=committee.type.slug)}}">{{committee.type.name}}</a></h2>
+  <h2>Edit <a href="{{url_for('.view_committee', place=place, slug=committee.type.slug)}}">{{committee.type.name}}</a></h2>
   <div>{{committee.type.description}}</div>
 
   <div class="hidden" id="member-card-template">
@@ -51,7 +51,7 @@
             <h4>{{m.name}}</h4>
             <div>{{m.email or ""}}</div>
             <div>{{m.phone}}</div>
-            <div class="small"><a href="{{url_for('place', key=m.place.key)}}">{{m.place.key}}</a></div>
+            <div class="small"><a href="{{url_for('place', place=m.place)}}">{{m.place.key}}</a></div>
           </div>
           <form method="POST">
             <input type="hidden" name="action" value="remove">
@@ -102,7 +102,7 @@
         }
 
         $.ajax({
-            url: "{{url_for('volunteers.volunteers_autocomplete', key=place.key)}}",
+            url: "{{url_for('volunteers.volunteers_autocomplete', place=place)}}",
             dataType: "json",
             data: {q: q},
             success: function(data) {

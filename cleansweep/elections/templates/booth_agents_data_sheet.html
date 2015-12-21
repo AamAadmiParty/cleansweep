@@ -5,8 +5,8 @@
     <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
 
     <ul class="nav nav-pills">
-      <li role="presentation"><a href="{{url_for('.booth_agents', key=place.key)}}">Report</a></li>
-      <li role="presentation" class="active"><a href="{{url_for('.booth_agents_data', key=place.key)}}">Data</a></li>
+      <li role="presentation"><a href="{{url_for('.booth_agents', place=place)}}">Report</a></li>
+      <li role="presentation" class="active"><a href="{{url_for('.booth_agents_data', place=place)}}">Data</a></li>
     </ul>
 
     <br/>
@@ -19,7 +19,7 @@
 
     <div>
       <a href="javascript:;" class="btn btn-primary save-table">Save</a>
-      <a href="{{url_for('.booth_agents_data', key=place.key)}}" class="btn btn-danger">Cancel</a>
+      <a href="{{url_for('.booth_agents_data', place=place)}}" class="btn btn-danger">Cancel</a>
     </div>
     <br/>
 
@@ -29,7 +29,7 @@
 
     <div>
       <a href="javascript" class="btn btn-primary save-table">Save</a>
-      <a href="{{url_for('.booth_agents_data', key=place.key)}}" class="btn btn-danger">Cancel</a>
+      <a href="{{url_for('.booth_agents_data', place=place)}}" class="btn btn-danger">Cancel</a>
     </div>
 
   <script type="text/javascript">

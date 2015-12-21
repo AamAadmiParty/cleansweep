@@ -13,5 +13,5 @@ This templates extends the an existing template place.html, which provides all t
 {% block page_content %}
 	<h1>Hello World!</h1>
 
-	<p>You are seeing this page at <a href="{{url_for('place', key=place.key)}}">{{place.name}}</a></p>.
+	<p>You are seeing this page at <a href="{{url_for('place', place=place)}}">{{place.name}}</a></p>.
 {% endblock %}

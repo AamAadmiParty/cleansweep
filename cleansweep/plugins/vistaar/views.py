@@ -38,7 +38,7 @@ def mv_request(place):
 @require_permission("write")
 def admin_mv_requests(place, status=None):
     if status not in [None, 'approved', 'rejected']:
-        return redirect(url_for(".admin_mv_requests", key=place.key))
+        return redirect(url_for(".admin_mv_requests", place=place))
     if status is None:
         status = 'pending'
 
@@ -50,10 +50,10 @@ def admin_mv_requests(place, status=None):
                 mv_req.approve()
                 db.session.commit()
                 flash('Successfully approved {} to work at {}.'.format(mv_req.member.name, mv_req.place.name))
-                return redirect(url_for(".admin_mv_requests", key=place.key))
+                return redirect(url_for(".admin_mv_requests", place=place))
             elif action == 'reject-request':
                 mv_req.reject()
                 db.session.commit()
                 flash('Successfully rejected {}.'.format(mv_req.name))
-                return redirect(url_for(".admin_mv_requests", key=place.key))
+                return redirect(url_for(".admin_mv_requests", place=place))
     return render_template("mv_requests.html", place=place, status=status)

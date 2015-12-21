@@ -27,14 +27,14 @@
     {% if place.type.short_name == "STATE" %}
       <ul class="list-group">
         {% for p in place.get_all_child_places(AC) %}
-          <li class="list-group-item"><a href="{{changeview(key=p.key)}}">{{p.name}}</a></li>
+          <li class="list-group-item"><a href="{{changeview(place=p)}}">{{p.name}}</a></li>
         {% endfor %}
       </ul>
     {% else %}
       <ul class="nav nav-pills">
         <li role="presentation" class="active"><a href="#">Report</a></li>
-        <li role="presentation"><a href="{{url_for('.booth_agents_data', key=place.key)}}">Data</a></li>
-        <li role="presentation"><a href="{{url_for('admin_sms', key=place.key)}}">Send SMS</a></li>
+        <li role="presentation"><a href="{{url_for('.booth_agents_data', place=place)}}">Data</a></li>
+        <li role="presentation"><a href="{{url_for('admin_sms', place=place)}}">Send SMS</a></li>
       </ul>
       <br/>
       {{render_booth_report(place, report)}}
@@ -51,14 +51,14 @@
   {% if place.type < STATE %}
     {% set p = place.get_parent(STATE) %}
     <li class="breadcrumb-{{p.type.short_name.lower()}}">
-      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
+      <a href="{{ changeview(place=p) }}">{{ p.name }}</a>
       <span class="divider"></span>
     </li>
   {% endif %}
   {% if place.type < AC %}
     {% set p = place.get_parent(AC) %}
     <li class="breadcrumb-{{p.type.short_name.lower()}}">
-      <a href="{{ changeview(key=p.key) }}">{{ p.name }}</a>
+      <a href="{{ changeview(place=p) }}">{{ p.name }}</a>
       <span class="divider"></span>
     </li>
   {% endif %}

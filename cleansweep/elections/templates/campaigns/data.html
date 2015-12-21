@@ -9,8 +9,8 @@
     <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
 
     <ul class="nav nav-pills">
-      <li role="presentation"><a href="{{url_for('.view_campaign', key=place.key, slug=campaign.slug)}}">Home</a></li>
-      <li role="presentation"><a href="{{url_for('.campaign_status', key=place.key, slug=campaign.slug)}}">Status</a></li>
+      <li role="presentation"><a href="{{url_for('.view_campaign', place=place, slug=campaign.slug)}}">Home</a></li>
+      <li role="presentation"><a href="{{url_for('.campaign_status', place=place, slug=campaign.slug)}}">Status</a></li>
       <li role="presentation" class="active"><a href="#">Data</a></li>
     </ul>
     <br/>

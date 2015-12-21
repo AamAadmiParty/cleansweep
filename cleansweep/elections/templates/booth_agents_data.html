@@ -5,15 +5,15 @@
     <h2>{{place.name}} <span class="small">{{ place.type.name }}</span></h2>
 
     <ul class="nav nav-pills">
-      <li role="presentation"><a href="{{url_for('.booth_agents', key=place.key)}}">Report</a></li>
+      <li role="presentation"><a href="{{url_for('.booth_agents', place=place)}}">Report</a></li>
       <li role="presentation" class="active"><a href="#">Data</a></li>
     </ul>
 
     <br/>
 
     <div>
-      <a class="btn btn-primary" href="{{url_for('.booth_agents_data_sheet', key=place.key)}}">Edit</a>
-      <a class="btn btn-primary" href="{{url_for('admin_sms', key=place.key)}}">Send SMS</a>
+      <a class="btn btn-primary" href="{{url_for('.booth_agents_data_sheet', place=place)}}">Edit</a>
+      <a class="btn btn-primary" href="{{url_for('admin_sms', place=place)}}">Send SMS</a>
     </div>
 
     <br/>
