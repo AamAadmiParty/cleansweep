@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content_head %}
+<div class="page-content">
+<div class="pull-right" style="font-size: 2.0em;">
+	<span class="label label-primary">Youth Wing</span>
+</div>
+
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="#">Delhi</a></li>
+    <li><a href="#">AC001 - Narela</a></li>
+    <li></li>
+  </ul>
+  <h2>Volunteers</h2>
+</div>
+{% endblock %}
+
+{% block content_body %}
+
+  <form class="form-inline" style="margin: 20px 0px;">
+	<div class="form-group">
+		<input type="text" class="form-control" placeholder="Search">
+	</div>
+	<div class="form-group">
+		<input type="submit" class="form-control" value="Search">
+	</div>
+  </form>
+
+  <ul class="list-group">
+	{% for i in range(50) %}
+      <li class="list-group-item">
+	<img src="/static/images/default-photo.jpg" style="height: 20px; padding-right: 10px;">
+        <a href="#">{{fake.name()}}</a>
+      </li>
+     {% endfor %}
+  </ul>
+{% endblock %}
