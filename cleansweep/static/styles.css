@@ -175,3 +175,25 @@ a.header {
     margin-top: 0px;
     margin-bottom: 0px;
 }
+
+.app {
+  float: left;
+  margin: 20px;
+}
+.app-icon {
+  padding: 20px 30px;
+  background: #eed;
+  border-radius: 5px;
+
+}
+.app-label {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.octicon, a .octicon {
+  font-size: 32px;
+}
+
+
+

@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='octicons/octicons.css') }}">
+{% endblock %}
+
 {% block content_head %}
   <h1>Dashboard</h1>
 {% endblock %}
@@ -11,4 +15,16 @@
   You are member of
   <a href="{{url_for('place', place=user.place)}}">{{user.place.name}}</a>.
   </p>
+
+
+  <div class="app-grid">
+    {% if has_permission("siteadmin") %}
+      <div class="app">
+        <div class="app-icon">
+          <a href="/admin"><span class="octicon octicon-key"></span></a>
+        </div>
+        <div class="app-label"><a href="/admin">Admin</a></div>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}
