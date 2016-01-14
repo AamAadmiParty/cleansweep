@@ -537,6 +537,9 @@ class Door2DoorEntry(db.Model):
         self.voters_in_family = voters_in_family
         self.phone = phone
 
+    @staticmethod
+    def find(**kw):
+        return Door2DoorEntry.query.filter_by(**kw).first()
 
 class Unsubscribe(db.Model):
     """List of people unsubscribes from receiving emails.
