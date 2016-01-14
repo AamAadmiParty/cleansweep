@@ -128,3 +128,52 @@ class SendSMSForm(Form):
 
 class UnsubscribeForm(Form):
     email = StringField('Email Address', [validators.Email()])
+
+
+class Door2DoorForm(Form):
+    name = StringField('Head of the family', [validators.required()])
+    phone = StringField(label='Phone Number', validators=[validators.Required()], description="10 digits only")
+    voters_in_family = StringField('Voters in family', default=1)
+    booth = SelectField('Polling Booth', validators=[validators.Required()])
+
+    def __init__(self, place, *a, **kw):
+        Form.__init__(self, *a, **kw)
+        self._place = place
+        self._setup_booth_options()
+
+    def _setup_booth_options(self):
+        t = self._place.type.short_name
+        if t == 'PB':
+            self.booth.choices = [(self._place.key, self._place.name)]
+            ## Anand: marking it as disabled is causing form validation error
+            ## as the browser is not sending any data for this input.
+            ## Commenting it out to avoid that issue.
+            # self.booth.flags.disabled = True
+        elif t in ['PX', 'LB', 'AC']:
+            PB = models.PlaceType.get("PB")
+            self.booth.choices = [(p.key, p.name) for p in self._place.get_places(PB)]
+            self.booth.choices.insert(0, (self._place.key, "Not Sure"))
+        else:
+            self.booth.choices = [('', '')]
+            ## Anand: marking it as disabled is causing form validation error
+            ## as the browser is not sending any data for this input.
+            ## Commenting it out to avoid that issue.
+            # self.booth.flags.disabled = True
+
+    def validate_phone(self, field):
+
+        if len(field.data) != 10:
+            raise validators.ValidationError('It should be 10 digit only')
+
+        phone = field.data.strip()
+
+        try:
+            number = phonenumbers.parse(phone, "IN")
+        except Exception:
+            raise validators.ValidationError('Please enter number only')
+
+        if not phonenumbers.is_valid_number(number):
+            raise validators.ValidationError('Invalid Phone number')
+
+        if models.Member.find(phone=phone):
+            raise validators.ValidationError('This phone number is already used')
