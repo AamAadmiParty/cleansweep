@@ -15,6 +15,9 @@
           {% if has_permission("write") %}
             <li><strong>{{place.get_contact_count()}}</strong> contacts</li>
           {% endif %}
+          {% if has_permission("door2door.view") %}
+              <li><strong>{{ place.get_door2door_count() }}</strong> Door 2 Door entries</li>
+          {% endif %}
         </ul>
       {% endif %}
     </div>

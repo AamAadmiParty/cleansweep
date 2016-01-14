@@ -104,7 +104,7 @@ margin-bottom: 0px;">
       {% endif %}
       {% if has_permission("door2door.view") %}
         <li class="list-group-item {{ 'active' if tab=='door2door' }}">
-            <a href="{{ url_for('door2door.door2door', place=place) }}">Door 2 Door</a>
+            <a href="{{ url_for('door2door.door2door', place=place) }}">Door 2 Door <span class="badge pull-right">{{ place.get_door2door_count() }}</span></a>
         </li>
       {% endif %}
     </ul>
