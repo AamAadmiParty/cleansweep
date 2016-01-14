@@ -15,19 +15,29 @@
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Voters in family</th>
-                <th>Phone</th>
-                <th>Location</th>
+                <th style="width: 25%">Head of the family</th>
+                <th style="width: 15%"># of voters</th>
+                <th style="width: 25%">Phone</th>
+                <th style="width: 20%">Location</th>
+                {% if has_permission("door2door.delete") %}
+                    <th  style="width: 10%"></th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
             {% for entry in place.get_door2door_entries() %}
                 <tr>
-                    <td>{{ entry.name }}</td>
-                    <td>{{ entry.phone }}</td>
-                    <td>{{ entry.voters_in_family or 1 }}</td>
-                    <td><a href="/{{ entry.place.key }}">{{ entry.place.key }}</a></td>
+                    <td style="width: 25%;">{{ entry.name }}</td>
+                    <td style="width: 15%">{{ entry.voters_in_family or 1 }}</td>
+                    <td style="width: 25%">{{ entry.phone }}</td>
+                    <td style="width: 20%"><a href="/{{ entry.place.key }}">{{ entry.place.key }}</a></td>
+                    {% if has_permission("door2door.delete") %}
+                        <td  style="width: 10%">
+                            <a class="btn btn-danger" href="{{ url_for('.delete_entry', place=place, _id=entry.id) }}">
+                                Delete
+                            </a>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </table>
