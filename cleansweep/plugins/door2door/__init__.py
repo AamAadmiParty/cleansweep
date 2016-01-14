@@ -1,1 +1,1 @@
-__author__ = 'Raghav'
+from .views import init_app

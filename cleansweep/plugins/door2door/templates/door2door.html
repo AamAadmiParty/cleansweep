@@ -1,0 +1,14 @@
+{% extends "place.html" %}
+
+{% block subnav %}
+    {{ subnav(place, tab="door2door") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>Door 2 Door</h2>
+  <div class="controls">
+    {% if has_permission("door2door.add") %}
+        <a href="{{url_for('.make_entry', place=place)}}" class="btn btn-primary">Create new entry</a>
+    {% endif %}
+  </div>
+{% endblock %}
