@@ -5,10 +5,31 @@
 {% endblock %}
 
 {% block page_content %}
-  <h2>Door 2 Door</h2>
-  <div class="controls">
-    {% if has_permission("door2door.add") %}
-        <a href="{{url_for('.make_entry', place=place)}}" class="btn btn-primary">Create new entry</a>
-    {% endif %}
-  </div>
+    <h2>Door 2 Door</h2>
+    <div style="margin-bottom: 20px;">
+        {% if has_permission("door2door.add") %}
+            <a href="{{ url_for('.make_entry', place=place) }}" class="btn btn-primary">Create new entry</a>
+        {% endif %}
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Voters in family</th>
+                <th>Phone</th>
+                <th>Location</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entry in place.get_door2door_entries() %}
+                <tr>
+                    <td>{{ entry.name }}</td>
+                    <td>{{ entry.phone }}</td>
+                    <td>{{ entry.voters_in_family or 1 }}</td>
+                    <td><a href="/{{ entry.place.key }}">{{ entry.place.key }}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}
