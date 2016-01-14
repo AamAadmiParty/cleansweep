@@ -1,0 +1,51 @@
+{% extends "place.html" %}
+{% from "macros.html" import render_field %}
+
+{% block page_container %}
+  {{self.two_column_layout()}}
+{% endblock %}
+
+{% block subnav %}
+    {{ subnav(place, tab="door2door") }}
+{% endblock %}
+
+{% block page_content %}
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('.door2door', place=place)}}">Door 2 Door</a></li>
+    <li></li>
+  </ul>
+  <h2>Add New Entry</h2>
+
+  {% if place.type > AC %}
+    {% if place.type > STATE %}
+      <p>Please select a state to continue.</p>
+      {% set subtype = STATE %}
+    {% else %}
+      <p>Please select an assembly constituency to continue.</p>
+      {% set subtype = AC %}
+    {% endif %}
+    <ul class="list-group">
+    {% for p in place.get_places(subtype) %}
+      <li class="list-group-item"><a href="{{changeview(place=p)}}">{{p.name}}</a></li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <div class="row">
+      <div class="col-md-4">
+        <form id="signup-form" role="form" method="POST" style="max-width: 400px;">
+          {{ form.csrf_token }}
+          {{ render_field(form.name) }}
+          {{ render_field(form.voters_in_family) }}
+          {{ render_field(form.phone) }}
+          {{ render_field(form.booth) }}
+          <button type="submit" class="btn btn-default">Create entry</button>
+        </form>
+      </div>
+      <div class="col-md-8" style="height: 100%">
+          <div id="map-canvas" style="height: 100%; min-height: 570px;"></div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}
