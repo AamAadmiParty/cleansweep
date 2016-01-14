@@ -376,6 +376,10 @@ class Place(db.Model, Mixable):
         return Door2DoorEntry.query.filter(place_parents.c.child_id == Door2DoorEntry.place_id,
                                            place_parents.c.parent_id == self.id).limit(limit).offset(offset).all()
 
+    def get_door2door_count(self):
+        return Door2DoorEntry.query.filter(place_parents.c.child_id == Door2DoorEntry.place_id,
+                                           place_parents.c.parent_id == self.id).count()
+
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
 
