@@ -110,8 +110,8 @@ class Place(db.Model, Mixable):
 
     # List of parents
     # Required to list immediate children on the place page
-    _parents = db.relationship('Place', 
-        secondary=place_parents, 
+    _parents = db.relationship('Place',
+        secondary=place_parents,
         primaryjoin=(id==place_parents.c.child_id),
         secondaryjoin=(id==place_parents.c.parent_id),
         backref=db.backref('places', lazy='dynamic', order_by='Place.key'),
@@ -142,7 +142,7 @@ class Place(db.Model, Mixable):
         """
         return Place.query.filter_by(iparent_id=None).first()
 
-    @property 
+    @property
     def code(self):
         return self.key.split("/")[-1]
 
@@ -305,7 +305,7 @@ class Place(db.Model, Mixable):
         """
         member = Member(self, name, email, phone, voterid, details)
         db.session.add(member)
-        return member   
+        return member
 
 
     def get_pending_members(self, status='pending', limit=100, offset=0):
@@ -334,7 +334,7 @@ class Place(db.Model, Mixable):
         contacts = [
                 Contact(self, name, email, phone, voterid)
                 for name, email, phone, voterid in data
-                if name and name.strip() 
+                if name and name.strip()
                     and email not in dup_emails
                     and phone not in dup_phones]
         db.session.add_all(contacts)
@@ -363,6 +363,14 @@ class Place(db.Model, Mixable):
             offset = offset + size
             for c in contacts:
                 yield c
+
+    def add_door2door_entry(self, name, voters_in_family, phone):
+        """
+        Adds a new entry to door 2 door table.
+        """
+        entry = Door2DoorEntry(self, name, voters_in_family, phone)
+        db.session.add(entry)
+        return entry
 
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
@@ -495,7 +503,7 @@ class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
     place = db.relationship('Place', foreign_keys=place_id)
-    
+
     name = db.Column(db.Text, nullable=False)
     email = db.Column(db.Text, index=True)
     phone = db.Column(db.Text, index=True)
@@ -507,6 +515,24 @@ class Contact(db.Model):
         self.email = email
         self.phone = phone
         self.voterid = voterid
+
+
+class Door2DoorEntry(db.Model):
+    __tablename__ = "door2door_entry"
+    id = db.Column(db.Integer, primary_key=True)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False)
+    place = db.relationship('Place', foreign_keys=place_id)
+
+    name = db.Column(db.Text, nullable=False)
+    voters_in_family = db.Column(db.Text)
+    phone = db.Column(db.Text, nullable=False, unique=True)
+
+    def __init__(self, place, name, voters_in_family, phone):
+        self.place = place
+        self.name = name
+        self.voters_in_family = voters_in_family
+        self.phone = phone
+
 
 class Unsubscribe(db.Model):
     """List of people unsubscribes from receiving emails.
