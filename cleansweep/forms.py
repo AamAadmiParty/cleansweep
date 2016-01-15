@@ -128,3 +128,34 @@ class SendSMSForm(Form):
 
 class UnsubscribeForm(Form):
     email = StringField('Email Address', [validators.Email()])
+
+
+class Door2DoorForm(Form):
+    name = StringField('Head of the family', [validators.required()])
+    phone = StringField(label='Phone Number', validators=[validators.Required()], description="10 digits only")
+    voters_in_family = StringField('Voters in family', default=1)
+    town = StringField('Village/Town', validators=[validators.Required()])
+    ac = StringField('Assembly Constituency', validators=[validators.Required()])
+
+    def __init__(self, place, *a, **kw):
+        Form.__init__(self, *a, **kw)
+        self._place = place
+        self.ac.data = place.get_parent('AC').name
+
+    def validate_phone(self, field):
+
+        if len(field.data) != 10:
+            raise validators.ValidationError('It should be 10 digit only')
+
+        phone = field.data.strip()
+
+        try:
+            number = phonenumbers.parse(phone, "IN")
+        except Exception:
+            raise validators.ValidationError('Please enter number only')
+
+        if not phonenumbers.is_valid_number(number):
+            raise validators.ValidationError('Invalid Phone number')
+
+        if models.Member.find(phone=phone):
+            raise validators.ValidationError('This phone number is already used')
