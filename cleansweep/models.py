@@ -533,7 +533,7 @@ class Door2DoorEntry(db.Model):
 
     name = db.Column(db.Text, nullable=False)
     voters_in_family = db.Column(db.Text)
-    phone = db.Column(db.Text, nullable=False, unique=True)
+    phone = db.Column(db.Text, nullable=False)
     town = db.Column(db.Text, nullable=False)
 
     def __init__(self, place, name, voters_in_family, phone, town):
