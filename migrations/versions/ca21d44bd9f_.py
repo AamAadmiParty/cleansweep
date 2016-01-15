@@ -20,6 +20,7 @@ def upgrade():
     op.add_column('door2door_entry', sa.Column('phone', sa.Text(), nullable=False))
     op.add_column('door2door_entry', sa.Column('place_id', sa.Integer(), nullable=False))
     op.add_column('door2door_entry', sa.Column('voters_in_family', sa.Text(), nullable=True))
+    op.add_column('door2door_entry', sa.Column('town', sa.Text(), nullable=False))
     op.create_unique_constraint(None, 'door2door_entry', ['phone'])
     op.create_foreign_key(None, 'door2door_entry', 'place', ['place_id'], ['id'])
     op.drop_constraint(u'member_email_key', 'member', type_='unique')
@@ -35,4 +36,5 @@ def downgrade():
     op.drop_column('door2door_entry', 'place_id')
     op.drop_column('door2door_entry', 'phone')
     op.drop_column('door2door_entry', 'name')
+    op.drop_column('door2door_entry', 'town')
     ### end Alembic commands ###
