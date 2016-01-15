@@ -1,5 +1,5 @@
 from cleansweep import forms
-from cleansweep.models import Place, db, Door2DoorEntry
+from cleansweep.models import db, Door2DoorEntry, PlaceType
 from cleansweep.plugin import Plugin
 from cleansweep.view_helpers import require_permission
 from flask import render_template, request, redirect, url_for
@@ -35,10 +35,10 @@ def door2door(place):
 @plugin.route("/<place:place>/door2door/add", methods=['GET', 'POST'])
 @require_permission("door2door.add")
 def make_entry(place):
-    form = forms.Door2DoorForm(place, request.form)
+    # If place is greater than AC set form to None
+    form = forms.Door2DoorForm(place, request.form) if place.type <= PlaceType.get("AC") else None
     if request.method == "POST" and form.validate():
-        p = Place.find(key=form.booth.data)
-        p.add_door2door_entry(
+        place.add_door2door_entry(
             name=form.name.data,
             voters_in_family=form.voters_in_family.data,
             phone=form.phone.data,

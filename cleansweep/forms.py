@@ -135,31 +135,12 @@ class Door2DoorForm(Form):
     phone = StringField(label='Phone Number', validators=[validators.Required()], description="10 digits only")
     voters_in_family = StringField('Voters in family', default=1)
     town = StringField('Village/Town', validators=[validators.Required()])
-    booth = SelectField('Polling Booth', validators=[validators.Required()])
+    ac = StringField('Assembly Constituency', validators=[validators.Required()])
 
     def __init__(self, place, *a, **kw):
         Form.__init__(self, *a, **kw)
         self._place = place
-        self._setup_booth_options()
-
-    def _setup_booth_options(self):
-        t = self._place.type.short_name
-        if t == 'PB':
-            self.booth.choices = [(self._place.key, self._place.name)]
-            ## Anand: marking it as disabled is causing form validation error
-            ## as the browser is not sending any data for this input.
-            ## Commenting it out to avoid that issue.
-            # self.booth.flags.disabled = True
-        elif t in ['PX', 'LB', 'AC']:
-            PB = models.PlaceType.get("PB")
-            self.booth.choices = [(p.key, p.name) for p in self._place.get_places(PB)]
-            self.booth.choices.insert(0, (self._place.key, "Not Sure"))
-        else:
-            self.booth.choices = [('', '')]
-            ## Anand: marking it as disabled is causing form validation error
-            ## as the browser is not sending any data for this input.
-            ## Commenting it out to avoid that issue.
-            # self.booth.flags.disabled = True
+        self.ac.data = place.get_parent('AC').name
 
     def validate_phone(self, field):
 
