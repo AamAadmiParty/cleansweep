@@ -41,7 +41,8 @@ def make_entry(place):
         p.add_door2door_entry(
             name=form.name.data,
             voters_in_family=form.voters_in_family.data,
-            phone=form.phone.data)
+            phone=form.phone.data,
+            town=form.town.data)
         db.session.commit()
         return redirect(url_for(".door2door", place=place))
     return render_template("entry_door2door.html", place=place, form=form)

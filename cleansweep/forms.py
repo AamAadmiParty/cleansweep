@@ -134,6 +134,7 @@ class Door2DoorForm(Form):
     name = StringField('Head of the family', [validators.required()])
     phone = StringField(label='Phone Number', validators=[validators.Required()], description="10 digits only")
     voters_in_family = StringField('Voters in family', default=1)
+    town = StringField('Village/Town', validators=[validators.Required()])
     booth = SelectField('Polling Booth', validators=[validators.Required()])
 
     def __init__(self, place, *a, **kw):
