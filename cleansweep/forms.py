@@ -142,6 +142,12 @@ class Door2DoorForm(Form):
         self._place = place
         self.ac.data = place.get_parent('AC').name
 
+    def validate_voters_in_family(self, field):
+        if field.data == "0":
+            raise validators.ValidationError("There can't be 0 voters in a family.")
+        if not field.data.isdigit():
+            raise validators.ValidationError("Only numbers are allowed in this field..")
+
     def validate_phone(self, field):
 
         if len(field.data) != 10:
