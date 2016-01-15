@@ -1,24 +1,31 @@
-{% extends "place.html" %}
+{% extends "base.html" %}
 
-{% block subnav %}
-    {{ subnav(place, tab="door2door") }}
-{% endblock %}
 
-{% block page_content %}
+{% block content_head %}
+<div class="page-content">
+  <ul class="breadcrumb breadcrumb-collapse">
+    <li><a href="{{url_for('place', place=place)}}">{{ place.name }}</a></li>
+    <li></li>
+  </ul>
     <h2>Door 2 Door</h2>
     <div style="margin-bottom: 20px;">
         {% if has_permission("door2door.add") %}
             <a href="{{ url_for('.make_entry', place=place) }}" class="btn btn-primary">Create new entry</a>
         {% endif %}
     </div>
+</div>
+{% endblock %}
+
+{% block content_body %}
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
-                <th style="width: 25%">Head of the family</th>
-                <th style="width: 15%"># of voters</th>
-                <th style="width: 25%">Phone</th>
-                <th style="width: 20%">Village/Town</th>
+                <th style="width: 20%">AC</th>
+                <th style="width: 25%">Village/Town</th>
+                <th style="width: 20%">Head of the family</th>
+                <th style="width: 15%">Phone</th>
+                <th style="width: 10%"># of voters</th>
                 {% if has_permission("door2door.delete") %}
                     <th  style="width: 10%"></th>
                 {% endif %}
@@ -27,10 +34,11 @@
             <tbody>
             {% for entry in place.get_door2door_entries() %}
                 <tr>
-                    <td style="width: 25%;">{{ entry.name }}</td>
-                    <td style="width: 15%">{{ entry.voters_in_family or 1 }}</td>
-                    <td style="width: 25%">{{ entry.phone }}</td>
-                    <td style="width: 20%">{{ entry.town }}</td>
+                    <td style="width: 20%;"><a href="{{url_for('place', place=entry.place)}}">{{ entry.place.name }}</a></td>
+                    <td style="width: 25%">{{ entry.town }}</td>
+                    <td style="width: 20%;">{{ entry.name }}</td>
+                    <td style="width: 15%">{{ entry.phone }}</td>
+                    <td style="width: 10%">{{ entry.voters_in_family or 1 }}</td>
                     {% if has_permission("door2door.delete") %}
                         <td  style="width: 10%">
                             <a class="btn btn-danger" href="{{ url_for('.delete_entry', place=place, _id=entry.id) }}">

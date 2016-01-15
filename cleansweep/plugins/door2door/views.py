@@ -2,6 +2,7 @@ from cleansweep import forms
 from cleansweep.models import db, Door2DoorEntry, PlaceType
 from cleansweep.plugin import Plugin
 from cleansweep.view_helpers import require_permission
+import cleansweep.helpers as h
 from flask import render_template, request, redirect, url_for
 
 plugin = Plugin("door2door", __name__, template_folder="templates")
@@ -25,6 +26,16 @@ plugin.define_permission(
 def init_app(app):
     plugin.init_app(app)
 
+
+@plugin.route("/door2door", methods=['GET'])
+def door2door_redirect():
+    user = h.get_current_user()
+    if not user:
+        return redirect(url_for("dashboard"))
+    place = user.place.get_parent("AC")
+    if not place:
+        return redirect(url_for("dashboard"))
+    return redirect(url_for(".door2door", place=place))
 
 @plugin.route("/<place:place>/door2door", methods=['GET'])
 @require_permission("door2door.view")
