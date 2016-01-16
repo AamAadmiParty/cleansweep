@@ -26,5 +26,16 @@
         <div class="app-label"><a href="/admin">Admin</a></div>
       </div>
     {% endif %}
+    {% if has_permission("door2door.add") %}
+      <div class="app">
+        <div class="app-icon">
+          <a href="{{ url_for('door2door.make_entry', place=user.place.get_parent("AC")) }}">
+              <span class="octicon octicon-organization"></span>
+          </a>
+        </div>
+        {# Redirecting to user's AC place #}
+        <div class="app-label"><a href="{{ url_for('door2door.make_entry', place=user.place.get_parent("AC")) }}">Parivar Jodo</a></div>
+      </div>
+    {% endif %}
   </div>
 {% endblock %}
