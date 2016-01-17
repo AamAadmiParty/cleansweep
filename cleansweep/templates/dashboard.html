@@ -26,7 +26,7 @@
         <div class="app-label"><a href="/admin">Admin</a></div>
       </div>
     {% endif %}
-    {% if has_permission("door2door.add") %}
+    {% if has_permission("door2door.add", place=user.place) %}
       <div class="app">
         <div class="app-icon">
           <a href="{{ url_for('door2door.make_entry', place=user.place.get_parent("AC")) }}">
