@@ -102,12 +102,18 @@ def get_permissions(user, place):
         perms += [p['permission'] for p in perm_dicts if p['place'] in place_keys]
     return perms
 
-def has_permission(permission):
+def has_permission(permission, place=None):
     """Checks if the current user has specified permission at the current place.
     """
-    # g.permissions is set in view_helpers.place_view before executing the view function.
+    if place is not None:
+        user = get_current_user()
+        perms = get_permissions(user, place)
+    else:
+        # g.permissions is set in view_helpers.place_view before executing the view function.
+        perms = g.permissions
+
     # * indicates all permissions
-    return permission in g.permissions or '*' in g.permissions
+    return permission in perms or '*' in perms
 
 def safeint(strvalue, default=0, minvalue=None, maxvalue=None):
     """Returns the int of strvalue or default.
