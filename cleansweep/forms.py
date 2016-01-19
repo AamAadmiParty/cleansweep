@@ -1,6 +1,6 @@
 from flask_wtf import Form
 import wtforms
-from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField
+from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField, BooleanField
 from wtforms import validators
 from . import models
 from .voterlib import voterdb
@@ -133,9 +133,11 @@ class UnsubscribeForm(Form):
 class Door2DoorForm(Form):
     name = StringField('Head of the family', [validators.required()])
     phone = StringField(label='Phone Number', validators=[validators.Required()], description="10 digits only")
-    voters_in_family = StringField('Voters in family', default=1)
+    voters_in_family = StringField('Voters in family')
     town = StringField('Village/Town', validators=[validators.Required()])
     ac = StringField('Assembly Constituency', validators=[validators.Required()])
+    donation_amount = 10  # 10 rupees
+    donated = BooleanField()
 
     def __init__(self, place, *a, **kw):
         Form.__init__(self, *a, **kw)
