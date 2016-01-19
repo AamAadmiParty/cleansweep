@@ -27,14 +27,15 @@
       </div>
     {% endif %}
     {% if has_permission("door2door.add", place=user.place) %}
+      {% set place = user.place if not user.place.get_parent("AC") else user.place.get_parent("AC") %}
       <div class="app">
         <div class="app-icon">
-          <a href="{{ url_for('door2door.make_entry', place=user.place.get_parent("AC")) }}">
+          <a href="{{ url_for('door2door.make_entry', place=place) }}">
               <span class="octicon octicon-organization"></span>
           </a>
         </div>
         {# Redirecting to user's AC place #}
-        <div class="app-label"><a href="{{ url_for('door2door.make_entry', place=user.place.get_parent("AC")) }}">Parivar Jodo</a></div>
+        <div class="app-label"><a href="{{ url_for('door2door.make_entry', place=place) }}">Parivar Jodo</a></div>
       </div>
     {% endif %}
   </div>
