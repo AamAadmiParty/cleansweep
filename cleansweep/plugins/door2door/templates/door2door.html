@@ -23,11 +23,12 @@
             <tr>
                 <th style="width: 20%">AC</th>
                 <th style="width: 25%">Village/Town</th>
-                <th style="width: 20%">Head of the family</th>
-                <th style="width: 15%">Phone</th>
-                <th style="width: 10%"># of voters</th>
+                <th style="width: 20%">Family head</th>
+                <th style="width: 10%">Phone</th>
+                <th style="width: 15%">Voters in family</th>
+                <th style="width: 5%">Donation</th>
                 {% if has_permission("door2door.delete") %}
-                    <th  style="width: 10%"></th>
+                    <th  style="width: 5%"></th>
                 {% endif %}
             </tr>
             </thead>
@@ -35,12 +36,19 @@
             {% for entry in place.get_door2door_entries() %}
                 <tr>
                     <td style="width: 20%;"><a href="{{url_for('place', place=entry.place)}}">{{ entry.place.name }}</a></td>
-                    <td style="width: 25%">{{ entry.town }}</td>
+                    <td style="width: 35%">{{ entry.town }}</td>
                     <td style="width: 20%;">{{ entry.name }}</td>
-                    <td style="width: 15%">{{ entry.phone }}</td>
-                    <td style="width: 10%">{{ entry.voters_in_family or 1 }}</td>
+                    <td style="width: 10%">{{ entry.phone }}</td>
+                    <td style="width: 15%">{{ entry.voters_in_family or 1 }}</td>
+                    <td style="width: 5%">
+                        {% if not entry.donation %}
+                            &#8377;0
+                        {% else %}
+                            &#8377;{{ entry.donation }}
+                        {% endif %}
+                    </td>
                     {% if has_permission("door2door.delete") %}
-                        <td  style="width: 10%">
+                        <td  style="width: 5%">
                             <a class="btn btn-danger" href="{{ url_for('.delete_entry', place=place, _id=entry.id) }}">
                                 Delete
                             </a>
