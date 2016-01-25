@@ -159,20 +159,21 @@ def edit_committee(place, slug):
 
     return render_template("edit_committee.html", place=place, committee=committee)
 
-@plugin.route("/admin/committee-structures/new", methods=['GET', 'POST'])
+@plugin.route("/admin/committee-structures/at/<level>/new", methods=['GET', 'POST'])
 @require_permission("admin.committee-structures.new")
-def new_committee_structure():
+def new_committee_structure(level):
     place = Place.get_toplevel_place()
+    place_type = PlaceType.get(level)
     form = forms.NewCommitteeForm(place)
     if request.method == "POST" and form.validate():
-        committee_type = CommitteeType.new_from_formdata(place, form)
+        committee_type = CommitteeType.new_from_formdata(place, place_type, form)
         db.session.commit()
         signals.new_committee_structure.send(committee_type)
 
         flash("Successfully defined new committee {}.".format(form.slug.data), category="success")
         return redirect(committee_type.url_for(".view_committee_structure"))
     else:
-        return render_template("new_committee_structure.html", place=place, form=form)
+        return render_template("new_committee_structure.html", place=place, place_type=place_type, form=form)
 
 @plugin.route("/admin/committee-structures")
 @require_permission("admin.committee-structures.view")

@@ -111,11 +111,11 @@ class CommitteeType(db.Model):
         return q
 
     @staticmethod
-    def new_from_formdata(place, form):
+    def new_from_formdata(place, place_type, form):
         """Creates new CommitteeType instance from form data.
         """
         c = CommitteeType(place,
-            place_type=PlaceType.get(form.level.data),
+            place_type=place_type,
             name=form.name.data,
             description=form.description.data,
             slug=form.slug.data)

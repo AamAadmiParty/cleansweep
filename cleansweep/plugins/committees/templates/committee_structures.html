@@ -15,23 +15,15 @@
   <div class="list-group">
     {% for p in place.type.all() %}
       {% set committees_count = place.committee_types.filter_by(place_type_id=p.id).count() %}
-        <a {% if committees_count > 0 %}
-             href="{{ url_for(".committee_structures_by_level", level=p.short_name)}}"
-             class="list-group-item"
-           {% else %}
-             class="list-group-item disabled"
-             title="No committees are defined at this level"
+        <a href="{{ url_for(".committee_structures_by_level", level=p.short_name)}}" class="list-group-item"
+           {% if committees_count == 0 %}
+             style="background: #eee;"
+             title="No committee structures are defined at this level."
            {% endif %}
         >
           {{ p.name }}
           <span class="badge">{{ committees_count }}</span>
         </a>
     {% endfor %}
-  </div>
-
-  <div style="margin-top: 20px;">
-    <a class="btn btn-primary" href="{{ url_for('.new_committee_structure', place=place) }}">
-        Add new committee structure
-    </a>
   </div>
 {% endblock %}

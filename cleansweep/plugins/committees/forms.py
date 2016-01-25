@@ -25,15 +25,12 @@ class NewCommitteeForm(Form):
     committee_type_id = HiddenField()
     name = StringField('Name', [validators.Required()])
     slug = StringField('Slug', [validators.Required()])
-    level = SelectField('Level', choices=[])
     description = TextAreaField('Description', [])
     roles = FieldList(FormField(RoleForm), min_entries=0)
 
     def __init__(self, place, *a, **kw):
         Form.__init__(self, *a, **kw)
         self.place = place
-        place_types = [place.type] + place.type.get_subtypes()
-        self.level.choices = [(t.short_name, t.name) for t in place_types]
         self.ensure_empty_slots()
 
     def validate_slug(self, field):
@@ -58,7 +55,6 @@ class NewCommitteeForm(Form):
         self.committee_type_id.data = c.id
         self.name.data = c.name
         self.slug.data = c.slug
-        self.level.data = c.place_type.short_name
         self.description.data = c.description
         roles = [dict(role_id=role.id, name=role.role, multiple=['no', 'yes'][role.multiple], permission=role.permission) for role in c.roles]
         self.roles.process(None, roles)
