@@ -30,12 +30,17 @@ def init_app(app):
 @plugin.route("/door2door", methods=['GET'])
 def door2door_redirect():
     user = h.get_current_user()
-    if not user:
+    if not user or not user.place:
         return redirect(url_for("dashboard"))
-    place = user.place.get_parent("AC")
-    if not place:
-        return redirect(url_for("dashboard"))
-    return redirect(url_for(".door2door", place=place))
+
+    place = user.place if user.place.type >= PlaceType.get("AC") else user.place.get_parent("AC")
+    endpoint = ".door2door" if request.path == "/door2door" else ".make_entry"
+    return redirect(url_for(endpoint, place=place))
+
+
+@plugin.route("/door2door/add", methods=['GET'])
+def door2door_entry_redirect():
+    return door2door_redirect()
 
 @plugin.route("/<place:place>/door2door", methods=['GET'])
 @require_permission("door2door.view")
