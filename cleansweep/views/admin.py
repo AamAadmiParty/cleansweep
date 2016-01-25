@@ -140,17 +140,17 @@ def admin_sudo():
 def admin_sendmail(place):
     form = forms.SendMailForm(request.form)
     if request.method == "POST" and form.validate():
-        if form.people.data == 'self':
-            people = [get_current_user()]
-        elif form.people.data == 'volunteers':
+        if form.people.data == 'volunteers':
             people = place.get_all_members_iter()
         elif form.people.data == 'contacts':
-            people = place.get_contacts_iter()          
+            people = place.get_contacts_iter()
+        else:
+            people = [get_current_user()]  # self
         subject = form.subject.data
         message = form.message.data
         for p in people:
             if p.email:
-                mailer.sendmail_async(p.email, subject, message)
+                mailer.sendmail_async(p.email, subject, message, message_html=message)
         return render_template("admin/sendmail.html", place=place, form=form, sent=True)
     return render_template("admin/sendmail.html", place=place, form=form, sent=False)
 
