@@ -7,7 +7,16 @@
     <script src='//cdn.tinymce.com/4/tinymce.min.js'></script>
     <script>
         tinymce.init({
-           selector: '#email'
+            selector: '#email',
+            theme: 'modern',
+            plugins: [
+                'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+                'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+                'save table contextmenu directionality emoticons template paste textcolor legacyoutput'
+            ],
+            content_css: 'css/content.css',
+            toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
+            browser_spellcheck: true
         });
     </script>
 {% endblock %}
