@@ -115,7 +115,7 @@ class SendMailForm(Form):
                     ('contacts', 'All Contacts')
                 ])
     subject = StringField('Subject', validators=[validators.Required()])
-    message = TextAreaField("Message", validators=[validators.Required()])
+    message = TextAreaField("Message", id="email", validators=[validators.Required()])
 
 
 class SendSMSForm(Form):

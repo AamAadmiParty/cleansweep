@@ -3,6 +3,15 @@
 
 {% extends "place.html" %}
 
+{% block extrahead %}
+    <script src='//cdn.tinymce.com/4/tinymce.min.js'></script>
+    <script>
+        tinymce.init({
+           selector: '#email'
+        });
+    </script>
+{% endblock %}
+
 {% block subnav %}
   {{ subnav(place, tab="sendmail") }}
 {% endblock %}
@@ -17,7 +26,10 @@
       {{ form.csrf_token }}
       {{ render_field(form.people) }}
       {{ render_field(form.subject) }}
-      {{ render_field(form.message) }}
+      <dl>
+          <dt>{{ form.message.label }}</dt>
+          <dd>{{ form.message(rows=15) }}</dd>
+      </dl>
       <button type="submit" class="btn btn-default">Send</button>
     </form>
   {% endif %}
