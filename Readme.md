@@ -69,7 +69,7 @@ Getting Started with Development
 Look at the [helloworld module][] to learn about how to a component works in
 cleansweep.
 
-[helloworld module]: https://github.com/anandology/cleansweep/tree/master/cleansweep/helloworld
+[helloworld module]: https://github.com/AamAadmiParty/cleansweep/tree/master/cleansweep/helloworld
 
 LICENSE
 -------
