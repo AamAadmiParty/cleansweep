@@ -2,6 +2,7 @@ from ..app import app
 from envelopes import Envelope
 from rq import Queue
 from redis import Redis
+import pynliner
 import logging
 from ..models import Unsubscribe
 
@@ -45,6 +46,9 @@ def sendmail(to_address, subject, message, message_html=None, reply_to=None, cc=
     headers = {}
     if reply_to:
         headers['Reply-To'] = reply_to
+
+    if message_html:
+        message_html = pynliner.fromString(message_html)
 
     if Unsubscribe.contains(to_address):
         app.logger.warn("%s is in the unsubscribed list. Not sending email.", to_address)
