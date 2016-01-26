@@ -9,7 +9,7 @@
     <script src='//cdn.tinymce.com/4/tinymce.min.js'></script>
     <script>
         tinymce.init({
-            selector: '#email',
+            selector: '#email-message',
             theme: 'modern',
             plugins: [
                 'advlist autolink link image lists charmap print preview hr anchor pagebreak',
@@ -42,10 +42,7 @@
             {{ form.csrf_token }}
             {{ render_field(form.people) }}
             {{ render_field(form.subject) }}
-            <dl>
-                <dt>{{ form.message.label }}</dt>
-                <dd>{{ form.message(rows=15) }}</dd>
-            </dl>
+            {{ render_field(form.message, rows=15, id="email-message") }}
             <button type="submit" class="btn btn-default">Send</button>
         </form>
     {% endif %}
