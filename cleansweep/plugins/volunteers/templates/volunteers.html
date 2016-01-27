@@ -30,9 +30,9 @@
             <a href="{{ url_for('.download_volunteer', place=place) }}" class="btn btn-primary">Export</a>
         {% endif %}
     </div>
-    <form class="form-inline" style="margin-bottom: 20px">
+    <form class="form-inline" style="margin-bottom: 20px" method="post">
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="Search">
+            <input type="text" class="form-control" name="search-query" placeholder="Search">
         </div>
         <div class="form-group">
             <input type="submit" class="form-control btn-primary" value="Search">
