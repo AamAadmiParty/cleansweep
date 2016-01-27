@@ -1,19 +1,64 @@
-{% extends "place.html" %}
+{% extends "base.html" %}
 
 {% block subnav %}
     {{ subnav(place, tab="volunteers") }}
 {% endblock %}
 
-{% block page_content %}
-  <h2>Volunteers</h2>
-  <div class="controls">
-    {% if has_permission("volunteers.add") %}
-        <a href="{{url_for('.add_volunteer', place=place)}}" class="btn btn-primary">Add New Volunteer</a>
-    {% endif %}
+{% block content_head %}
+    <div class="page-content">
+        <ul class="breadcrumb breadcrumb-collapse">
+            {% for p in place.parents %}
+                <li><a href="{{ url_for('place', place=p) }}">{{ p.name }}</a></li>
+            {% endfor %}
+            <li><a href="{{ url_for('place', place=place) }}">{{ place.name }}</a></li>
+        </ul>
+        <h2>Volunteers</h2>
+    </div>
+{% endblock %}
 
-    {% if has_permission("volunteers.download") %}
-      <a href="{{url_for('.download_volunteer', place=place)}}" class="btn btn-primary">Export</a>
-    {% endif %}
-  </div>
-  {{ widget("MemberList", pagination=pagination, volunteers=volunteers) }}
+{% block content_body %}
+    <div class="controls" style="margin-bottom: 20px;">
+        {% if has_permission("volunteers.add") %}
+            <a href="{{ url_for('.add_volunteer', place=place) }}" class="btn btn-primary">Add volunteer</a>
+        {% endif %}
+
+        <a href="{{ url_for('admin_sms', place=place) }}" class="btn btn-primary">Send SMS</a>
+
+        <a href="{{ url_for('admin_sendmail', place=place) }}" class="btn btn-primary">Send E-mail</a>
+
+        {% if has_permission("volunteers.download") %}
+            <a href="{{ url_for('.download_volunteer', place=place) }}" class="btn btn-primary">Export</a>
+        {% endif %}
+    </div>
+    <form class="form-inline" style="margin-bottom: 20px">
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <div class="form-group">
+            <input type="submit" class="form-control btn-primary" value="Search">
+        </div>
+    </form>
+    <ul class="list-group">
+        {% for volunteer in volunteers %}
+            <li class="list-group-item">
+                <a href="{{ url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash()) }}">
+                    {% if volunteer.get_detail("facebook_id") %}
+                        <img src="http://graph.facebook.com/{{ volunteer.get_detail('facebook_id') }}/picture?type=normal"
+                             style="height: 20px; padding-right: 10px;">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/default-photo.jpg') }}"
+                             style="height: 20px; padding-right: 10px;">
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash()) }}">{{ volunteer.name }}</a>
+                <a href="{{ url_for('place', place=volunteer.place) }}" class="badge">{{ volunteer.place.key }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block footer %}
+    <div class="text-center">
+        {{ pagination.links }}
+    </div>
 {% endblock %}
