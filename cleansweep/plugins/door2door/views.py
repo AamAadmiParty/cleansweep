@@ -5,6 +5,7 @@ from cleansweep.view_helpers import require_permission
 import cleansweep.helpers as h
 from flask import render_template, request, redirect, url_for, jsonify
 from werkzeug.exceptions import Unauthorized
+from . import signals, notifications
 
 plugin = Plugin("door2door", __name__, template_folder="templates")
 
@@ -130,11 +131,15 @@ def bulk_import(place):
             p = ac_cache[ac_code]
         return p
 
+    entries = []
+
     for row in data['data']:
         ac_code = row.pop('ac')
         ac = get_ac(ac_code)
         print("adding", row)
-        ac.add_door2door_entry(**row)
-
+        entry = ac.add_door2door_entry(**row)
+        entries.append(entry)
     db.session.commit()
+    signals.door2door_import.send(entries)
+
     return jsonify(status="ok", message="successfully imported.")
