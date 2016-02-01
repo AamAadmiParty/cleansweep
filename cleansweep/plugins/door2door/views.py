@@ -1,9 +1,10 @@
 from cleansweep import forms
-from cleansweep.models import db, Door2DoorEntry, PlaceType
+from cleansweep.models import db, Place, Door2DoorEntry, PlaceType
 from cleansweep.plugin import Plugin
 from cleansweep.view_helpers import require_permission
 import cleansweep.helpers as h
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, jsonify
+from werkzeug.exceptions import Unauthorized
 
 plugin = Plugin("door2door", __name__, template_folder="templates")
 
@@ -23,8 +24,13 @@ plugin.define_permission(
     description='Permission to delete door to door entries'
 )
 
+DOOR2DOOR_SECRET = None
+
 def init_app(app):
     plugin.init_app(app)
+
+    global DOOR2DOOR_SECRET
+    DOOR2DOOR_SECRET = app.config.get('DOOR2DOOR_SECRET')
 
 
 @plugin.route("/door2door", methods=['GET'])
@@ -75,3 +81,60 @@ def delete_entry(place, _id):
     db.session.commit()
     return render_template("door2door.html", place=place)
 
+@plugin.route("/<place:place>/door2door/import", methods=["POST"])
+def bulk_import(place):
+    """View to bulk import door2door data.
+
+    Protected by a secret password, shared between the API user and the server.
+
+    The data must be sent as JSON payload. Sample payload:
+
+        {
+            "secret": "abcd1234",
+            "data": [
+                {
+                    "ac": "AC123",
+                    "town": "name of village or town",
+                    "name": "Person One",
+                    "phone": "1234567890",
+                    "voters_in_family": 5,
+                    "donation": 10
+                },
+                {
+                    "ac": "AC123",
+                    "town": "name of village or town",
+                    "name": "Person Two",
+                    "phone": "1234567892",
+                    "voters_in_family": 2,
+                    "donation": 10
+                }
+            ]
+        }
+    """
+    data = request.get_json(force=True)
+    if not DOOR2DOOR_SECRET or data.get("secret") != DOOR2DOOR_SECRET:
+        raise Unauthorized({
+            "status": "failed",
+            "error": "unauthorized",
+            "message": "Please check the secret"
+        })
+
+    ac_cache = {}
+
+    def get_ac(ac_code):
+        if ac_code not in ac_cache:
+            key = place.key + "/" + ac_code
+            p = Place.find(key)
+            ac_cache[ac_code] = p
+        else:
+            p = ac_cache[ac_code]
+        return p
+
+    for row in data['data']:
+        ac_code = row.pop('ac')
+        ac = get_ac(ac_code)
+        print("adding", row)
+        ac.add_door2door_entry(**row)
+
+    db.session.commit()
+    return jsonify(status="ok", message="successfully imported.")
