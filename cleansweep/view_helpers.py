@@ -1,7 +1,7 @@
 import functools
 
 from flask import (abort, request, render_template, session, g)
-from werkzeug.routing import BaseConverter
+from werkzeug.routing import BaseConverter, ValidationError
 
 from .core import rbac
 from .models import Place, Member
