@@ -127,6 +127,26 @@ class PlaceTest(DBTestCase):
         result = list(KA.search_members("Foo"))
         assert len(result) == 0
 
+    def test_search_all_members(self):
+        KA = self.add_place("KA", "Karnataka", self.STATE)
+        KA.add_member("Evalu Ator", "eval@ator.com", "0001234500")
+        db.session.commit()
+
+        result = KA.search_all_members("Ator")
+        assert len(result) == 1
+        assert result[0].phone == "0001234500"
+
+        result = KA.search_all_members("0001234500")
+        assert len(result) == 1
+        assert result[0].email == "eval@ator.com"
+
+        result = KA.search_all_members("eval@ator.com")
+        assert len(result) == 1
+        assert result[0].name == "Evalu Ator"
+
+        result = KA.search_all_members("asdf")
+        assert len(result) == 0
+
 
 class MemberTest(DBTestCase):
     setup_place_types = True
