@@ -114,11 +114,11 @@ def bulk_import(place):
     """
     data = request.get_json(force=True)
     if not DOOR2DOOR_SECRET or data.get("secret") != DOOR2DOOR_SECRET:
-        raise Unauthorized({
+        return jsonify({
             "status": "failed",
             "error": "unauthorized",
             "message": "Please check the secret"
-        })
+        }), 401
 
     ac_cache = {}
 
