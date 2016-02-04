@@ -12,32 +12,52 @@
             {% endfor %}
             <li><a href="{{ url_for('place', place=place) }}">{{ place.name }}</a></li>
         </ul>
-        <h2>Volunteers</h2>
+        <h2>Volunteers
+            {% if search_query %}
+                <span class="small">Search</span>
+            {% endif %}
+        </h2>
     </div>
 {% endblock %}
 
 {% block content_body %}
-    <div class="controls" style="margin-bottom: 20px;">
-        {% if has_permission("volunteers.add") %}
-            <a href="{{ url_for('.add_volunteer', place=place) }}" class="btn btn-primary">Add volunteer</a>
-        {% endif %}
+    {% if not search_query %}
+        <div class="controls" style="margin-bottom: 20px;">
+            {% if has_permission("volunteers.add") %}
+                <a href="{{ url_for('.add_volunteer', place=place) }}" class="btn btn-primary">Add volunteer</a>
+            {% endif %}
 
-        <a href="{{ url_for('admin_sms', place=place) }}" class="btn btn-primary">Send SMS</a>
+            <a href="{{ url_for('admin_sms', place=place) }}" class="btn btn-primary">Send SMS</a>
 
-        <a href="{{ url_for('admin_sendmail', place=place) }}" class="btn btn-primary">Send E-mail</a>
+            <a href="{{ url_for('admin_sendmail', place=place) }}" class="btn btn-primary">Send E-mail</a>
 
-        {% if has_permission("volunteers.download") %}
-            <a href="{{ url_for('.download_volunteer', place=place) }}" class="btn btn-primary">Export</a>
-        {% endif %}
-    </div>
+            {% if has_permission("volunteers.download") %}
+                <a href="{{ url_for('.download_volunteer', place=place) }}" class="btn btn-primary">Export</a>
+            {% endif %}
+        </div>
+    {% endif %}
     <form class="form-inline" style="margin-bottom: 20px">
         <div class="form-group">
-            <input type="text" class="form-control" name="search-query" placeholder="Search">
+            <input type="text" class="form-control" name="search-query" placeholder="Search by name, email or phone"
+                   {% if search_query %} value="{{ search_query }}" {% endif %} size="35">
         </div>
         <div class="form-group">
             <input type="submit" class="form-control btn-primary" value="Search">
         </div>
     </form>
+    {% if search_query %}
+        <p>
+            {% if volunteers %}
+                {% set volunteers_length = volunteers|length %}
+                Found {{ volunteers_length }} volunteer{% if volunteers_length > 1 %}s{% endif %}  matching
+                "<em>{{ search_query }}</em>".
+            {% else %}
+                Couldn't find any volunteers matching "<em>{{ search_query }}</em>".
+            {% endif %}
+            <a href="{{ url_for('.volunteers', place=place) }}">[Show all]</a>
+        </p>
+    {% endif %}
+    <p></p>
     <ul class="list-group">
         {% for volunteer in volunteers %}
             <li class="list-group-item">

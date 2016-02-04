@@ -79,7 +79,8 @@ def volunteers(place):
     else:
         pagination = None  # Limit is 10 anyway
         volunteers_per_page = place.search_all_members(search_query)
-    return render_template("volunteers.html", place=place, pagination=pagination, volunteers=volunteers_per_page)
+    return render_template("volunteers.html", place=place, pagination=pagination, volunteers=volunteers_per_page,
+                           search_query=search_query)
 
 
 @plugin.route("/<place:place>/volunteers/add", methods=['GET', 'POST'])
