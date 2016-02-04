@@ -71,7 +71,7 @@ def volunteers(place):
     page = h.safeint(request.args.get('page', 1), default=1, minvalue=1)
     total_count = place.get_member_count()
     limit = 50
-    search_query = request.form.get("search-query")
+    search_query = request.args.get("search-query")
     if search_query is None:
         pagination = Pagination(total=total_count, page=page, per_page=limit,
                                 bs_version=3, prev_label="&laquo; Prev", next_label="Next &raquo;")
