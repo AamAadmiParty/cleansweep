@@ -65,16 +65,20 @@ plugin.define_permission(
 def init_app(app):
     plugin.init_app(app)
 
-@plugin.route("/<place:place>/volunteers")
+@plugin.route("/<place:place>/volunteers", methods = ['GET', 'POST'])
 @require_permission("volunteers.view")
 def volunteers(place):
     page = h.safeint(request.args.get('page', 1), default=1, minvalue=1)
     total_count = place.get_member_count()
     limit = 50
-
-    pagination = Pagination(total=total_count, page=page, per_page=limit,
-                            bs_version=3, prev_label="&laquo; Prev", next_label="Next &raquo;")
-    volunteers_per_page = place.get_all_members(limit=limit, offset=(page - 1) * limit)
+    search_query = request.form.get("search-query")
+    if search_query is None:
+        pagination = Pagination(total=total_count, page=page, per_page=limit,
+                                bs_version=3, prev_label="&laquo; Prev", next_label="Next &raquo;")
+        volunteers_per_page = place.get_all_members(limit=limit, offset=(page - 1) * limit)
+    else:
+        pagination = None  # Limit is 10 anyway
+        volunteers_per_page = place.search_all_members(search_query)
     return render_template("volunteers.html", place=place, pagination=pagination, volunteers=volunteers_per_page)
 
 
@@ -102,7 +106,7 @@ def volunteers_autocomplete(place):
     q = request.args.get('q')
     if q:
         matches = place.search_members(q)
-        matches = [dict(name=m.name, email=m.email, phone=m.phone, id=m.id) for m in matches]
+        matches = [dict(name=m.name, email=m.email, phone=m.phone, id=m.id, place=m.place) for m in matches]
     else:
         matches = []
     return jsonify({"matches": matches})

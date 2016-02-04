@@ -202,6 +202,20 @@ class Place(db.Model, Mixable):
             """)
         return db.engine.execute(sql, q=q, percent='%')
 
+    def search_all_members(self, query, limit=10):
+        """
+        Searches for members from this place or places below this by name, phone or email.
+        :param query: search query
+        :return: List of object Member
+        """
+        like_q = "%{0}%".format(query.lower())
+        q1 = Member.query.filter(
+            place_parents.c.child_id == Member.place_id,
+            place_parents.c.parent_id == self.id,
+            (func.lower(Member.name).like(like_q) | Member.phone.like(like_q) | func.lower(Member.email).like(
+                like_q))).limit(limit)
+        return q1.all()
+
     @property
     def parents(self):
         # return all parents except self
@@ -393,6 +407,7 @@ class Place(db.Model, Mixable):
             .order_by(Stats.date)
             .limit(limit))
         return q.all()
+
 
 class Stats(db.Model):
     """Model for storing stats for a place.
