@@ -16,14 +16,9 @@
   </ul>
   <h2>Add New Volunteer</h2>
 
-  {% if place.type > AC %}
-    {% if place.type > STATE %}
+  {% if place.type > STATE %}
       <p>Please select a state to continue.</p>
       {% set subtype = STATE %}
-    {% else %}
-      <p>Please select an assembly constituency to continue.</p>
-      {% set subtype = AC %}
-    {% endif %}
     <ul class="list-group">
     {% for p in place.get_places(subtype) %}
       <li class="list-group-item"><a href="{{changeview(place=p)}}">{{p.name}}</a></li>
@@ -47,6 +42,5 @@
       </div>
     </div>
   {% endif %}
-</div>
 
 {% endblock %}

@@ -54,16 +54,11 @@ class AddVolunteerForm(Form):
             ## as the browser is not sending any data for this input.
             ## Commenting it out to avoid that issue.
             # self.booth.flags.disabled = True
-        elif t in ['PX', 'LB', 'AC']:
+        # elif t in ['PX', 'LB', 'AC']:
+        else:
             PB = models.PlaceType.get("PB")
             self.booth.choices = [(p.key, p.name) for p in self._place.get_places(PB)]
             self.booth.choices.insert(0, (self._place.key, "Not Sure"))
-        else:
-            self.booth.choices = [('', '')]
-            ## Anand: marking it as disabled is causing form validation error
-            ## as the browser is not sending any data for this input.
-            ## Commenting it out to avoid that issue.
-            # self.booth.flags.disabled = True
 
     def validate_phone(self, field):
 
