@@ -98,7 +98,8 @@ def add_volunteer(place):
         signals.add_new_volunteer.send(volunteer)
         flash(u"Added {} as volunteer to {}.".format(form.name.data, p.name))
         return redirect(url_for(".volunteers", place=place))
-    return render_template("add_volunteer.html", place=place, form=form)
+    force_add = request.args.get("force") == 'True'
+    return render_template("add_volunteer.html", place=place, form=form, force_add=force_add)
 
 
 @plugin.route("/<place:place>/volunteers/autocomplete", methods=['GET'])
