@@ -137,6 +137,14 @@ def safeint(strvalue, default=0, minvalue=None, maxvalue=None):
 
     return value
 
+@app.template_filter()
+def starts_with_vowel(input_text):
+    input_text = input_text.lower()
+    if len(input_text) > 0:
+        if input_text[0] in ['a', 'e', 'i', 'o', 'u']:
+            return True
+    return False
+
 @app.context_processor
 def helpers():
     return {
