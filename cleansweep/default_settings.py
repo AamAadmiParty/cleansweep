@@ -59,7 +59,6 @@ DEFAULT_PLUGINS = [
     "cleansweep.plugins.committees",
     "cleansweep.plugins.vistaar",
     "cleansweep.plugins.audit",
-    "cleansweep.plugins.door2door"
 ]
 
 # Specify any additional plugins that you may want to load here.
