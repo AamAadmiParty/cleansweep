@@ -89,11 +89,12 @@ def add_volunteer(place):
     form = forms.AddVolunteerForm(place, request.form)
     if request.method == "POST" and form.validate():
         p = Place.find(key=form.booth.data)
+        details = {"added-by": h.get_current_user().email}
         volunteer = p.add_member(
             name=form.name.data,
             email=form.email.data or None,
             phone=form.phone.data or None,
-            voterid=form.voterid.data or None)
+            voterid=form.voterid.data or None, details=details)
         db.session.commit()
         signals.add_new_volunteer.send(volunteer)
         flash(u"Added {} as volunteer to {}.".format(form.name.data, p.name))
