@@ -38,7 +38,7 @@
     {% endif %}
     <form class="form-inline" style="margin-bottom: 20px">
         <div class="form-group">
-            <input type="text" class="form-control" name="search-query" placeholder="Search by name, email or phone"
+            <input type="text" class="form-control" name="q" placeholder="Search by name, email or phone"
                    {% if search_query %} value="{{ search_query }}" {% endif %} size="35">
         </div>
         <div class="form-group">
@@ -49,7 +49,12 @@
         <p>
             {% if volunteers %}
                 {% set volunteers_length = volunteers|length %}
-                Found {{ volunteers_length }} volunteer{% if volunteers_length > 1 %}s{% endif %}  matching
+                {% if volunteers_length == limit %}
+                    Showing first
+                {% else %}
+                    Found
+                {% endif %}
+                {{ volunteers_length }} volunteer{% if volunteers_length > 1 %}s{% endif %}  matching
                 "<em>{{ search_query }}</em>".
             {% else %}
                 Couldn't find any volunteers matching "<em>{{ search_query }}</em>".
