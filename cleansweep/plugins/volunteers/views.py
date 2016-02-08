@@ -130,7 +130,7 @@ def download_volunteer(place):
     for m in place.get_all_members(limit=10000):
         data.append([m.name, m.phone, m.email, m.voterid] + get_locations(m.place))
     response = make_response(data.xls)
-    response.headers['content_type'] = 'application/vnd.ms-excel;charset=utf-8'
+    response.headers['Content-Type'] = 'application/vnd.ms-excel;charset=utf-8'
     response.headers['Content-Disposition'] = "attachment; filename='{0}-volunteers.xls'".format(place.key)
     signals.download_volunteers_list.send(place)
     return response
