@@ -16,19 +16,19 @@
   </ul>
   <h2>Add New Volunteer</h2>
 
-  {% if place.type > AC %}
-    {% if place.type > STATE %}
-      <p>Please select a state to continue.</p>
-      {% set subtype = STATE %}
-    {% else %}
-      <p>Please select an assembly constituency to continue.</p>
-      {% set subtype = AC %}
-    {% endif %}
-    <ul class="list-group">
-    {% for p in place.get_places(subtype) %}
-      <li class="list-group-item"><a href="{{changeview(place=p)}}">{{p.name}}</a></li>
-    {% endfor %}
-    </ul>
+  {% if place.type > AC and not force_add %}
+      <a href="{{ url_for('.add_volunteer', place=place, force=true) }}" class="btn btn-primary"
+         style="margin-bottom: 20px;">Add volunteer here</a>
+      {% for subtype, places in place.get_child_places_by_type() %}
+          {% set subtype_name = subtype.name %}
+          <p>Or select {% if subtype_name|starts_with_vowel %} an {% else %} a {% endif %} {{ subtype.name | lower }}
+              to continue.</p>
+          <ul class="list-group">
+              {% for p in places %}
+                  <li class="list-group-item"><a href="{{ changeview(place=p) }}">{{ p.name }}</a></li>
+              {% endfor %}
+          </ul>
+      {% endfor %}
   {% else %}
     <div class="row">
       <div class="col-md-4">
@@ -38,7 +38,9 @@
           {{ render_field(form.email) }}
           {{ render_field(form.phone) }}
           {{ render_field(form.voterid) }}
-          {{ render_field(form.booth) }}
+          {% if not force_add %}
+            {{ render_field(form.booth) }}
+          {% endif %}
           <button type="submit" class="btn btn-default">Add volunteer</button>
         </form>
       </div>
@@ -47,6 +49,5 @@
       </div>
     </div>
   {% endif %}
-</div>
 
 {% endblock %}

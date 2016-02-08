@@ -65,17 +65,22 @@ plugin.define_permission(
 def init_app(app):
     plugin.init_app(app)
 
-@plugin.route("/<place:place>/volunteers")
+@plugin.route("/<place:place>/volunteers", methods = ['GET', 'POST'])
 @require_permission("volunteers.view")
 def volunteers(place):
     page = h.safeint(request.args.get('page', 1), default=1, minvalue=1)
     total_count = place.get_member_count()
     limit = 50
-
-    pagination = Pagination(total=total_count, page=page, per_page=limit,
-                            bs_version=3, prev_label="&laquo; Prev", next_label="Next &raquo;")
-    volunteers_per_page = place.get_all_members(limit=limit, offset=(page - 1) * limit)
-    return render_template("volunteers.html", place=place, pagination=pagination, volunteers=volunteers_per_page)
+    search_query = request.args.get("search-query")
+    if search_query is None:
+        pagination = Pagination(total=total_count, page=page, per_page=limit,
+                                bs_version=3, prev_label="&laquo; Prev", next_label="Next &raquo;")
+        volunteers_per_page = place.get_all_members(limit=limit, offset=(page - 1) * limit)
+    else:
+        pagination = None  # Limit is 10 anyway
+        volunteers_per_page = place.search_all_members(search_query)
+    return render_template("volunteers.html", place=place, pagination=pagination, volunteers=volunteers_per_page,
+                           search_query=search_query)
 
 
 @plugin.route("/<place:place>/volunteers/add", methods=['GET', 'POST'])
@@ -93,7 +98,8 @@ def add_volunteer(place):
         signals.add_new_volunteer.send(volunteer)
         flash(u"Added {} as volunteer to {}.".format(form.name.data, p.name))
         return redirect(url_for(".volunteers", place=place))
-    return render_template("add_volunteer.html", place=place, form=form)
+    force_add = request.args.get("force") == 'True'
+    return render_template("add_volunteer.html", place=place, form=form, force_add=force_add)
 
 
 @plugin.route("/<place:place>/volunteers/autocomplete", methods=['GET'])
@@ -102,7 +108,7 @@ def volunteers_autocomplete(place):
     q = request.args.get('q')
     if q:
         matches = place.search_members(q)
-        matches = [dict(name=m.name, email=m.email, phone=m.phone, id=m.id) for m in matches]
+        matches = [dict(name=m.name, email=m.email, phone=m.phone, id=m.id, place=m.place) for m in matches]
     else:
         matches = []
     return jsonify({"matches": matches})
