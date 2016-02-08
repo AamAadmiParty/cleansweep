@@ -123,12 +123,15 @@ def download_volunteer(place):
     def get_locations(place):
         """Returns all locations in the hierarchy to identify this location.
         """
-        d = place.get_parent_names_by_type()
+        d = parents.get(place.id) or {}
         return [d.get('STATE', '-'), d.get('DISTRICT', '-'), d.get('AC', '-'), d.get('WARD', '-'), d.get('PB', '-')]
+
+    members = place.get_all_members()
+    parents = Place.bulkload_parent_names([m.place_id for m in members])
 
     headers = ['Name', "Phone", 'Email', 'Voter ID'] + get_location_columns()
     data = tablib.Dataset(headers=headers, title="Volunteers")
-    for m in place.get_all_members(limit=10000):
+    for m in members:
         data.append([m.name, m.phone, m.email, m.voterid] + get_locations(m.place))
     response = make_response(data.xls)
     response.headers['Content-Type'] = 'application/vnd.ms-excel;charset=utf-8'
