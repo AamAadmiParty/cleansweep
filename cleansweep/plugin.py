@@ -26,8 +26,16 @@ class Plugin(Blueprint):
             title=title,
             tab=endpoint))
 
+_loaded_plugins = []
+
 def load_plugin(modname):
     from .app import app
     app.logger.info("Loading plugin %s", modname)
     mod = __import__(modname, globals(), locals(), fromlist=["x"])
     mod.init_app(app)
+    _loaded_plugins.append(modname)
+
+def get_loaded_plugins():
+    """Returns the list of all plugins that are loaded.
+    """
+    return _loaded_plugins[:]

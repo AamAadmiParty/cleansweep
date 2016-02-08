@@ -115,6 +115,10 @@ def has_permission(permission, place=None):
     # * indicates all permissions
     return permission in perms or '*' in perms
 
+def has_plugin(name):
+    from . import plugin
+    return name in plugin.get_loaded_plugins()
+
 def safeint(strvalue, default=0, minvalue=None, maxvalue=None):
     """Returns the int of strvalue or default.
 
@@ -169,7 +173,8 @@ def helpers():
         "changeview": changeview,
         "is_phone_valid": is_phone_valid,
         "get_user_permissions": rbac.get_user_permissions,
-        "get_user_roles": rbac.get_user_roles
+        "get_user_roles": rbac.get_user_roles,
+        "has_plugin": has_plugin
     }
 
 @app.context_processor
