@@ -108,7 +108,7 @@ def volunteers_autocomplete(place):
     q = request.args.get('q')
     if q:
         matches = place.search_members(q)
-        matches = [dict(name=m.name, email=m.email, phone=m.phone, id=m.id, place=m.place) for m in matches]
+        matches = [dict(name=m.name, email=m.email, phone=m.phone, id=m.id) for m in matches]
     else:
         matches = []
     return jsonify({"matches": matches})
