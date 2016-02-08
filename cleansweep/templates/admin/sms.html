@@ -10,9 +10,10 @@
 
   {% if not is_sms_configured %}
     <div class="alert alert-danger">
-      Sending SMS is not configured for this place. Please contact your admin.
+      SMS is configured for this website yet. You'll not be able to send SMS. Please contact your admin for configuring it.
     </div>
-  {% elif sent %}
+  {% endif %}
+  {% if sent %}
     Done! The SMS will be sent to selected people shortly.
   {% else %}
     <form id="sendmail-form" role="form" method="POST">
