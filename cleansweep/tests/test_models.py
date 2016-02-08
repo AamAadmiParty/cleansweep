@@ -148,6 +148,30 @@ class PlaceTest(DBTestCase):
         assert len(result) == 0
 
 
+    def test_bulkload_parent_names(self):
+        KA = self.add_place("KA", "Karnataka", self.STATE)
+        AC001 = self.add_place('KA/AC001', 'One', self.AC, parent=KA)
+        AC002 = self.add_place('KA/AC002', 'Two', self.AC, parent=KA)
+        db.session.commit()
+
+        Place.bulkload_parent_names([KA.id]) == {
+            KA.id: {
+                "STATE": "Karnataka"
+            }
+        }
+
+        Place.bulkload_parent_names([AC001.id, AC002.id]) == {
+            AC001.id: {
+                "STATE": "Karnataka",
+                "AC": "One",
+            },
+            AC002.id: {
+                "STATE": "Karnataka",
+                "AC": "Two",
+            }
+        }
+
+
 class MemberTest(DBTestCase):
     setup_place_types = True
 

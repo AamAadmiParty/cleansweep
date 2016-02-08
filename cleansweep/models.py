@@ -237,6 +237,46 @@ class Place(db.Model, Mixable):
         parents = self.parents + [self]
         return {p.type.short_name: p.name for p in parents}
 
+    @staticmethod
+    def bulkload_parent_names(place_ids):
+        """Returns dictionary of parent names for each place_id.
+
+        The return value will be of the following form.
+
+            {
+                "id1": {
+                    "STATE": "Delhi",
+                    "AC": "AC001 - Aaaa"
+                },
+                "id2": {
+                    "STATE": "Delhi",
+                    "AC": "AC002 - Bbb"
+                }
+            }
+
+        This function is very efficient way to get parent names for a
+        big list of place_ids.
+        """
+        parent_rows = (
+            db.session.query(
+                place_parents.c.child_id, place_parents.c.parent_id)
+                .filter(
+                    place_parents.c.child_id.in_(place_ids)).all())
+
+        parent_ids = set(row.parent_id for row in parent_rows)
+
+        rows = (
+            db.session.query(Place.id, PlaceType.short_name, Place.name)
+            .filter(Place.id.in_(parent_ids), Place.type_id==PlaceType.id).all())
+
+        parent_names = {id: (typename, name) for id, typename, name in rows}
+
+        parents = defaultdict(dict)
+        for child_id, parent_id in parent_rows:
+            typename, name = parent_names[parent_id]
+            parents[child_id][typename] = name
+        return parents
+
     def get_parent(self, type):
         """Returns parent place of given type.
         """
