@@ -1,6 +1,8 @@
 <div class="member-card">
   {% if volunteer.get_detail("facebook_id") %}
     <div style="width: 75px; height: 75px;"><a href="{{url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash())}}"><img src="http://graph.facebook.com/{{volunteer.get_detail('facebook_id')}}/picture?type=normal" class="img-rounded" style="max-width: 75px;"/></a></div>
+  {% elif volunteer.get_detail("google_id") %}
+    <div style="width: 75px; height: 75px;"><a href="{{url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash())}}"><img src="{{volunteer.get_detail('google_image_url')}}" class="img-rounded" style="max-width: 75px;"/></a></div>
   {% else %}
     <div style="width: 75px; height: 75px;"><a href="{{url_for('volunteers.profile', id=volunteer.id, hash=volunteer.get_hash())}}"><img src="{{url_for('static', filename='images/default-photo.jpg')}}" class="img-rounded" style="max-width: 75px;"/></a></div>
   {% endif %}
