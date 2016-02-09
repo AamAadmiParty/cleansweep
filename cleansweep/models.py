@@ -591,6 +591,7 @@ class Door2DoorEntry(db.Model):
     phone = db.Column(db.Text, nullable=False)
     town = db.Column(db.Text, nullable=False)
     donation = db.Column(db.Integer)
+    created = db.Column(db.DateTime, default=datetime.datetime.now)
 
     # any other optional details
     details = db.Column(JSON)
