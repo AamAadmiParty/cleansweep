@@ -4,8 +4,7 @@ from cleansweep.plugin import Plugin
 from cleansweep.view_helpers import require_permission
 import cleansweep.helpers as h
 from flask import render_template, request, redirect, url_for, jsonify
-from werkzeug.exceptions import Unauthorized
-from . import signals, notifications
+from . import signals, notifications, stats
 
 plugin = Plugin("door2door", __name__, template_folder="templates")
 
