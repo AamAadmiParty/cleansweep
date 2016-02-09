@@ -33,7 +33,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for entry in place.get_door2door_entries() %}
+            {% for entry in entries %}
                 <tr>
                     <td style="width: 20%;"><a href="{{url_for('place', place=entry.place)}}">{{ entry.place.name }}</a></td>
                     <td style="width: 35%">{{ entry.town }}</td>
@@ -53,5 +53,8 @@
                 </tr>
             {% endfor %}
         </table>
+    </div>
+    <div class="text-center">
+        {{ pagination.links }}
     </div>
 {% endblock %}

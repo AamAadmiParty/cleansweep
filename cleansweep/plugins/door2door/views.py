@@ -5,6 +5,7 @@ from cleansweep.view_helpers import require_permission
 import cleansweep.helpers as h
 from flask import render_template, request, redirect, url_for, jsonify
 from . import signals, notifications, stats
+from flask.ext.paginate import Pagination
 
 plugin = Plugin("door2door", __name__, template_folder="templates")
 
@@ -51,7 +52,13 @@ def door2door_entry_redirect():
 @plugin.route("/<place:place>/door2door", methods=['GET'])
 @require_permission("door2door.view")
 def door2door(place):
-    return render_template("door2door.html", place=place)
+    page = h.safeint(request.args.get('page', 1), default=1, minvalue=1)
+    total = place.get_door2door_count()
+    limit = 50
+    pagination = Pagination(total=total, page=page, per_page=limit, bs_version=3, prev_label="&laquo; Prev",
+                            next_label="Next &raquo;")
+    entries = place.get_door2door_entries(limit=limit, offset=(page - 1) * limit)
+    return render_template("door2door.html", place=place, entries=entries, pagination=pagination)
 
 
 @plugin.route("/<place:place>/door2door/add", methods=['GET', 'POST'])
