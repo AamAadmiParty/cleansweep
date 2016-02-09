@@ -60,13 +60,11 @@ def make_entry(place):
     # If place is greater than AC set form to None
     form = forms.Door2DoorForm(place, request.form) if place.type <= PlaceType.get("AC") else None
     if request.method == "POST" and form.validate():
-        donation = form.donation_amount if form.donated.data is True else None
         place.add_door2door_entry(
             name=form.name.data,
             voters_in_family=form.voters_in_family.data,
             phone=form.phone.data,
             town=form.town.data,
-            donation=donation
         )
         db.session.commit()
         return redirect(url_for(".door2door", place=place))

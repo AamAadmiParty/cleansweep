@@ -418,7 +418,7 @@ class Place(db.Model, Mixable):
             for c in contacts:
                 yield c
 
-    def add_door2door_entry(self, name, voters_in_family, phone, town, donation, created=None, **details):
+    def add_door2door_entry(self, name, voters_in_family, phone, town, donation=None, created=None, **details):
         """
         Adds a new entry to door 2 door table.
         """

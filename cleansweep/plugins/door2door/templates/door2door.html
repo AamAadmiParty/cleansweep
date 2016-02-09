@@ -26,7 +26,7 @@
                 <th style="width: 20%">Family head</th>
                 <th style="width: 10%">Phone</th>
                 <th style="width: 15%">Voters in family</th>
-                <th style="width: 5%">Donation</th>
+                {# <th style="width: 5%">Donation</th> #}
                 {% if has_permission("door2door.delete") %}
                     <th  style="width: 5%"></th>
                 {% endif %}
@@ -40,9 +40,9 @@
                     <td style="width: 20%;">{{ entry.name }}</td>
                     <td style="width: 10%">{{ entry.phone }}</td>
                     <td style="width: 15%">{{ entry.voters_in_family or 1 }}</td>
-                    <td style="width: 5%">
+                    {# <td style="width: 5%">
                         {% if entry.donation %}&#8377;{% endif %}{{ entry.donation }}
-                    </td>
+                    </td> #}
                     {% if has_permission("door2door.delete") %}
                         <td  style="width: 5%">
                             <a class="btn btn-danger" href="{{ url_for('.delete_entry', place=place, _id=entry.id) }}">

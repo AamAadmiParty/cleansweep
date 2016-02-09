@@ -137,8 +137,8 @@ class Door2DoorForm(Form):
     voters_in_family = StringField('Voters in family')
     town = StringField('Village/Town', validators=[validators.Required()])
     ac = StringField('Assembly Constituency', validators=[validators.Required()])
-    donation_amount = 10  # 10 rupees
-    donated = BooleanField()
+    # donation_amount = 10  # 10 rupees
+    # donated = BooleanField()
 
     def __init__(self, place, *a, **kw):
         Form.__init__(self, *a, **kw)
