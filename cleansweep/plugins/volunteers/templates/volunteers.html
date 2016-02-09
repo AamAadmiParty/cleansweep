@@ -70,6 +70,9 @@
                     {% if volunteer.get_detail("facebook_id") %}
                         <img src="http://graph.facebook.com/{{ volunteer.get_detail('facebook_id') }}/picture?type=normal"
                              style="height: 20px; padding-right: 10px;">
+                    {% elif volunteer.get_detail("google_id") %}
+                        <img src="{{ get_google_photo_url(volunteer.get_detail('google_id')) }}"
+                             style="height: 20px; padding-right: 10px;">
                     {% else %}
                         <img src="{{ url_for('static', filename='images/default-photo.jpg') }}"
                              style="height: 20px; padding-right: 10px;">
