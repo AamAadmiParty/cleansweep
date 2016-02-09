@@ -24,7 +24,7 @@ How to Setup
 
 * Clone the repository
 
-        $ git clone https://github.com/anandology/cleansweep.git
+        $ git clone https://github.com/AamAadmiParty/cleansweep.git
         $ cd cleansweep
 
 * setup virtualenv
