@@ -418,11 +418,11 @@ class Place(db.Model, Mixable):
             for c in contacts:
                 yield c
 
-    def add_door2door_entry(self, name, voters_in_family, phone, town, donation, **details):
+    def add_door2door_entry(self, name, voters_in_family, phone, town, donation, created=None, **details):
         """
         Adds a new entry to door 2 door table.
         """
-        entry = Door2DoorEntry(self, name, voters_in_family, phone, town, donation, details)
+        entry = Door2DoorEntry(self, name, voters_in_family, phone, town, donation, created, details)
         db.session.add(entry)
         return entry
 
@@ -596,13 +596,14 @@ class Door2DoorEntry(db.Model):
     # any other optional details
     details = db.Column(JSON)
 
-    def __init__(self, place, name, voters_in_family, phone, town, donation, details=None):
+    def __init__(self, place, name, voters_in_family, phone, town, donation, created, details=None):
         self.place = place
         self.name = name
         self.voters_in_family = voters_in_family
         self.phone = phone
         self.town = town
         self.donation = donation
+        self.created = created
         self.details = details or None
 
     @staticmethod
