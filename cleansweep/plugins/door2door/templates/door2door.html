@@ -3,10 +3,12 @@
 
 {% block content_head %}
 <div class="page-content">
-  <ul class="breadcrumb breadcrumb-collapse">
-    <li><a href="{{url_for('place', place=place)}}">{{ place.name }}</a></li>
-    <li></li>
-  </ul>
+    <ul class="breadcrumb breadcrumb-collapse">
+        {% for p in place.parents %}
+            <li><a href="{{ url_for('place', place=p) }}">{{ p.name }}</a></li>
+        {% endfor %}
+        <li><a href="{{ url_for('place', place=place) }}">{{ place.name }}</a></li>
+    </ul>
     <h2>Door 2 Door</h2>
     <div style="margin-bottom: 20px;">
         {% if has_permission("door2door.add") %}
@@ -25,31 +27,27 @@
                 <th style="width: 25%">Village/Town</th>
                 <th style="width: 20%">Family head</th>
                 <th style="width: 10%">Phone</th>
-                <th style="width: 15%">Voters in family</th>
+                <th style="width: 12%">Voters in family</th>
                 {# <th style="width: 5%">Donation</th> #}
-                {% if has_permission("door2door.delete") %}
-                    <th  style="width: 5%"></th>
-                {% endif %}
+                <th  style="width: 13%">When</th>
             </tr>
             </thead>
             <tbody>
             {% for entry in entries %}
                 <tr>
-                    <td style="width: 20%;"><a href="{{url_for('place', place=entry.place)}}">{{ entry.place.name }}</a></td>
-                    <td style="width: 35%">{{ entry.town }}</td>
-                    <td style="width: 20%;">{{ entry.name }}</td>
+                    <td style="width: 20%"><a href="{{url_for('place', place=entry.place)}}">{{ entry.place.name }}</a></td>
+                    <td style="width: 25%">{{ entry.town }}</td>
+                    <td style="width: 20%">{{ entry.name }}</td>
                     <td style="width: 10%">{{ entry.phone }}</td>
-                    <td style="width: 15%">{{ entry.voters_in_family or 1 }}</td>
+                    <td style="width: 12%">{{ entry.voters_in_family or 1 }}</td>
+                    <td style="width: 13%">
+                        <a href="{{ url_for(".details", place=place, id=entry.id, hash=entry.get_hash()) }}">
+                            {{ entry.created | naturaltime }}
+                        </a>
+                    </td>
                     {# <td style="width: 5%">
                         {% if entry.donation %}&#8377;{% endif %}{{ entry.donation }}
                     </td> #}
-                    {% if has_permission("door2door.delete") %}
-                        <td  style="width: 5%">
-                            <a class="btn btn-danger" href="{{ url_for('.delete_entry', place=place, _id=entry.id) }}">
-                                Delete
-                            </a>
-                        </td>
-                    {% endif %}
                 </tr>
             {% endfor %}
         </table>
