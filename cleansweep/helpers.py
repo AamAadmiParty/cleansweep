@@ -14,6 +14,7 @@ from . import oauth
 from .voterlib import VoterDB
 from . import stats
 import json
+import urllib2
 
 sidebar_entries = []
 
@@ -148,6 +149,13 @@ def starts_with_vowel(input_text):
         if input_text[0] in ['a', 'e', 'i', 'o', 'u']:
             return True
     return False
+
+@app.context_processor
+def google_image_url():
+    def get_google_photo_url(google_id):
+        google_profile_image_url = json.loads(urllib2.urlopen( "https://www.googleapis.com/plus/v1/people/"+google_id+"?fields=image&key="+app.config['GOOGLE_API_KEY']).read())['image']['url']
+        return google_profile_image_url
+    return dict(get_google_photo_url = get_google_photo_url)
 
 @app.context_processor
 def helpers():
