@@ -1,3 +1,4 @@
+from cleansweep.models import Place
 from flask_wtf import Form
 import wtforms
 from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField
@@ -19,7 +20,7 @@ class SignupForm(Form):
             raise validators.ValidationError('This phone number is already used')
 
     def validate_voterid(self, field):
-        if not self.voterid.data and not self.place.data:
+        if not field.data and self.place.data == "None":  # TODO highlight locality field too
             raise validators.ValidationError("You must provide either a valid voter ID or locality.")
 
         if self.voterid.data:
