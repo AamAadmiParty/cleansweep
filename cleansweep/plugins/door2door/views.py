@@ -3,7 +3,7 @@ from cleansweep.models import db, Place, Door2DoorEntry, PlaceType
 from cleansweep.plugin import Plugin
 from cleansweep.view_helpers import require_permission
 import cleansweep.helpers as h
-from flask import render_template, request, redirect, url_for, jsonify
+from flask import render_template, request, redirect, url_for, jsonify, abort
 from . import signals, notifications, stats
 from flask.ext.paginate import Pagination
 
@@ -85,6 +85,16 @@ def delete_entry(place, _id):
     db.session.delete(entry)
     db.session.commit()
     return render_template("door2door.html", place=place)
+
+
+@plugin.route("/<place:place>/door2door/entry/<id>-<hash>")
+def details(place, id, hash):
+    entry = Door2DoorEntry.find(id=id)
+    if not entry and entry.get_hash() != hash:
+        abort(404)
+    return render_template("details.html", place=place, entry=entry)
+
+
 
 @plugin.route("/<place:place>/door2door/import", methods=["POST"])
 def bulk_import(place):

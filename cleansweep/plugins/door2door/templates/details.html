@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content_head %}
+    <div class="page-content">
+        <ul class="breadcrumb breadcrumb-collapse">
+            {% for p in entry.place.parents %}
+                <li><a href="{{ url_for('place', place=p) }}">{{ p.name }}</a></li>
+            {% endfor %}
+            <li><a href="{{ url_for('place', place=entry.place) }}">{{ entry.place.name }}</a></li>
+        </ul>
+        <h3>Door2door entry #{{ entry.id }}</h3>
+    </div>
+{% endblock %}
+
+{% block content_body %}
+    <dl class="dl-horizontal">
+        <dt>Location</dt>
+        <dd><a href="{{url_for('place', place=entry.place)}}">{{ entry.place.name }}</a></dd>
+        <dt>Village/Town</dt>
+        <dd>{{ entry.town }}</dd>
+        <dt>Head of the family</dt>
+        <dd>{{ entry.name }}</dd>
+        <dt>Phone</dt>
+        <dd>{{ entry.phone }}</dd>
+        <dt>Voter in family</dt>
+        <dd>{{ entry.voters_in_family or 1}}</dd>
+        {% if entry.details %}
+            {% for key, value in entry.details.iteritems() %}
+                <dt>{{ key }}</dt>
+                <dd>{{ value }}</dd>
+            {% endfor %}
+        {% endif %}
+        <dt>Added</dt>
+        <dd>{{ entry.created | naturaltime }}</dd>
+    </dl>
+
+    <a href="{{ url_for(".door2door", place=place) }}" class="btn btn-default">Back</a>
+    <a href="{{ url_for(".delete_entry", place=place, id=entry.id, hash=entry.get_hash()) }}" class="btn btn-danger">Delete</a>
+{% endblock %}
