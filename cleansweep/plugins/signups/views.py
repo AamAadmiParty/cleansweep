@@ -1,9 +1,10 @@
+from cleansweep.voterlib import voterdb
 from ...plugin import Plugin
-from ...models import db, Member, PendingMember
+from ...models import db, Member, PendingMember, Place
 from flask import (flash, request, session, render_template, redirect, url_for)
 from ...core import signals
 from ...view_helpers import require_permission
-from . import signals, notifications, audits, forms, signups
+from . import signals, notifications, audits, forms
 
 plugin = Plugin("signups", __name__, template_folder="templates")
 
@@ -37,15 +38,18 @@ def signup():
     if request.method == "GET":
         form.name.data = userdata['name']
     if request.method == "POST" and form.validate():
-        person = signups.signup(
-            name=form.name.data,
-            email=userdata['email'],
-            phone=form.phone.data,
-            voterid=form.voterid.data,
-            place_key=form.place.data)
+        voter_id = form.voterid.data
+        place_key = form.place.data
+        place = None
+        if voter_id:
+            _, place = _resolve_voterid(voter_id)  # Access voter details here
+        elif not place and place_key:
+            place = Place.find(place_key)
+        pending_member = place.add_pending_member(name=form.name.data, email=userdata['email'], phone=form.phone.data,
+                                                  voterid=voter_id)
         db.session.commit()
-        signals.volunteer_signup.send(person)
-        return render_template("signup_complete.html", person=person)
+        signals.volunteer_signup.send(pending_member)
+        return render_template("signup_complete.html", person=pending_member)
     return render_template("signup.html", userdata=userdata, form=form)
 
 
@@ -75,3 +79,10 @@ def signups(place, status=None):
                 flash('Successfully rejected {}.'.format(pmember.name))
                 return redirect(url_for(".signups", place=place.place))
     return render_template("signups.html", place=place, status=status)
+
+
+def _resolve_voterid(voterid):
+    """Takes a voterid and returns a place object.
+    """
+    voter_info = voterdb.get_voter(voterid=voterid)
+    return voter_info and voter_info.get_place()

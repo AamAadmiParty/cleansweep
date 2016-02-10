@@ -361,6 +361,15 @@ class Place(db.Model, Mixable):
         db.session.add(member)
         return member
 
+    def add_pending_member(self, name, email, phone, voterid):
+        pending_member = PendingMember(
+            self,
+            name=name,
+            email=email,
+            phone=phone,
+            voterid=voterid)
+        db.session.add(pending_member)
+        return pending_member
 
     def get_pending_members(self, status='pending', limit=100, offset=0):
         """Returns all the pending signups below this place.
