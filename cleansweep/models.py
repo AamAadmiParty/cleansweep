@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import itertools
 from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -7,7 +8,6 @@ from sqlalchemy.sql.expression import func
 from sqlalchemy import text
 from sqlalchemy.orm.attributes import flag_modified
 from .app import app
-import md5
 import uuid
 
 db = SQLAlchemy(app)
@@ -531,8 +531,8 @@ class Member(db.Model):
             return self.details.get(name)
 
     def get_hash(self):
-        key = str(id) + app.config['SECRET_KEY']
-        return md5.md5(key).hexdigest()[:7]
+        key = str(self.id) + app.config['SECRET_KEY']
+        return hashlib.md5(key).hexdigest()[:7]
 
 
 class PendingMember(db.Model):
@@ -618,6 +618,10 @@ class Door2DoorEntry(db.Model):
     @staticmethod
     def find(**kw):
         return Door2DoorEntry.query.filter_by(**kw).first()
+
+    def get_hash(self):
+        key = str(self.id) + app.config['SECRET_KEY']
+        return hashlib.md5(key).hexdigest()[:7]
 
 class Unsubscribe(db.Model):
     """List of people unsubscribes from receiving emails.
