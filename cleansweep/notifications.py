@@ -2,6 +2,7 @@ from .core import signals, mailer
 from .models import db
 from flask import render_template
 
+
 @signals.login_successful.connect
 def on_login_update_ids(user, userdata):
 	"""Add Facebook ID to ther user details on login.
@@ -11,5 +12,8 @@ def on_login_update_ids(user, userdata):
 	service = userdata and userdata.get("service", "").lower()
 	if service == 'facebook':
 		user.add_details('facebook_id', userdata['facebook_id'])
+		db.session.commit()
+	elif service == 'google':
+		user.add_details('google_id', userdata['google_id'])
 		db.session.commit()
 
