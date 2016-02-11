@@ -150,12 +150,14 @@ def starts_with_vowel(input_text):
             return True
     return False
 
-@app.context_processor
-def google_image_url():
-    def get_google_photo_url(google_id):
-        google_profile_image_url = json.loads(urllib2.urlopen( "https://www.googleapis.com/plus/v1/people/"+google_id+"?fields=image&key="+app.config['GOOGLE_API_KEY']).read())['image']['url']
-        return google_profile_image_url
-    return dict(get_google_photo_url = get_google_photo_url)
+def get_google_photo_url(google_id):
+    """ Generates Google+ Profile Image URL Specific to user """
+    if 'GOOGLE_API_KEY' in app.config :
+        profile_image_url = json.loads(urllib2.urlopen( "https://www.googleapis.com/plus/v1/people/"+google_id+"?fields=image&key="+app.config['GOOGLE_API_KEY']).read())['image']['url']
+    else:
+        profile_image_url = url_for('static', filename='images/default-photo.jpg')
+    return profile_image_url
+
 
 @app.context_processor
 def helpers():
@@ -180,6 +182,7 @@ def helpers():
         "get_site_title": get_site_title,
         "changeview": changeview,
         "is_phone_valid": is_phone_valid,
+        "get_google_photo_url": get_google_photo_url,
         "get_user_permissions": rbac.get_user_permissions,
         "get_user_roles": rbac.get_user_roles,
         "has_plugin": has_plugin
