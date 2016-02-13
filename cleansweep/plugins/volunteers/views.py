@@ -126,7 +126,7 @@ def download_volunteer(place):
         d = parents.get(place.id) or {}
         return [d.get('STATE', '-'), d.get('DISTRICT', '-'), d.get('AC', '-'), d.get('WARD', '-'), d.get('PB', '-')]
 
-    members = place.get_all_members()
+    members = place.get_all_members(limit=10000)
     parents = Place.bulkload_parent_names([m.place_id for m in members])
 
     headers = ['Name', "Phone", 'Email', 'Voter ID'] + get_location_columns()
