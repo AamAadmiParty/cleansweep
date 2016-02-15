@@ -41,7 +41,7 @@
                     <td style="width: 10%">{{ entry.phone }}</td>
                     <td style="width: 12%">{{ entry.voters_in_family or 1 }}</td>
                     <td style="width: 13%">
-                        <a href="{{ url_for(".details", place=place, id=entry.id, hash=entry.get_hash()) }}">
+                        <a href="{{ url_for(".details", place=place, id=entry.id, page=pagination.page, hash=entry.get_hash()) }}">
                             {{ entry.created | naturaltime }}
                         </a>
                     </td>

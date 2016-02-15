@@ -91,12 +91,12 @@ def delete_entry(place, id, hash):
     return redirect(url_for(".door2door", place=place))
 
 
-@plugin.route("/<place:place>/door2door/entry/<id>-<hash>")
-def details(place, id, hash):
+@plugin.route("/<place:place>/door2door/<page>/entry/<id>-<hash>")
+def details(place, page, id, hash):
     entry = Door2DoorEntry.find(id=id)
     if not entry and entry.get_hash() != hash:
         abort(404)
-    return render_template("details.html", place=place, entry=entry)
+    return render_template("details.html", place=place, entry=entry, page=page)
 
 
 
