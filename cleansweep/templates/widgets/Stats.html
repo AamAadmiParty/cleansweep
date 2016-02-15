@@ -8,11 +8,13 @@
         <div class="graph">
             <div id="{{stats.id}}" class="plot" style="width:100%;height:150px; border: 1px solid gray;"></div>
         </div>      
-      {% elif stats.type == "stats" %}
+      {% elif stats.type == "number" %}
+        {{stats.get_total(place)}}
       {% endif %}
     </div>
   </div>
 </div>
+{% if stats.type == "timeseries" %}
 <script type="text/javascript">
   $(function() {
       var data = {{stats.get_timeseries_data_for_graph(place) | json_encode}};
@@ -31,3 +33,4 @@
       $.plot("#{{stats.id}}", [data], options);
   });
 </script>
+{% endif %}
