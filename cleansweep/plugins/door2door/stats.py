@@ -22,7 +22,8 @@ class Door2DoorStats(Stats):
         return list(result)
 
     def get_total(self, place):
-        return place.get_member_count()
+        # Anand: Improve this
+        return sum(count for date, count in self.get_timeseries_data(place))
 
     def get_stats(self, place):
         pass
