@@ -9,9 +9,6 @@
 
   {{stat.render(place)}}
 
-  <div>
-  Count: {{stat.get_total(place)}}
-  </div>
   <br/>
   <br/>
 
@@ -26,5 +23,9 @@
   			<td>{{stat.get_total(p)}}
   		</tr>
   	{% endfor %}
+	<tr>
+		<th>Total</th>
+		<th>{{stat.get_total(place)}}</th>
+	</tr>
   </table>
 {% endblock %}
