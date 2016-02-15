@@ -1,7 +1,7 @@
 <div class="widget widget-placelist">
   <div class="panel panel-default">
     <div class="panel-heading">
-      <strong>{{stats.title}}</strong>
+      <strong><a href="{{url_for('detailed_stats', place=place, name=stats.classname)}}">{{stats.title}}</a></strong>
     </div>
     <div class="panel-body">
       {% if stats.type == "timeseries" %}

@@ -8,6 +8,10 @@ class Stats(object):
     cummulative = False
 
     @property
+    def classname(self):
+        return self.__class__.__name__
+
+    @property
     def id(self):
         return self.NAME.replace(".", "-")
 

@@ -1,0 +1,30 @@
+{% extends "place.html" %}
+
+{% block subnav %}
+  {{ subnav(place, tab="stats") }}
+{% endblock %}
+
+{% block page_content %}
+  <h2><a href="{{url_for('stats', place=place)}}">Stats</a> / {{ stat.title }}</h2>
+
+  {{stat.render(place)}}
+
+  <div>
+  Count: {{stat.get_total(place)}}
+  </div>
+  <br/>
+  <br/>
+
+  <table class="table">
+  	<tr>
+  		<th>Place</th>
+  		<th>Count</th>
+  	</tr>
+  	{% for p in place.child_places.all() %}
+  		<tr>
+  			<td><a href="{{url_for('detailed_stats', place=p, name=stat.classname)}}">{{p.name}}</a></td>
+  			<td>{{stat.get_total(p)}}
+  		</tr>
+  	{% endfor %}
+  </table>
+{% endblock %}
