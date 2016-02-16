@@ -437,7 +437,8 @@ class Place(db.Model, Mixable):
 
     def get_door2door_entries(self, limit=100, offset=0):
         return Door2DoorEntry.query.filter(place_parents.c.child_id == Door2DoorEntry.place_id,
-                                           place_parents.c.parent_id == self.id).order_by(Door2DoorEntry.created).limit(
+                                           place_parents.c.parent_id == self.id).order_by(
+            Door2DoorEntry.created.desc()).limit(
             limit).offset(offset).all()
 
     def get_door2door_count(self):
