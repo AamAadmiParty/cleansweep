@@ -127,6 +127,10 @@ class Place(db.Model, Mixable):
         return "Place(%r)" % self.key
 
     @staticmethod
+    def get_pb_key(state, ac, pb):
+        return "{}/AC{:0>3}/PB{:0>4}".format(state, ac, pb)
+
+    @staticmethod
     def find(key):
         return Place.query.filter_by(key=key).first()
 
