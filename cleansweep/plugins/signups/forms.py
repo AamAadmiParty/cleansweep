@@ -1,11 +1,11 @@
-from cleansweep.models import Place
 from flask_wtf import Form
-import wtforms
-from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField
+from wtforms import StringField, HiddenField
 from wtforms import validators
 
 from ... import models
-from ...voterlib import voterdb
+
+from cleansweep.core.voter_lookup import voterid_valid
+
 
 class SignupForm(Form):
     name = StringField('Name', [validators.Required()])
@@ -25,6 +25,5 @@ class SignupForm(Form):
 
         if self.voterid.data:
             voterid = self.voterid.data
-            voterinfo = voterdb.get_voter(voterid=voterid)
-            if not voterinfo:
+            if not voterid_valid(voterid):
                 raise validators.ValidationError("Invalid Voter ID")

@@ -1,4 +1,4 @@
-from cleansweep.voterlib import voterdb
+from cleansweep.core import voter_lookup
 from ...plugin import Plugin
 from ...models import db, Member, PendingMember, Place
 from flask import (flash, request, session, render_template, redirect, url_for)
@@ -40,11 +40,10 @@ def signup():
     if request.method == "POST" and form.validate():
         voter_id = form.voterid.data
         place_key = form.place.data
-        place = None
         if voter_id:
-            _, place = _resolve_voterid(voter_id)  # Access voter details here
-        elif not place and place_key:
-            place = Place.find(place_key)
+            voter_data = voter_lookup.get_voter(voter_id)
+            place_key = Place.get_pb_key(voter_data['state'], voter_data['ac'], voter_data['pb'])
+        place = Place.find(place_key)
         pending_member = place.add_pending_member(name=form.name.data, email=userdata['email'], phone=form.phone.data,
                                                   voterid=voter_id)
         db.session.commit()
@@ -79,10 +78,3 @@ def signups(place, status=None):
                 flash('Successfully rejected {}.'.format(pmember.name))
                 return redirect(url_for(".signups", place=place.place))
     return render_template("signups.html", place=place, status=status)
-
-
-def _resolve_voterid(voterid):
-    """Takes a voterid and returns a place object.
-    """
-    voter_info = voterdb.get_voter(voterid=voterid)
-    return voter_info and voter_info.get_place()
