@@ -15,6 +15,9 @@ from .voterlib import VoterDB
 from . import stats
 import json
 import urllib2
+import logging
+
+logger = logging.getLogger(__name__)
 
 sidebar_entries = []
 
