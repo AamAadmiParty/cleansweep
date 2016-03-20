@@ -153,10 +153,14 @@ def starts_with_vowel(input_text):
 def get_google_photo_url(google_id):
     """ Generates Google+ Profile Image URL Specific to user """
     if 'GOOGLE_API_KEY' in app.config :
-        profile_image_url = json.loads(urllib2.urlopen( "https://www.googleapis.com/plus/v1/people/"+google_id+"?fields=image&key="+app.config['GOOGLE_API_KEY']).read())['image']['url']
-    else:
-        profile_image_url = url_for('static', filename='images/default-photo.jpg')
-    return profile_image_url
+        try:
+            return json.loads(urllib2.urlopen( "https://www.googleapis.com/plus/v1/people/"+google_id+"?fields=image&key="+app.config['GOOGLE_API_KEY']).read())['image']['url']
+        except IOError:
+            logger.error("Invalid google_id: %s", google_id, exc_info=True)
+            pass
+
+    # fallback
+    return url_for('static', filename='images/default-photo.jpg')
 
 
 @app.context_processor
