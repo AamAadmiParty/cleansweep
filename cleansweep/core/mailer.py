@@ -82,16 +82,20 @@ _q = None
 def get_queue():
     global _q
     if not _q:
-        host = app.config.get('REDIS_HOST')
-        port = app.config.get('REDIS_PORT')
-        if host and port:
-            redis_conn = Redis(host, port)
-            _q = Queue(connection=redis_conn) 
+        _q = Queue(connection=get_connection())
     return _q
+
+def get_connection():
+    host = app.config.get('REDIS_HOST')
+    port = app.config.get('REDIS_PORT')
+    if host and port:
+        return Redis(host, port)
+    else:
+        return Redis()
 
 def run_worker():
     from rq import Worker, Connection
-    with Connection():
+    with Connection(get_connection()):
         q = get_queue()
         qs = [q]
         w = Worker(qs)
