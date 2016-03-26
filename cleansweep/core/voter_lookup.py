@@ -20,5 +20,10 @@ def get_voter(voterid):
 def voterid_valid(voterid):
     """
     Just a more readable function to check if voter id is valid or not at the time of registration.
+
+    Note: This function gets called in form validation. If any exception occurs the error gets displayed to user. Weird.
     """
-    return get_voter(voterid)
+    try:
+        return get_voter(voterid)
+    except Exception:
+        return None
