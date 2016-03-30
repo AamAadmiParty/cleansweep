@@ -54,7 +54,7 @@ class AuditPlaceMixin(object):
                  .offset(offset)
                  .all())
 
-    def get_audit_record_counts(self, ndays=30):
+    def get_audit_record_counts(self):
         q = (db.session.query(Audit.action, func.count(Audit.action))
             .group_by(Audit.action))
 
