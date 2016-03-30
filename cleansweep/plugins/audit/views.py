@@ -14,4 +14,5 @@ def init_app(app):
 @plugin.route("/<place:place>/audit", methods=['GET'])
 @require_permission("audit")
 def audit_trail(place):
-	return render_template("audit.html", place=place)
+	action = request.args.get("action")
+	return render_template("audit.html", place=place, action=action)

@@ -14,7 +14,7 @@
       <th>Who</th>
       <th>What</th>
     </tr>
-    {% for record in place.get_audit_records() %}
+    {% for record in place.get_audit_records(action=action) %}
       <tr>
         <td>{{ record.timestamp | naturaltime }}</td>
         <td><a href="{{url_for('place', place=record.place)}}">{{record.place.key}}</a></td>

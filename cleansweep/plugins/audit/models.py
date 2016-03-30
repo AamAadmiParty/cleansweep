@@ -41,11 +41,15 @@ class Audit(db.Model):
 
 @Place.mixin
 class AuditPlaceMixin(object):
-    def get_audit_records(self, limit=100, offset=0):
-        return (Audit.query.filter(
+    def get_audit_records(self, action=None, limit=100, offset=0):
+        q = Audit.query.filter(
                     place_parents.c.child_id==Audit.place_id,
                     place_parents.c.parent_id==self.id)
-                .order_by(desc(Audit.timestamp))
-                .limit(limit)
-                .offset(offset)
-                .all())
+
+        if action:
+            q = q.filter_by(action=action)
+
+        return (q.order_by(desc(Audit.timestamp))
+                 .limit(limit)
+                 .offset(offset)
+                 .all())
