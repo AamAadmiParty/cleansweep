@@ -24,50 +24,51 @@
 
 {% block content_body %}
   <div class="row">
-  <div class="col-md-9">
-    <table class="table">
-      <tr>
-        <th>When</th>
-        <th>Where</th>
-        <th>Who</th>
-        <th>What</th>
-      </tr>
-      {% for record in audit_records %}
+    <div class="col-md-9">
+      <table class="table">
         <tr>
-          <td>{{ record.timestamp | naturaltime }}</td>
-          <td><a href="{{url_for('place', place=record.place)}}">{{record.place.key}}</a></td>
-          <td>
-            {% if record.user %}
-              <a href="{{url_for('volunteers.profile', id=record.user.id, hash=record.user.get_hash())}}"><strong>{{record.user.name}}</strong></a>
-            {% endif %}
-          </td>
-          <td>{{render_audit_record(record)}}</td>
+          <th>When</th>
+          <th>Where</th>
+          <th>Who</th>
+          <th>What</th>
         </tr>
-      {% endfor %}
-    </table>
-  </div>
-  <div class="col-md-3 place-navigation">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>Last 30 days</h4>
-      </div>
-      <div class="panel-body">
-          <ul class="list-unstyled parents section-body">
-          {% for name, count in audit_counts %}
-            <li>
-              {% if action and name == action %}
-                <strong>{{name}}</strong>
-              {% else %}
-                <a href="{{url_for('.audit_trail', place=place, action=name)}}">{{name}}</a>
+        {% for record in audit_records %}
+          <tr>
+            <td>{{ record.timestamp | naturaltime }}</td>
+            <td><a href="{{url_for('place', place=record.place)}}">{{record.place.key}}</a></td>
+            <td>
+              {% if record.user %}
+                <a href="{{url_for('volunteers.profile', id=record.user.id, hash=record.user.get_hash())}}"><strong>{{record.user.name}}</strong></a>
               {% endif %}
-              <span class="badge pull-right">{{count}}</span>
-            </li>
-          {% endfor %}
-          <li><a href="{{url_for('.audit_trail', place=place)}}">Show All</a></li>
-        </ul>
+            </td>
+            <td>{{render_audit_record(record)}}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="col-md-3 place-navigation">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4>Last 30 days</h4>
+        </div>
+        <div class="panel-body">
+          <ul class="list-unstyled parents section-body">
+            {% for name, count in audit_counts %}
+              <li>
+                {% if action and name == action %}
+                  <strong>{{name}}</strong>
+                {% else %}
+                  <a href="{{url_for('.audit_trail', place=place, action=name)}}">{{name}}</a>
+                {% endif %}
+                <span class="badge pull-right">{{count}}</span>
+              </li>
+            {% endfor %}
+            <li><a href="{{url_for('.audit_trail', place=place)}}">Show All</a></li>
+          </ul>
+        </div>
       </div>
+    </div>
   </div>
-
 
   <div style="text-align: center; font-weight: bold;">
     {% set has_prev = page > 1 %}
