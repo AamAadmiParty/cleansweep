@@ -2,7 +2,7 @@
 """
 from ...models import db, Place, place_parents
 from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 import datetime
 
 class Audit(db.Model):
@@ -53,3 +53,11 @@ class AuditPlaceMixin(object):
                  .limit(limit)
                  .offset(offset)
                  .all())
+
+    def get_audit_record_counts(self, ndays=30):
+        q = (db.session.query(Audit.action, func.count(Audit.action))
+            .group_by(Audit.action))
+
+        q = q.filter(place_parents.c.child_id==Audit.place_id,
+                     place_parents.c.parent_id==self.id)
+        return q.all()

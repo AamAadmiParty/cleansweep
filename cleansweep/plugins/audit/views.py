@@ -15,6 +15,8 @@ def init_app(app):
 @plugin.route("/<place:place>/audit", methods=['GET'])
 @require_permission("audit")
 def audit_trail(place):
+    audit_counts = place.get_audit_record_counts()
+
     action = request.args.get("action")
     page = h.safeint(request.args.get("page", 1), default=1, minvalue=1)
     perpage = 100
@@ -25,4 +27,5 @@ def audit_trail(place):
             audit_records=audit_records,
             action=action,
             page=page,
-            perpage=perpage)
+            perpage=perpage,
+            audit_counts=audit_counts)
