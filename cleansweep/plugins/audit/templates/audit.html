@@ -14,7 +14,7 @@
       <th>Who</th>
       <th>What</th>
     </tr>
-    {% for record in place.get_audit_records(action=action) %}
+    {% for record in audit_records %}
       <tr>
         <td>{{ record.timestamp | naturaltime }}</td>
         <td><a href="{{url_for('place', place=record.place)}}">{{record.place.key}}</a></td>
@@ -27,6 +27,22 @@
       </tr>
     {% endfor %}
   </table>
+
+  <div style="text-align: center; font-weight: bold;">
+    {% set has_prev = page > 1 %}
+    {% set has_next = len(audit_records) == perpage %}
+
+    {% if has_prev %}
+      <a href="{{url_for('.audit_trail', place=place, page=page-1)}}">&larr; Prev</a>
+    {% endif %}
+
+    {% if has_prev and has_next %} | {% endif %}
+
+    {% if has_next %}
+      <a href="{{url_for('.audit_trail', place=place, page=page+1)}}">Next &rarr;</a>
+    {% endif %}
+  </div>
+
 {% endblock %}
 
 {% block page_container %}
