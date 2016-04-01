@@ -48,7 +48,10 @@ def json_encode(value):
 def get_current_user():
     if session.get('user'):
         return Member.find(email=session['user'])
-
+    else:
+        # Hack for allowing authentication using API keys
+        from .views import account
+        return account.get_api_user()
 
 def get_site_title():
     place = getattr(g, "place", None)

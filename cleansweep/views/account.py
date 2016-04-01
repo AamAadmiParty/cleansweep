@@ -4,7 +4,7 @@ Includes login, signup, oauth handlers etc.
 """
 from flask import (abort, render_template, request, redirect, url_for, flash, session, jsonify)
 from ..app import app
-from ..models import Member, PendingMember, Place
+from ..models import db, Member, PendingMember, Place
 from .. import oauth
 from .. import forms
 from ..core import signals, rbac
@@ -38,6 +38,20 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("home"))
+
+@app.route("/account/tokens", methods=["GET", "POST"])
+def account_tokens():
+    user = h.get_current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        if request.form.get("action") == "delete":
+            user.delete_access_token()
+        else:
+            user.generate_access_token()
+        db.session.commit()
+    return render_template("account/tokens.html")
 
 def get_host(provider):
     # Microsoft doesn't allow 127.0.0.1 and Yahoo doesn't allow even localhost
@@ -193,11 +207,17 @@ def token2user(token):
 
     tnow = int(time.time())
 
-    print salt, digest, userid, t, tnow, tnow-t
-
     # Token is valid only for 1 hour
     if tnow - t > 3600:
         return None
 
     if generate_hash(message, salt) == token:
         return Member.find(id=userid)
+
+def get_api_user():
+    if not request.path.startswith("/api/"):
+        return None
+    auth = request.authorization
+    user = auth and Member.find(email=auth.username)
+    if user and user.has_access_token(token=auth.password):
+        return user

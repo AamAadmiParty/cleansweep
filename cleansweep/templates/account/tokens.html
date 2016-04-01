@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content_head %}
+  <h1>Personal Access Tokens</h1>
+{% endblock %}
+
+{% block content_body %}
+
+  {% if not user.details.get("access_token") %}
+      <p>You've not generated any access tokens yet.</p>
+      <form method="POST">
+        <button name="action" value="generate" class="btn btn-primary">Generate Access Token</button>
+      </form>
+  {% else %}
+      <p>You personal access token is <code>{{ user.details["access_token"] }}</code></p>
+      <form method="POST">
+        <button name="action" value="generate" class="btn btn-primary">Regenerate Access Token</button>
+        <button name="action" value="delete" class="btn btn-danger">Delete Access Token</button>
+      </form>
+  {% endif %}
+{% endblock %}

@@ -1,6 +1,7 @@
 from flask import (request, Response, jsonify)
 import json
 import requests
+from .. import helpers as h
 from ..app import app
 from ..models import Place, Member, db
 from ..core import rbac, smslib
@@ -152,3 +153,13 @@ def send_sms():
     )
     db.session.commit()
     return jsonify({'feedback': "Your message has been sent to all the volunteers of '%s'." % place_key})
+
+
+@app.route("/api/user", methods=['GET'])
+def api_user():
+    user = h.get_current_user()
+    if not user:
+        d = dict(message="Bad credentials")
+        return jsonify(d), 401
+
+    return jsonify(user.dict(include_place=True))

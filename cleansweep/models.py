@@ -463,6 +463,13 @@ class Place(db.Model, Mixable):
             .limit(limit))
         return q.all()
 
+    def dict(self):
+        return {
+            "key": self.key,
+            "place_type": self.type.short_name,
+            "name": self.name
+        }
+
 
 class Stats(db.Model):
     """Model for storing stats for a place.
@@ -511,15 +518,44 @@ class Member(db.Model):
             q = q.filter(func.lower(Member.email) == email.lower())
         return q.first()
 
-    def dict(self):
-        return {
+    def generate_access_token(self):
+        """Generates a personal access token to be used with API.
+
+        The access token is like a password that can be used for authenticating
+        an API request.
+
+        As of now only one access token is supported per user, but more tokens
+        could be provided later to allow using a different token for each client.
+        """
+        token = uuid.uuid4().hex
+        self.details = dict(self.details, access_token=token)
+        db.session.add(self)
+
+    def delete_access_token(self):
+        d = dict(self.details)
+        d.pop('access_token', None)
+        self.details = d
+        db.session.add(self)
+
+    def has_access_token(self, token):
+        return self.details.get("access_token") == token
+
+    def dict(self, include_details=False, include_place=False):
+        d = {
             "id": self.id,
             "name": self.name,
             "email": self.email,
             "phone": self.phone,
             "voterid": self.voterid,
-            "details": self.details
+            "created": self.created.isoformat()
         }
+
+        if include_details:
+            d["details"] = self.details
+        if include_place:
+            d["place"] = self.place.dict()
+
+        return d
 
     def add_details(self, name, value):
         """Adds/updates a new name-value pair to member details.
