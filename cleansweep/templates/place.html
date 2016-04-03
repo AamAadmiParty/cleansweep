@@ -89,10 +89,12 @@ margin-bottom: 0px;">
       <li class="list-group-item {{'active' if tab=='home' }}">
         <a href="{{url_for('place', place=place)}}">Home</a>
       </li>
+      {% if has_permission("read") %}
       <li class="list-group-item {{'active' if tab=='stats' }}">
         <a href="{{url_for('stats', place=place)}}">Stats</a>
       </li>
-      {% if has_permission("read") %}
+      {% endif %}
+      {% if has_permission("committees.view") %}
         <li class="list-group-item {{'active' if tab=='committees' }}">
           <a href="{{url_for('committees.committees', place=place)}}">Committees</a>
         </li>
