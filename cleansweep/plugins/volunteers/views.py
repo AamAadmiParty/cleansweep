@@ -141,6 +141,7 @@ def download_volunteer(place):
 
 
 @plugin.route("/people/<id>-<hash>", methods=["GET", "POST"])
+@require_permission("volunteers.view")
 def profile(id, hash):
     m = Member.find(id=id)
     if not m or m.get_hash() != hash:
