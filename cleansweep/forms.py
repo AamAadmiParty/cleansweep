@@ -1,10 +1,22 @@
-from flask_wtf import Form
+from flask_wtf import Form as BaseForm
 import wtforms
 from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField, BooleanField
 from wtforms import validators
 from . import models
 from .voterlib import voterdb
 import phonenumbers
+from werkzeug.datastructures import MultiDict
+
+class Form(BaseForm):
+    """Extension of WFT Form that supports simple dictionary
+    also as formdata.
+
+    It is useful for validating API inputs.
+    """
+    def __init__(self, formdata=None, *a, **kw):
+        if formdata is not None and not hasattr(formdata, 'getall'):
+            formdata = MultiDict(formdata)
+        BaseForm.__init__(self, formdata, *a, **kw)
 
 class SignupForm(Form):
     name = StringField('Name', [validators.Required()])
@@ -34,40 +46,12 @@ class SignupForm(Form):
             if not voterinfo:
                 raise validators.ValidationError("Invalid Voter ID")
 
-class AddVolunteerForm(Form):
+class BaseAddVolunteerForm(Form):
     name = StringField('Name', [validators.Required()])
     email = StringField('Email Address')
     phone = StringField(label='Phone Number', validators=[validators.Required()], description="10 digits only")
-    voterid = StringField('Voter ID')
-    booth = SelectField('Polling Booth')
-
-    def __init__(self, place, *a, **kw):
-        Form.__init__(self, *a, **kw)
-        self._place = place
-        self._setup_booth_options()
-
-    def _setup_booth_options(self):
-        t = self._place.type.short_name
-        if t == 'PB':
-            self.booth.choices = [(self._place.key, self._place.name)]
-            ## Anand: marking it as disabled is causing form validation error
-            ## as the browser is not sending any data for this input.
-            ## Commenting it out to avoid that issue.
-            # self.booth.flags.disabled = True
-        elif t in ['PX', 'LB', 'AC']:
-            PB = models.PlaceType.get("PB")
-            self.booth.choices = [(p.key, p.name) for p in self._place.get_places(PB)]
-            self.booth.choices.insert(0, (self._place.key, "Not Sure"))
-        else:
-            self.booth.choices = [(self._place.key, '')]
-            self.booth.data = self._place.key
-            ## Anand: marking it as disabled is causing form validation error
-            ## as the browser is not sending any data for this input.
-            ## Commenting it out to avoid that issue.
-            # self.booth.flags.disabled = True
 
     def validate_phone(self, field):
-
         if len(field.data) != 10:
             raise validators.ValidationError('it should be 10 digit only')
 
@@ -98,6 +82,35 @@ class AddVolunteerForm(Form):
         # make sure the email address is not already used
         if models.PendingMember.find(email=email) or models.Member.find(email=email):
             raise validators.ValidationError('This email address is already used')
+
+class AddVolunteerForm(BaseAddVolunteerForm):
+    voterid = StringField('Voter ID')
+    booth = SelectField('Polling Booth')
+
+    def __init__(self, place, *a, **kw):
+        BaseAddVolunteerForm.__init__(self, *a, **kw)
+        self._place = place
+        self._setup_booth_options()
+
+    def _setup_booth_options(self):
+        t = self._place.type.short_name
+        if t == 'PB':
+            self.booth.choices = [(self._place.key, self._place.name)]
+            ## Anand: marking it as disabled is causing form validation error
+            ## as the browser is not sending any data for this input.
+            ## Commenting it out to avoid that issue.
+            # self.booth.flags.disabled = True
+        elif t in ['PX', 'LB', 'AC']:
+            PB = models.PlaceType.get("PB")
+            self.booth.choices = [(p.key, p.name) for p in self._place.get_places(PB)]
+            self.booth.choices.insert(0, (self._place.key, "Not Sure"))
+        else:
+            self.booth.choices = [(self._place.key, '')]
+            self.booth.data = self._place.key
+            ## Anand: marking it as disabled is causing form validation error
+            ## as the browser is not sending any data for this input.
+            ## Commenting it out to avoid that issue.
+            # self.booth.flags.disabled = True
 
     def validate_voterid(self, field):
         #SignupForm.validate_voterid(self, field)

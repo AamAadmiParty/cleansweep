@@ -102,6 +102,28 @@ def add_volunteer(place):
     force_add = request.args.get("force") == 'True'
     return render_template("add_volunteer.html", place=place, form=form, force_add=force_add)
 
+@plugin.route("/api/<place:place>/volunteers/add", methods=['POST'])
+@require_permission("volunteers.add")
+def api_add_volunteer(place):
+    data = request.json
+    form = forms.BaseAddVolunteerForm(data, csrf_enabled=False)
+    if not form.validate():
+        return jsonify({"success": "failed", "errors": form.errors}), 400
+
+    volunteer = place.add_member(
+        name=data['name'],
+        email=data['email'],
+        phone=data['phone'],
+        voterid=data.get('voterid'))
+    db.session.commit()
+    signals.add_new_volunteer.send(volunteer)
+
+    return jsonify({
+        "success": "ok",
+        "message": "Added new volunteer successfully",
+        "volunteer": volunteer.dict()
+    })
+
 
 @plugin.route("/<place:place>/volunteers/autocomplete", methods=['GET'])
 @require_permission("volunteers.view")
