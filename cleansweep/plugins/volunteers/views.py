@@ -108,7 +108,7 @@ def api_add_volunteer(place):
     data = request.json
     form = forms.BaseAddVolunteerForm(data, csrf_enabled=False)
     if not form.validate():
-        return jsonify({"success": "failed", "errors": form.errors}), 400
+        return jsonify({"status": "failed", "errors": form.errors}), 400
 
     volunteer = place.add_member(
         name=data['name'],
@@ -119,7 +119,7 @@ def api_add_volunteer(place):
     signals.add_new_volunteer.send(volunteer)
 
     return jsonify({
-        "success": "ok",
+        "status": "ok",
         "message": "Added new volunteer successfully",
         "volunteer": volunteer.dict()
     })
