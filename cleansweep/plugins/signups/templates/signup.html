@@ -40,31 +40,31 @@
                       {{ render_field(form.phone) }}
                   </div>
               </div>
-              <div class="panel panel-default">
+              <!-- <div class="panel panel-default">
                   <div class="panel-heading">
                       <h3 class="panel-title">Polling booth</h3>
                   </div>
                   <div class="panel-body">
                       {{ render_field(form.voterid) }}
                       {{ render_field(form.locality, placeholder="Select your locality") }}
-
+              
                       <strong class="help-block help-first">Provide your voter id or locality so
                           that we can identify your polling booth.</strong>
-
+              
                       <p class="help-block help-second" style="display: none;"><i class="fa fa-spinner fa-spin"></i>
                           Please wait while we discover your assembly constituency from the location.</p>
-
+              
                       <input type="hidden" id="place" name="place" value="{{ form.place.data }}"/>
-
+              
                       <div class="locality-details alert alert-info" style="display: none;">
                           We've identified the polling station near to your location as:<br/>
-
+              
                           <div><strong><span class="pb">xx</span></strong></div>
                           <div><span class="ac">xx</span>
                               <small>Assembly Constituency</small>
                               , <span class="state"></span></div>
                           <br/>
-
+              
                           <div>
                               <small>If you think it is not correct, please correct the locality in the above text box.
                               </small>
@@ -74,7 +74,7 @@
                           <strong>Sorry!</strong> The selected locality is not covered yet.
                       </div>
                   </div>
-              </div>
+              </div> -->
               <a class="btn btn-danger pull-left" href="{{url_for('oauth_reset')}}">Cancel</a>
               <button type="submit" class="btn btn-success pull-right">Sign Up</button>
           </form>
