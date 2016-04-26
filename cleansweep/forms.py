@@ -37,8 +37,10 @@ class SignupForm(Form):
 
     def validate_voterid(self, field):
         if not self.voterid.data:
-            if not self.place.data and (self._place and self._place.type.short_name not in ['PB', 'PX', 'LB', 'AC']):
-                raise validators.ValidationError("You must provide either a valid voter ID or locality.")
+            ## Anand - April 2016: Temporarily disabled location search
+            # if not self.place.data and (self._place and self._place.type.short_name not in ['PB', 'PX', 'LB', 'AC']):
+            #     raise validators.ValidationError("You must provide either a valid voter ID or locality.")
+            raise validators.ValidationError("You must provide a valid voter ID.")
 
         if self.voterid.data:
             voterid = self.voterid.data

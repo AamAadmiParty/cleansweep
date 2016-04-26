@@ -46,6 +46,9 @@
                   </div>
                   <div class="panel-body">
                       {{ render_field(form.voterid) }}
+
+                    {# *** Anand - April 2016: disabled location search temporarily
+
                       {{ render_field(form.locality, placeholder="Select your locality") }}
 
                       <strong class="help-block help-first">Provide your voter id or locality so
@@ -73,6 +76,8 @@
                       <div class="locality-error alert alert-danger" style="display: none;">
                           <strong>Sorry!</strong> The selected locality is not covered yet.
                       </div>
+
+                    #}
                   </div>
               </div>
               <a class="btn btn-danger pull-left" href="{{url_for('oauth_reset')}}">Cancel</a>
@@ -92,6 +97,8 @@
     </p>
   {% endif %}
 </div>
+
+{# *** Anand - April 2016: disabled location search temporarily
 
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 <script src="https://geosearch-anandology.rhcloud.com/js/jquery-geosearch.js"></script>
@@ -216,4 +223,6 @@ $(function() {
 });
 
 </script>
+#}
+
 {% endblock %}
