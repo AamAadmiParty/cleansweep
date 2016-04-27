@@ -39,10 +39,13 @@ def signup():
         form.name.data = userdata['name']
     if request.method == "POST" and form.validate():
         voter_id = form.voterid.data
-        place_key = form.place.data
+        #place_key = form.place.data
         if voter_id:
             voter_data = voter_lookup.get_voter(voter_id)
             place_key = Place.get_pb_key(voter_data['state'], voter_data['ac'], voter_data['pb'])
+        else:
+            return render_template("signup.html", userdata=userdata, form=form)
+
         place = Place.find(place_key)
         pending_member = place.add_pending_member(name=form.name.data, email=userdata['email'], phone=form.phone.data,
                                                   voterid=voter_id)
