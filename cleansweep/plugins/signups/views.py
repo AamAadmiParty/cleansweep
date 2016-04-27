@@ -79,5 +79,5 @@ def signups(place, status=None):
                 db.session.commit()
                 signals.volunteer_signup_rejected.send(pmember)
                 flash('Successfully rejected {}.'.format(pmember.name))
-                return redirect(url_for(".signups", place=place.place))
+                return redirect(url_for(".signups", place=place))
     return render_template("signups.html", place=place, status=status)
