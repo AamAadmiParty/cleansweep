@@ -20,8 +20,11 @@ class SignupForm(Form):
             raise validators.ValidationError('This phone number is already used')
 
     def validate_voterid(self, field):
-        if not field.data and self.place.data == "None":  # TODO highlight locality field too
-            raise validators.ValidationError("You must provide either a valid voter ID or locality.")
+        # if not field.data and self.place.data == "None":  # TODO highlight locality field too
+        #     raise validators.ValidationError("You must provide either a valid voter ID or locality.")
+
+        if not field.data:
+            raise validators.ValidationError("You must provide a valid voter ID.")
 
         if self.voterid.data:
             voterid = self.voterid.data
