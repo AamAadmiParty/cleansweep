@@ -384,6 +384,7 @@ class Place(db.Model, Mixable):
                 .filter(
                     PendingMember.place_id==place_parents.c.child_id,
                     place_parents.c.parent_id==self.id)
+                .order_by(PendingMember.timestamp.desc())
                 .limit(limit)
                 .offset(offset)
                 .all())
