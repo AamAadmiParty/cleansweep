@@ -33,31 +33,52 @@
                     {% endif %}
                 </div>
                 <div class="caption">
-                    <h2>{{ person.name }}</h2>
+                    <h2 class="person-title">{{ person.name }}</h2>
                     <hr>
                     <div style="line-height: 30px;font-size: 15px;">
-                        <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> {{ person.email }}
-                        <br>
-                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span> Joined on {{ person.created |
-                             naturaltime }}
+                        <p class="person-email"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> {{ person.email }}</p>
+                        
+                        <p class="person-joined"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Joined {{ person.created |
+                             naturaltime }}</p>
                     </div>
                 </div>
             </div>
-            <div class="panel-footer">
+            <!-- <div class="panel-footer">
                 <a href="#" class="btn btn-primary">Edit profile</a>
-            </div>
+            </div> -->
         </div>
     </div>
     <div class="col-md-8">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Activity</h3>
+                <h3 class="panel-title">Profile Detail</h3>
             </div>
             <div class="panel-body">
-                TODO
+                <div class="row">
+                    <div class="col-sm-12">
+                      <span class="field-label"><strong>Full Name :</strong></span>
+                      <p class="field-detail col-sm-12"><span class="user_field_value">{{ person.name }}</span></p>
+                    </div>   
+                    <div class="col-sm-12">
+                      <span class="field-label"><strong>Email :</strong></span>
+                      <p class="field-detail col-sm-12"><span class="user_field_value">{{ person.email }}</span></p>
+                    </div>
+                    <div class="col-sm-6">
+                      <span class="field-label"><strong>Phone Number</strong></span>
+                      <p class="field-detail col-sm-12"><span class="user_field_value">{{ person.phone }}</span></p>
+                    </div>
+                    {% if has_permission("persons.edit") %}
+                      <div class="col-md-12">
+                         <a href="{{ url_for('volunteers.edit_profile', id=person.id, hash=person.get_hash()) }}" class="btn btn-default">Edit Profile
+                         </a>
+                      </div>
+                    {% endif %}
+      
+                </div>
+                </div>
             </div>
         </div>
-    </div>
+  
 
   {% if has_permission("persons.delete") %}
       <div class="col-md-12">
