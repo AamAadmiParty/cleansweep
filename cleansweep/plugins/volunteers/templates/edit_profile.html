@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content_head %}
+    <div class="col-md-12">
+        <div class="page-content">
+            <ul class="breadcrumb breadcrumb-collapse">
+                {% for p in person.place.parents %}
+                    <li><a href="{{ url_for('place', place=p) }}">{{ p.name }}</a></li>
+                {% endfor %}
+                <li><a href="{{ url_for('place', place=person.place) }}">{{ person.place.name }}</a></li>
+            </ul>
+            <h2>Profile</h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content_body %}
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Profile</h3>
+            </div>
+            <div class="panel-body">
+                <div class="text-center">
+                    {% if person.get_detail("facebook_id") %}
+                        <img class="img"
+                             src="http://graph.facebook.com/{{ person.get_detail('facebook_id') }}/picture?type=large"
+                             width="250" height="250">
+                    {% elif person.get_detail("google_id") %}
+                        <img src="{{ get_google_photo_url(person.get_detail('google_id')) }}" width="250" height="250">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/default-photo.jpg') }}" width="250"
+                             height="250">
+                    {% endif %}
+                </div>
+                <div class="caption">
+                    <h2 class="person-title">{{ person.name }}</h2>
+                    <hr>
+                    <div style="line-height: 30px;font-size: 15px;">
+                        <p class="person-email"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> {{ person.email }}</p>
+                        
+                        <p class="person-joined"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Joined {{ person.created |
+                             naturaltime }}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="panel-footer">
+                <a href="#" class="btn btn-primary">Edit profile</a>
+            </div> -->
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Profile Detail</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                  <form method="POST" class="edit_profile" id="edit_profile" name="editProfileForm" role="form">
+                    <div class="form-group">
+                      <label class="control-label">Full Name</label>
+                      <input type="text" name="name" value="{{ person.name }}" class="form-control"> 
+                    </div>
+                    
+                    <div class="form-group">
+                      <label class="control-label">Email</label>
+                      {% if person.email  %}
+                      <input type="email" name="email" value="{{ person.email }}" class="form-control"> 
+                      {% else %}
+                      <input  value="{{ person.email }}" class="form-control" readonly> 
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Phone Number</label>
+                        <input type="text" name = "phone" value="{{ person.phone }}" class="form-control"> 
+                    </div>
+                    <input type="hidden" name="action" value="update"/>
+                     <button type="submit" class="btn btn-success save-change">Save Changes</button>
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  {% if has_permission("persons.delete") %}
+      <div class="col-md-12">
+          <form method="POST">
+              <input type="hidden" name="action" value="delete"/>
+              <button type="submit" class="btn btn-danger">Delete this person</button>
+          </form>
+      </div>
+  {% endif %}
+
+  {% if debug %}
+  <br><br>
+  <div class="well">
+  <h2>DEBUG INFO</h2>
+  <h3>Roles</h3>
+  <ul>
+    {% for role in get_user_roles(person) %}
+      <li>{{role | json_encode }}</li>
+    {% endfor %}
+  </ul>
+  <h3>Permissions</h3>
+  <ul>
+    {% for p in get_user_permissions(person) %}
+      <li>{{p | json_encode }}</li>
+    {% endfor %}
+  </ul>
+  </div>
+  {% endif %}
+
+{% endblock %}
