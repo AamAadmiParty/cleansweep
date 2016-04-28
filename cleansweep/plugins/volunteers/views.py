@@ -191,3 +191,27 @@ def profile(id, hash):
     else:
         debug = request.args.get("debug") == "true"
         return render_template("profile.html", person=m, debug=debug)
+
+@plugin.route("/people/edit/<id>-<hash>/", methods=["GET", "POST"])
+@require_permission("volunteers.edit")
+def edit_profile(id, hash):
+    m = Member.find(id=id)
+    if not m or m.get_hash() != hash:
+        abort(404)
+
+    if request.method == "POST":
+        action = request.form.get('action')
+        if action == 'update':
+            name=request.form.get('name'),
+            email=request.form.get('email'),
+            phone=request.form.get('phone'),
+            m.name = name
+            m.email = email
+            m.phone = phone
+            db.session.add(m)
+            db.session.commit()
+            flash(u"Updated {} as volunteer.".format(m.name))
+            return redirect(url_for('.profile', id=id, hash=hash))
+    else:
+        debug = request.args.get("debug") == "true"
+        return render_template("edit_profile.html", person=m, debug=debug)
