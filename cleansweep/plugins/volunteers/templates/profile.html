@@ -2,93 +2,58 @@
 {% block content_head %}
     <div class="col-md-12">
         <div class="page-content">
-            <ul class="breadcrumb breadcrumb-collapse">
-                {% for p in person.place.parents %}
-                    <li><a href="{{ url_for('place', place=p) }}">{{ p.name }}</a></li>
-                {% endfor %}
-                <li><a href="{{ url_for('place', place=person.place) }}">{{ person.place.name }}</a></li>
-            </ul>
-            <h2>Profile</h2>
+            <h2>{{person.name}}</h2>
         </div>
     </div>
 {% endblock %}
 
 {% block content_body %}
     <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Profile</h3>
-            </div>
-            <div class="panel-body">
-                <div class="text-center">
-                    {% if person.get_detail("facebook_id") %}
-                        <img class="img"
-                             src="http://graph.facebook.com/{{ person.get_detail('facebook_id') }}/picture?type=large"
-                             width="250" height="250">
-                    {% elif person.get_detail("google_id") %}
-                        <img src="{{ get_google_photo_url(person.get_detail('google_id')) }}" width="250" height="250">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='images/default-photo.jpg') }}" width="250"
-                             height="250">
-                    {% endif %}
-                </div>
-                <div class="caption">
-                    <h2 class="person-title">{{ person.name }}</h2>
-                    <hr>
-                    <div style="line-height: 30px;font-size: 15px;">
-                        <p class="person-email"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> {{ person.email }}</p>
-                        
-                        <p class="person-joined"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Joined {{ person.created |
-                             naturaltime }}</p>
-                    </div>
-                </div>
-            </div>
-            <!-- <div class="panel-footer">
-                <a href="#" class="btn btn-primary">Edit profile</a>
-            </div> -->
+        <div>
+            {% if person.get_detail("facebook_id") %}
+                <img class="img"
+                     src="http://graph.facebook.com/{{ person.get_detail('facebook_id') }}/picture?type=large"
+                     width="150" height="150">
+            {% elif person.get_detail("google_id") %}
+                <img class="gphoto" src="{{ get_google_photo_url(person.get_detail('google_id')) }}" width="150" height="150">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/default-photo.jpg') }}" width="150"
+                     height="150">
+            {% endif %}
         </div>
-    </div>
-    <div class="col-md-8">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Profile Detail</h3>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-12">
-                      <span class="field-label"><strong>Full Name :</strong></span>
-                      <p class="field-detail col-sm-12"><span class="user_field_value">{{ person.name }}</span></p>
-                    </div>   
-                    <div class="col-sm-12">
-                      <span class="field-label"><strong>Email :</strong></span>
-                      <p class="field-detail col-sm-12"><span class="user_field_value">{{ person.email }}</span></p>
-                    </div>
-                    <div class="col-sm-6">
-                      <span class="field-label"><strong>Phone Number</strong></span>
-                      <p class="field-detail col-sm-12"><span class="user_field_value">{{ person.phone }}</span></p>
-                    </div>
-                    {% if has_permission("persons.edit") %}
-                      <div class="col-md-12">
-                         <a href="{{ url_for('volunteers.edit_profile', id=person.id, hash=person.get_hash()) }}" class="btn btn-default">Edit Profile
-                         </a>
-                      </div>
-                    {% endif %}
-      
-                </div>
-                </div>
-            </div>
-        </div>
-  
+        <br/>
+        <div class="caption">
+            <div style="line-height: 30px;font-size: 15px;">
+                <p class="person-location"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                    <a href="{{ url_for('place', place=person.place) }}"><span class="small">{{ person.place.name }}</span></a>
+                </p>
 
-  {% if has_permission("persons.delete") %}
-      <div class="col-md-12">
-          <form method="POST">
+              {% if has_permission("volunteers.edit") %}
+                <p class="person-email"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                <a href="mailto:{{person.email}}">{{ person.email }}</a></p>
+                <p class="person-phone"><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span>
+                <a href="mailto:{{person.phone}}">{{ person.phone }}</a></p>
+              {% endif %}
+                
+              <p class="person-joined">
+                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                Joined {{ person.created | naturaltime }}
+              </p>
+            </div>
+        </div>
+
+        {% if has_permission("volunteers.edit") %}
+            <a href="{{ url_for('volunteers.edit_profile', id=person.id, hash=person.get_hash()) }}" class="btn btn-default">Edit Profile</a>
+        {% endif %}
+
+        {% if has_permission("volunteers.delete") %}
+          <form method="POST" class="pull-right">
               <input type="hidden" name="action" value="delete"/>
               <button type="submit" class="btn btn-danger">Delete this person</button>
           </form>
-      </div>
-  {% endif %}
-
+        {% endif %}
+    </div>
+      
   {% if debug %}
 	<br><br>
 	<div class="well">

@@ -192,7 +192,7 @@ def profile(id, hash):
         debug = request.args.get("debug") == "true"
         return render_template("profile.html", person=m, debug=debug)
 
-@plugin.route("/people/edit/<id>-<hash>/", methods=["GET", "POST"])
+@plugin.route("/people/<id>-<hash>/edit", methods=["GET", "POST"])
 @require_permission("volunteers.edit")
 def edit_profile(id, hash):
     m = Member.find(id=id)
