@@ -13,12 +13,11 @@
             {% if person.get_detail("facebook_id") %}
                 <img class="img"
                      src="http://graph.facebook.com/{{ person.get_detail('facebook_id') }}/picture?type=large"
-                     width="150" height="150">
-            {% elif person.get_detail("google_id") %}
-                <img class="gphoto" src="{{ get_google_photo_url(person.get_detail('google_id')) }}" width="150" height="150">
-            {% else %}
-                <img src="{{ url_for('static', filename='images/default-photo.jpg') }}" width="150"
                      height="150">
+            {% elif person.get_detail("google_id") %}
+                <img class="gphoto" src="{{ get_google_photo_url(person.get_detail('google_id')) }}" height="150">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/default-photo.jpg') }}" height="150">
             {% endif %}
         </div>
         <br/>
