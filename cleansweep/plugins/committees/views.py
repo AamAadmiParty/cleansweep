@@ -33,6 +33,8 @@ def init_app(app):
 def get_user_roles(user):
     """Returns permission of a role.
     """
+    if not user:
+        return
     committee_member_objects = user.committees.all()
     for cm in committee_member_objects:
         place = cm.committee.place
