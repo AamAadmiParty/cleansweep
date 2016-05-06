@@ -97,7 +97,7 @@ def get_permissions(user, place):
     """
     perms = []
     # ADMIN_USERS have all the permissions
-    if user.email in app.config['ADMIN_USERS']:
+    if user and user.email in app.config['ADMIN_USERS']:
         perms = ['*', 'read', 'write', 'admin', 'siteadmin', 'volunteers.view']
 
 
