@@ -163,11 +163,13 @@ def download_volunteer(place):
 
 
 @plugin.route("/people/<id>-<hash>", methods=["GET", "POST"])
-@require_permission("volunteers.view")
 def profile(id, hash):
     m = Member.find(id=id)
     if not m or m.get_hash() != hash:
         abort(404)
+
+    if not h.has_permission('volunteers.view', m.place):
+        return render_template("permission_denied.html")
 
     if request.method == "POST":
         action = request.form.get('action')

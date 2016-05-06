@@ -27,7 +27,7 @@
                     <a href="{{ url_for('place', place=person.place) }}"><span class="small">{{ person.place.name }}</span></a>
                 </p>
 
-              {% if has_permission("volunteers.edit") %}
+              {% if has_permission("volunteers.edit", person.place) %}
                 <p class="person-email"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                 <a href="mailto:{{person.email}}">{{ person.email }}</a></p>
                 <p class="person-phone"><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span>
