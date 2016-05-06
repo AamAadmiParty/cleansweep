@@ -36,6 +36,8 @@ def register_place_hook():
 
 @rbac.role_provider
 def get_user_roles(user):
+    if not user:
+        return
     if user.email in app.config['ADMIN_USERS']:
         yield {"place": "", "role": "admin"}
     yield {"place": user.place.key, "role": "volunteer"}
