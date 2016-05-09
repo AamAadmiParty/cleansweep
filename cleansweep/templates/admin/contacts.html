@@ -30,7 +30,7 @@
       </tr>
     </thead>
     <tbody>
-    {% for c in place.get_contacts() %}
+    {% for c in place.get_contacts_iter() %}
       <tr>
         <td>{{c.name or ""}}</td>
         <td>{{c.email or ""}}</td>

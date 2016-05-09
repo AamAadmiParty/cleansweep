@@ -202,7 +202,7 @@ def admin_contacts(place):
 @app.route("/<place:place>/admin/contacts.xls")
 @require_permission("write")
 def admin_contacts_download(place):
-    contacts = place.get_contacts()
+    contacts = place.get_contacts_iter()
 
     headers = ['Place', 'Name', 'Phone', 'E-mail', 'Voter ID']
     data = tablib.Dataset(headers=headers, title="Contacts")
