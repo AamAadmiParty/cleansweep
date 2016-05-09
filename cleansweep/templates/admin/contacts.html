@@ -15,6 +15,8 @@
   <h2>Contacts</h2>
   <div class="" style="margin: 20px 0px;">
     <a href="{{url_for('admin_add_contacts', place=place)}}" class="btn btn-primary btn-add-contacts">Add New Contacts</a>
+
+    <a href="{{url_for('admin_contacts_download', place=place)}}" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Download</a>
   </div>
 
   <table class="table table-striped">

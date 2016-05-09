@@ -1,7 +1,8 @@
 """Views of the admin panel.
 """
 
-from flask import (render_template, abort, url_for, redirect, request, session, flash, jsonify)
+from flask import (render_template, abort, url_for, redirect, request,
+                    make_response, session, flash, jsonify)
 from ..models import Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
@@ -15,6 +16,7 @@ from ..voterlib import voterdb
 from ..plugins.audit import record_audit
 import json
 from collections import defaultdict
+import tablib
 
 
 @app.route("/admin")
@@ -196,6 +198,22 @@ def admin_sms(place):
 @require_permission("write")
 def admin_contacts(place):
     return render_template("admin/contacts.html", place=place)
+
+@app.route("/<place:place>/admin/contacts.xls")
+@require_permission("write")
+def admin_contacts_download(place):
+    contacts = place.get_contacts()
+
+    headers = ['Place', 'Name', 'Phone', 'E-mail', 'Voter ID']
+    data = tablib.Dataset(headers=headers, title="Contacts")
+
+    for c in contacts:
+        data.append([c.place.key, c.name, c.phone, c.email, c.voterid])
+
+    response = make_response(data.xls)
+    response.headers['Content-Type'] = 'application/vnd.ms-excel;charset=utf-8'
+    response.headers['Content-Disposition'] = "attachment; filename='{0}-contacts.xls'".format(place.key)
+    return response
 
 @app.route("/<place:place>/admin/contacts/add", methods=['GET', 'POST'])
 @require_permission("write")
