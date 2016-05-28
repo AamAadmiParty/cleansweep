@@ -171,7 +171,7 @@ def admin_sms(place):
     is_sms_configured = sms_provider is not None
 
     form = forms.SendSMSForm(request.form)
-    if is_sms_configured and request.method == "POST" and form.validate():
+    if request.method == "POST" and form.validate() and is_sms_configured:
         if form.people.data == 'self':
             people = [get_current_user()]
         elif form.people.data == 'volunteers':

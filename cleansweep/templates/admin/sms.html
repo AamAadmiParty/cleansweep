@@ -20,10 +20,30 @@
     <form id="sendmail-form" role="form" method="POST">
       {{ form.csrf_token }}
       {{ render_field(form.people) }}
-      {{ render_field(form.message) }}
+      {{ render_field(form.message, maxlength=form.maxCharacters) }}
       <button type="submit" class="btn btn-default">Send</button>
+      <span class="pull-right" id="counter"></span>
     </form>
   {% endif %}
+
+    <script type="text/javascript">
+        var textArea = $('textarea');
+        var maxLength = textArea.attr('maxlength');
+        textArea.attr('maxlength', null);  // Set to null so you can exceed  the limit.
+
+        var getRemainingCount = function(maxLength, currentLength) {
+            return maxLength - currentLength;
+        };
+
+        var counter = $('#counter');
+        counter.text(getRemainingCount(maxLength, textArea.val().length));
+
+        textArea.bind('keyup', function () {
+            var remainingCount = getRemainingCount(maxLength, textArea.val().length);
+            counter.text(remainingCount);
+            counter.css('color', remainingCount < 0 ? 'red' : '');
+        });
+    </script>
 
 {% endblock %}
 

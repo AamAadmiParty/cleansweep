@@ -141,6 +141,11 @@ class SendSMSForm(Form):
                     ('contacts', 'All Contacts')
                 ])
     message = TextAreaField("Message", validators=[validators.Required()])
+    maxCharacters = 160
+
+    def validate_message(self, field):
+        if len(field.data) > self.maxCharacters:
+            raise validators.ValidationError("Only 160 characters.")
 
 class UnsubscribeForm(Form):
     email = StringField('Email Address', [validators.Email()])
