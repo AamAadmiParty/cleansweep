@@ -169,6 +169,10 @@ def get_google_photo_url(google_id):
     return url_for('static', filename='images/default-photo.jpg')
 
 
+def get_attr(obj, attribute):
+    return getattr(obj, attribute)
+
+
 @app.context_processor
 def helpers():
     return {
@@ -190,6 +194,7 @@ def helpers():
         "today": datetime.datetime.today(),
         "yesterday": datetime.datetime.today() - datetime.timedelta(days=1),
         "get_site_title": get_site_title,
+        "getattr": get_attr,
         "changeview": changeview,
         "is_phone_valid": is_phone_valid,
         "get_google_photo_url": get_google_photo_url,
