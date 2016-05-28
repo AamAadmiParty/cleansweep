@@ -49,7 +49,7 @@ def signup():
 
         place = Place.find(place_key)
         pending_member = place.add_pending_member(name=form.name.data, email=userdata['email'], phone=form.phone.data,
-                                                  voterid=voter_id)
+                                                  voterid=voter_id, details=userdata)
         db.session.commit()
         signals.volunteer_signup.send(pending_member)
         return render_template("signup_complete.html", person=pending_member)

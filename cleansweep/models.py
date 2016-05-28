@@ -365,13 +365,14 @@ class Place(db.Model, Mixable):
         db.session.add(member)
         return member
 
-    def add_pending_member(self, name, email, phone, voterid):
+    def add_pending_member(self, name, email, phone, voterid, details=None):
         pending_member = PendingMember(
             self,
             name=name,
             email=email,
             phone=phone,
-            voterid=voterid)
+            voterid=voterid,
+            details=details)
         db.session.add(pending_member)
         return pending_member
 
@@ -596,21 +597,38 @@ class PendingMember(db.Model):
     phone = db.Column(db.Text, unique=True, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
     voterid = db.Column(db.Text)
+    details = db.Column(JSON)
 
     status = db.Column(
         db.Enum("pending", "approved", "rejected", name="pending_member_status"),
         default="pending")
 
-    def __init__(self, place, name, email, phone, voterid):
+    def __init__(self, place, name, email, phone, voterid, details=None):
         self.place = place
         self.name = name
         self.email = email
         self.phone = phone
         self.voterid = voterid
+        self.details = details
 
     @classmethod
     def find(cls, **kw):
         return cls.query.filter_by(**kw).first()
+
+    def add_details(self, name, value):
+        """Adds/updates a new name-value pair to member details.
+        """
+        if self.details is None:
+            self.details = {}
+        if self.details.get(name) != value:
+            # Force an assignment to let SA know that the field is modified
+            self.details = dict(self.details)
+            self.details[name] = value
+            db.session.add(self)
+
+    def get_detail(self, name):
+        if self.details:
+            return self.details.get(name)
 
     def reject(self):
         self.status = 'rejected'
