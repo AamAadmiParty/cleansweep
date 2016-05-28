@@ -18,13 +18,14 @@ class Plugin(Blueprint):
         from .core import permissions
         permissions.define_permission(name, description)
 
-    def add_sidebar_entry(self, title, endpoint, permission):
+    def add_sidebar_entry(self, title, endpoint, permission, counter_func=None):
         _endpoint = "{}.{}".format(self.name, endpoint)
         h.sidebar_entries.append(dict(
             entrypoint=_endpoint,
             permission=permission,
             title=title,
-            tab=endpoint))
+            tab=endpoint,
+            counter_func=counter_func))
 
 _loaded_plugins = []
 

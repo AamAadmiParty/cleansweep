@@ -126,7 +126,8 @@ margin-bottom: 0px;">
         {% for e in sidebar_entries %}
           {% if not e['permission'] or has_permission(e['permission']) %}
             <li class="list-group-item {{'active' if tab==e['tab'] }}">
-              <a href="{{url_for(e['entrypoint'], place=place)}}">{{e['title']}}</a>
+              <a href="{{url_for(e['entrypoint'], place=place)}}"> {{e['title']}} {% if e['counter_func'] %} <span class="badge
+              pull-right">{{getattr(place, e['counter_func'])()}}</span> {% endif %}</a>
             </li>
           {% endif %}
         {% endfor %}

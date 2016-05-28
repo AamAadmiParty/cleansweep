@@ -11,7 +11,8 @@ plugin = Plugin("signups", __name__, template_folder="templates")
 
 def init_app(app):
     plugin.init_app(app)
-    plugin.add_sidebar_entry("Signups", endpoint="signups", permission="write")
+    plugin.add_sidebar_entry("Signups", endpoint="signups", permission="write",
+                             counter_func="get_pending_members_count")
 
 @plugin.route("/account/signup", methods=["GET", "POST"])
 def signup():

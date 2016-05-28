@@ -389,6 +389,13 @@ class Place(db.Model, Mixable):
                 .offset(offset)
                 .all())
 
+    def get_pending_members_count(self, status='pending'):
+        """Returns all the pending signups count below this place.
+        """
+        return PendingMember.query.filter_by(status=status).filter(
+                    PendingMember.place_id==place_parents.c.child_id,
+                    place_parents.c.parent_id==self.id).count()
+
     def add_contacts(self, data):
         phones = [row[2].strip() for row in data if row[2] and row[2].strip()]
         emails = [row[1].strip() for row in data if row[1] and row[1].strip()]
