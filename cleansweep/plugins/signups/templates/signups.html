@@ -1,12 +1,20 @@
+{% extends "base.html" %}
 {% from "macros.html" import render_pill %}
-{% extends "place.html" %}
 
-{% block subnav %}
-  {{ subnav(place, tab="signups") }}
+
+{% block content_head %}
+    <div class="page-content">
+        <ul class="breadcrumb breadcrumb-collapse">
+            {% for p in place.parents %}
+                <li><a href="{{ url_for('place', place=p) }}">{{ p.name }}</a></li>
+            {% endfor %}
+            <li><a href="{{ url_for('place', place=place) }}">{{ place.name }}</a></li>
+        </ul>
+        <h2>Volunteer Signups</h2>
+    </div>
 {% endblock %}
 
-{% block page_content %}
-  <h2>Volunteer Signups</h2>
+{% block content_body %}
   <ul class="nav nav-pills nav-status">
     {{ render_pill("Pending", url_for('.signups', place=place), request_path)}}
     {{ render_pill("Approved", url_for('.signups', place=place, status='approved'), request_path)}}
@@ -16,16 +24,28 @@
   {% if not signups %}
     <em>None found</em>
   {% else %}
-    <table class="table">
+    <table class="table table-bordered">
       <tr>
+        <th>Photo</th>
+        <th>Details</th>
+        <th>Place</th>
         <th>When</th>
-        <th>Who</th>
-        <th>Where</th>
         <th>Actions</th>
       </tr>
       {% for person in signups %}
         <tr>
-          <td>{{person.timestamp | naturaltime }}</td>
+          <td>
+            {% if person.get_detail("facebook_id") %}
+                <img src="http://graph.facebook.com/{{ person.get_detail('facebook_id') }}/picture?type=normal"
+                     style="height: 55px">
+            {% elif person.get_detail("google_id") %}
+                <img src="{{ get_google_photo_url(person.get_detail('google_id')) }}"
+                     style="height: 55px">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/default-photo.jpg') }}"
+                     style="height: 55px">
+            {% endif %}
+          </td>
           <td>
             <strong>{{person.name}}</strong>
             <div>{{person.email}}</div>
@@ -35,9 +55,10 @@
             <a href="{{url_for('place', place=person.place)}}">{{person.place.name}}</a>,<br/>
             {% set ac = person.place.get_parent("AC") %}
             {% set state = person.place.get_parent("STATE") %}
-            <a href="{{url_for('place', place=ac)}}">{{ac.name}}</a> <small>Assembly Constituency</small>,
+            <a href="{{url_for('place', place=ac)}}">{{ac.name}}</a>,
             <a href="{{url_for('place', place=state)}}">{{state.name}}</a>
           </td>
+          <td>{{person.timestamp | naturaltime }}</td>
           <td class="actions">
             {% if status == 'pending' %}
               <form method="POST">
