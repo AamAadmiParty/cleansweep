@@ -41,11 +41,11 @@
             </div>
         </div>
 
-        {% if has_permission("volunteers.edit") %}
+        {% if has_permission("volunteers.edit", person.place) %}
             <a href="{{ url_for('volunteers.edit_profile', id=person.id, hash=person.get_hash()) }}" class="btn btn-default">Edit Profile</a>
         {% endif %}
 
-        {% if has_permission("volunteers.delete") %}
+        {% if has_permission("volunteers.delete", person.place) %}
           <form method="POST" class="pull-right">
               <input type="hidden" name="action" value="delete"/>
               <button type="submit" class="btn btn-danger">Delete this person</button>
