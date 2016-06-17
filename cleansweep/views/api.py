@@ -44,16 +44,15 @@ def api_geosearch():
             d['result'][type_name + "_name"] = p.name
     return Response(json.dumps(d, sort_keys=True), mimetype="application/json")
 
-@app.route("/api/place/<place:key>")
-def api_place(key):
-    place = key and Place.find(key=key)
+@app.route("/api/place/<place:place>")
+def api_place(place):
     if not place:
         d = {"error": "Invalid place"}
         return Response(json.dumps(d), mimetype="application/json")
     else:
         parents = place.parents
         d = {
-            "key": key,
+            "key": place.key,
             "type": place.type.short_name,
             "name": place.name,
             "parents": [dict(key=p.key, type=p.type.short_name, name=p.name) for p in parents]
