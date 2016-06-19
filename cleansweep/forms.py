@@ -3,7 +3,7 @@ import wtforms
 from wtforms import FieldList, FormField, SelectField, StringField, TextAreaField, HiddenField, BooleanField
 from wtforms import validators
 from . import models
-from .voterlib import voterdb
+from .core import voter_lookup
 import phonenumbers
 from werkzeug.datastructures import MultiDict
 
@@ -44,7 +44,7 @@ class SignupForm(Form):
 
         if self.voterid.data:
             voterid = self.voterid.data
-            voterinfo = voterdb.get_voter(voterid=voterid, trynew=True)
+            voterinfo = voter_lookup.get_voter(voterid)
             if not voterinfo:
                 raise validators.ValidationError("Invalid Voter ID")
 
@@ -93,6 +93,7 @@ class AddVolunteerForm(BaseAddVolunteerForm):
         BaseAddVolunteerForm.__init__(self, *a, **kw)
         self._place = place
         self._setup_booth_options()
+        self._voterid_place = None
 
     def _setup_booth_options(self):
         t = self._place.type.short_name
@@ -118,10 +119,21 @@ class AddVolunteerForm(BaseAddVolunteerForm):
         #SignupForm.validate_voterid(self, field)
         if self.voterid.data:
             voterid = self.voterid.data
-            voterinfo = voterdb.get_voter(voterid=voterid)
-            if voterinfo and not voterinfo.get_place().has_parent(self._place):
+            if not voterid.strip():
+                return
+            voterinfo = voter_lookup.get_voter(voterid)
+
+            if not voterinfo:
+                raise validators.ValidationError("Invalid voter ID")
+
+            place = voterinfo and models.Place.find(voterinfo['key'])
+            if not place or not place.has_parent(self._place):
                 raise validators.ValidationError("This voter ID doesn't belong to the current place.")
 
+            self._voterid_place = place
+
+    def get_voterid_place(self):
+        return self._voterid_place
 
 class SendMailForm(Form):
     people = SelectField('Send Email to',
