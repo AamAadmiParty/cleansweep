@@ -89,6 +89,7 @@ def add_volunteer(place):
     form = forms.AddVolunteerForm(place, request.form)
     if request.method == "POST" and form.validate():
         # Find the place from voterid if is present
+        p = None
         if form.voterid.data:
             p = form.get_voterid_place()
         p = p or Place.find(key=form.booth.data)
