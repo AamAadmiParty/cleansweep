@@ -48,9 +48,7 @@ def init_app(config_file, create_tables=None):
         toolbar.init_app(app)
 
     if app.debug or app.config.get("ENABLE_MOCKDOWN") == "true":
-        import mockdown
-        app.register_blueprint(mockdown.mockdown_app, url_prefix="/mockups")
-        mockdown._mockdown.set_root("mockups")
+        enable_mockdown()
 
     # load all helpers
     from . import helpers
@@ -61,6 +59,14 @@ def init_app(config_file, create_tables=None):
     app.logger.info("Starting cleansweep app")
     return app
 
+def enable_mockdown():
+    try:
+        import mockdown
+    except ImportError:
+        logger.warn("Unable to import mockdown, skipping it...")
+        return
+    app.register_blueprint(mockdown.mockdown_app, url_prefix="/mockups")
+    mockdown._mockdown.set_root("mockups")
 
 def main(port=5000):
     init_app("config/development.py", create_tables=True)
