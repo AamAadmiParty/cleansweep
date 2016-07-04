@@ -43,6 +43,13 @@ def init():
     from cleansweep.loaddata import init
     init()
 
+@manager.command
+def initdb():
+    "Initiates the database by creating the required tables."
+
+    from cleansweep.main import initdb
+    initdb()
+
 
 @manager.command
 def load(directory):

@@ -66,5 +66,12 @@ def main(port=5000):
     init_app("config/development.py", create_tables=True)
     app.run(port=port)
 
+def initdb():
+    app.config.from_object('cleansweep.default_settings')
+    if os.getenv('CLEANSWEEP_SETTINGS'):
+        app.config.from_envvar('CLEANSWEEP_SETTINGS')
+    logger.info("initializing the database...")
+    db.create_all()
+
 if __name__ == '__main__':
     main()
