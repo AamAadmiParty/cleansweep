@@ -45,9 +45,8 @@ class NewCommitteeForm(Form):
             raise validators.ValidationError("There is already a committee in {} with same slug.".format(self.place.key))
 
     def ensure_empty_slots(self, n=5):
-        # Ensure that there are at least 5 empty slots
-        empty_slots = sum(1 for role in self.data['roles'] if not role['name'].strip())
-        for i in range(n-empty_slots):
+        # Ensure that there are at least 5 <s>empty</s> slots
+        for i in range(n - len(self.roles)):
             self.roles.append_entry()
 
     def load(self, committee_structure):
