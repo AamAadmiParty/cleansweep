@@ -188,6 +188,15 @@ class CommitteeType(db.Model):
         q = self._get_members_query(place)
         return db.engine.execute(q).fetchall()
 
+    @staticmethod
+    def export():
+        """
+        Calls dict() on each committee type and stores it in a list.
+        :return: List of all committee types.
+        """
+        query = CommitteeType.query.all()
+        committee_types = [committee_type.dict() for committee_type in query]
+        return committee_types
 
 class CommitteeRole(db.Model):
     """Role in a committee.
