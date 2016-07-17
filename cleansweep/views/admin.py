@@ -1,8 +1,7 @@
 """Views of the admin panel.
 """
-from cleansweep.plugins.committees.models import CommitteeType
 from flask import (render_template, abort, url_for, redirect, request,
-                    make_response, session, flash, jsonify)
+                    make_response, session, flash)
 from ..models import Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
@@ -283,18 +282,3 @@ def _load_contacts(place, data):
         contacts += p.add_contacts(prows)
     db.session.commit()
     return contacts
-
-
-@app.route("/admin/settings/export", methods=['GET'])
-@require_permission("siteadmin")
-def export_admin_settings():
-    data = {}
-    items_to_export = request.args.get('items', '').split(",")
-
-    if "committees" in items_to_export:
-        data['committee_types'] = CommitteeType.export()
-
-    response = jsonify(data)
-    response.headers['Content-Type'] = 'application/json'
-    response.headers['Content-Disposition'] = "attachment;filename=settings.json"
-    return response

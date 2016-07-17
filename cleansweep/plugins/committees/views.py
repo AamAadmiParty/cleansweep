@@ -2,7 +2,7 @@ from ...plugin import Plugin
 from ...core import rbac
 from ...models import db, Member, PlaceType, Place
 from .models import CommitteeRole, CommitteeType
-from flask import (flash, request, Response, make_response, render_template, redirect, url_for, abort)
+from flask import (flash, request, Response, make_response, render_template, redirect, url_for, abort, jsonify)
 from . import forms
 from . import signals, notifications, audits
 from ...view_helpers import require_permission
@@ -232,4 +232,13 @@ def download_members_of_committee_type(slug):
 
     response = Response(dataset.xls, content_type='application/vnd.ms-excel;charset=utf-8')
     response.headers['Content-Disposition'] = "attachment; filename='{0}'".format(filename)
+    return response
+
+
+@plugin.route("/admin/committee-structures/export", methods=['GET'])
+@require_permission("admin.committee-structures.view")
+def export_committee_structures():
+    response = jsonify({'committee_types': CommitteeType.export()})
+    response.headers['Content-Type'] = 'application/json'
+    response.headers['Content-Disposition'] = "attachment;filename=committee_structures.json"
     return response
