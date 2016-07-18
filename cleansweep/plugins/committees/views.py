@@ -1,3 +1,5 @@
+import json
+
 from ...plugin import Plugin
 from ...core import rbac
 from ...models import db, Member, PlaceType, Place
@@ -238,7 +240,24 @@ def download_members_of_committee_type(slug):
 @plugin.route("/admin/committee-structures/export", methods=['GET'])
 @require_permission("admin.committee-structures.view")
 def export_committee_structures():
-    response = jsonify({'committee_types': CommitteeType.export()})
+    response = jsonify(committee_types=CommitteeType.export())
     response.headers['Content-Type'] = 'application/json'
     response.headers['Content-Disposition'] = "attachment;filename=committee_structures.json"
     return response
+
+
+@plugin.route("/admin/committee-structures/import", methods=['POST'])
+@require_permission("admin.committee-structures.import")
+def import_committee_structures():
+    json_file = request.files['file']
+    file_content = json_file.read()
+    try:
+        committee_types = json.loads(file_content).get('committee_types') or []
+        created = CommitteeType.import_committee_types(committee_types)
+        db.session.commit()
+        flash("Successfully created {0} of {1} committee structures.".format(len(created), len(committee_types)),
+              category="success")
+    except ValueError:
+        flash("An error occurred. Maybe it was an invalid file. Make sure JSON is correct.", category="error")
+
+    return redirect(url_for(".committee_structures"))

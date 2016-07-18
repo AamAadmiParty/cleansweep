@@ -42,6 +42,7 @@ class CommitteeType(db.Model):
             "slug": self.slug,
             "description": self.description,
             "place_key": self.place.key,
+            "place_type_key": self.place_type.short_name,
             "roles": [role.dict() for role in self.roles]
         }
 
@@ -197,6 +198,48 @@ class CommitteeType(db.Model):
         query = CommitteeType.query.all()
         committee_types = [committee_type.dict() for committee_type in query]
         return committee_types
+
+    @staticmethod
+    def import_committee_types(committee_types):
+        """
+        Imports committee types from export data.
+        Validates if all required fields are present and slug does not already exist.
+
+        :param committee_types: List of dictionary objects containing committee_type data. See dict() of CommitteeType.
+        :return: List of CommitteeType objects successfully created.
+        """
+        created = []
+        for c_type in committee_types:
+            place = Place.find(c_type.get('place_key'))
+            place_type = PlaceType.get(c_type.get('place_type_key'))
+            name = c_type.get('name', '').strip()
+            slug = c_type.get('slug', '').strip()
+            desc = c_type.get('description', '').strip()
+
+            slug_already_exists = CommitteeType.find(place, slug) is not None
+            if not place or not place_type or not name or slug_already_exists:
+                continue
+
+            committee_type = CommitteeType.new(place=place, place_type=place_type, name=name, slug=slug, desc=desc,
+                                               roles=c_type.get('roles', []))
+            created.append(committee_type)
+        return created
+
+    @staticmethod
+    def new(place, place_type, name, slug, desc="", roles=None):
+        """
+        Creates a new CommitteeType from data provided and returns the object.
+        """
+        committee_type = CommitteeType(place=place, place_type=place_type, name=name, slug=slug, description=desc)
+        db.session.add(committee_type)
+
+        for role in roles or []:
+            name = role.get('role', '').strip()
+            if not name:
+                continue
+            committee_type.add_role(role_name=name, multiple=role.get('multiple'), permission=role.get('permission'))
+        return committee_type
+
 
 class CommitteeRole(db.Model):
     """Role in a committee.

@@ -1,33 +1,43 @@
-
 {% extends "admin/base.html" %}
 
 {% block content_head %}
-<div class="page-content">
-  <ul class="breadcrumb breadcrumb-collapse">
-    <li><a href="{{url_for('admin')}}">Admin Center</a></li>
-    <li></li>
-  </ul>
-  <h2>Committee Structures
-    <div class="pull-right">
-        <a class="btn btn-primary" href="{{ url_for('.export_committee_structures') }}">Export</a>
-    </div>
-  </h2>
-</div>
+  <div class="page-content">
+    <ul class="breadcrumb breadcrumb-collapse">
+      <li><a href="{{ url_for('admin') }}">Admin Center</a></li>
+      <li></li>
+    </ul>
+    <h2>Committee Structures</h2>
+  </div>
 {% endblock %}
 
 {% block content_body %}
   <div class="list-group">
     {% for p in place.type.all() %}
       {% set committees_count = place.committee_types.filter_by(place_type_id=p.id).count() %}
-        <a href="{{ url_for(".committee_structures_by_level", level=p.short_name)}}" class="list-group-item"
-           {% if committees_count == 0 %}
-             style="background: #eee;"
-             title="No committee structures are defined at this level."
-           {% endif %}
-        >
-          {{ p.name }}
-          <span class="badge">{{ committees_count }}</span>
-        </a>
+      <a href="{{ url_for(".committee_structures_by_level", level=p.short_name) }}" class="list-group-item"
+              {% if committees_count == 0 %}
+         style="background: #eee;"
+         title="No committee structures are defined at this level."
+              {% endif %}
+      >
+        {{ p.name }}
+        <span class="badge">{{ committees_count }}</span>
+      </a>
     {% endfor %}
+  </div>
+  <div>
+    <a class="btn btn-primary" href="{{ url_for('.export_committee_structures') }}">Export</a>
+    <div class="pull-right">
+      {% if has_permission("committees.import") %}
+        <form action="{{ url_for('.import_committee_structures') }}" enctype="multipart/form-data" method="post">
+          <div class="input-group" style="width: 300px">
+            <input type="file" name="file" class="form-control">
+                  <span class="input-group-btn">
+                    <button class="btn btn-primary" type="submit">Import</button>
+                  </span>
+          </div>
+        </form>
+      {% endif %}
+    </div>
   </div>
 {% endblock %}
