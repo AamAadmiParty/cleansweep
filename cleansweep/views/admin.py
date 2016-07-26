@@ -1,8 +1,7 @@
 """Views of the admin panel.
 """
-
 from flask import (render_template, abort, url_for, redirect, request,
-                    make_response, session, flash, jsonify)
+                    make_response, session, flash)
 from ..models import Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
