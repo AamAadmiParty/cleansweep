@@ -159,7 +159,7 @@ def download_volunteer(place):
     headers = ['Name', "Phone", 'Email', 'Voter ID', 'Date'] + get_location_columns()
     data = tablib.Dataset(headers=headers, title="Volunteers")
     for m in members:
-        data.append([m.name, m.phone, m.email, m.voterid, v.created.isoformat()] + get_locations(m.place))
+        data.append([m.name, m.phone, m.email, m.voterid, m.created.isoformat()] + get_locations(m.place))
     response = make_response(data.xls)
     response.headers['Content-Type'] = 'application/vnd.ms-excel;charset=utf-8'
     response.headers['Content-Disposition'] = "attachment; filename='{0}-volunteers.xls'".format(place.key)
