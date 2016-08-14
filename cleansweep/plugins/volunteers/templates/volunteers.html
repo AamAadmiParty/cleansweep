@@ -32,7 +32,7 @@
             <a href="{{ url_for('admin_sendmail', place=place) }}" class="btn btn-primary">Send E-mail</a>
 
             {% if has_permission("volunteers.download") %}
-                <a href="{{ url_for('.download_volunteer', place=place) }}" class="btn btn-primary">Export</a>
+                <a href="{{ url_for('.download_volunteer', place=place) }}" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Download</a>
             {% endif %}
         </div>
     {% endif %}
