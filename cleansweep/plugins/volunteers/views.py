@@ -156,10 +156,10 @@ def download_volunteer(place):
     members = place.get_all_members(limit=10000)
     parents = Place.bulkload_parent_names([m.place_id for m in members])
 
-    headers = ['Name', "Phone", 'Email', 'Voter ID'] + get_location_columns()
+    headers = ['Name', "Phone", 'Email', 'Voter ID', 'Date'] + get_location_columns()
     data = tablib.Dataset(headers=headers, title="Volunteers")
     for m in members:
-        data.append([m.name, m.phone, m.email, m.voterid] + get_locations(m.place))
+        data.append([m.name, m.phone, m.email, m.voterid, v.created.isoformat()] + get_locations(m.place))
     response = make_response(data.xls)
     response.headers['Content-Type'] = 'application/vnd.ms-excel;charset=utf-8'
     response.headers['Content-Disposition'] = "attachment; filename='{0}-volunteers.xls'".format(place.key)
