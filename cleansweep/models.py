@@ -89,8 +89,8 @@ class PlaceType(db.Model, ComparableMixin):
 # of places. For convenience, we also store a place as parent of it self.
 # That makes it easier to run queries over the subtree, including that place.
 place_parents = db.Table('place_parents',
-    db.Column('parent_id', db.Integer, db.ForeignKey('place.id')),
-    db.Column('child_id', db.Integer, db.ForeignKey('place.id'))
+    db.Column('parent_id', db.Integer, db.ForeignKey('place.id'), index=True),
+    db.Column('child_id', db.Integer, db.ForeignKey('place.id'), index=True)
 )
 
 class Place(db.Model, Mixable):
@@ -660,7 +660,7 @@ class Contact(db.Model):
 class Door2DoorEntry(db.Model):
     __tablename__ = "door2door_entry"
     id = db.Column(db.Integer, primary_key=True)
-    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False, index=True)
     place = db.relationship('Place', foreign_keys=place_id)
 
     name = db.Column(db.Text, nullable=False)
