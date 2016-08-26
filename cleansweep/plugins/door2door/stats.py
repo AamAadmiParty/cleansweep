@@ -1,6 +1,7 @@
 import datetime
-from cleansweep.models import db
+from cleansweep.models import db, Door2DoorEntry, place_parents
 from cleansweep.stats import Stats, register_stats
+from flask import request
 
 @register_stats
 class Door2DoorStats(Stats):
@@ -16,26 +17,36 @@ class Door2DoorStats(Stats):
         # queried with date bounds. Otherwise it is doing seqscan.
         end_date = datetime.date.today()
         begin_date = end_date - datetime.timedelta(days=90)
-        q = (
-            "SELECT created_date as date, count(*) as count" +
-            " FROM door2door_entry, place_parents p" +
-            " WHERE place_id=p.child_id" +
-            "   AND p.parent_id=%s" +
-            "   AND created_date > %s" +
-            "   AND created_date <= %s"
-            " GROUP BY 1" +
-            " ORDER BY 1 desc")
-        result = db.engine.execute(q, [place.id, begin_date, end_date])
-        return list(result)
+
+        q = db.session.query(
+                Door2DoorEntry.created_date.label("date"),
+                db.func.count(Door2DoorEntry.id).label("count")
+            ).filter(
+                place_parents.c.parent_id==place.id,
+                place_parents.c.child_id==Door2DoorEntry.place_id,
+                Door2DoorEntry.created_date > begin_date,
+                Door2DoorEntry.created_date <= end_date
+            ).group_by(Door2DoorEntry.created_date)
+
+
+        if 'campaign_id' in request.args:
+            q = q.filter(Door2DoorEntry.details['campaign_id'].astext == request.args['campaign_id'])
+        return [row._asdict() for row in q.all()]
 
     def get_total(self, place):
-        q = (
-            "SELECT count(*) as count FROM door2door_entry, place_parents p" +
-            " WHERE place_id=p.child_id" +
-            "   AND p.parent_id=%s"
+        print "get_total", place.id
+        q = db.session.query(
+                db.func.count(Door2DoorEntry.id).label("count")
+            ).filter(
+                place_parents.c.parent_id==place.id,
+                place_parents.c.child_id==Door2DoorEntry.place_id
             )
-        result = db.engine.execute(q, [place.id])
-        return result.fetchone()[0]
+
+        if 'campaign_id' in request.args:
+            q = q.filter(Door2DoorEntry.details['campaign_id'].astext == request.args['campaign_id'])
+
+        #return db.engine.execute(q).fetchone()[0]
+        return q.first()[0]
 
     def get_stats(self, place):
         pass
