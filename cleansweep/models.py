@@ -681,7 +681,7 @@ class Door2DoorEntry(db.Model):
         self.town = town
         self.donation = donation
         self.created = created
-        self.details = details or None
+        self.details = details or {}
 
     @staticmethod
     def find(**kw):
