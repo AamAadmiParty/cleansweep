@@ -669,6 +669,7 @@ class Door2DoorEntry(db.Model):
     town = db.Column(db.Text, nullable=False)
     donation = db.Column(db.Integer)
     created = db.Column(db.DateTime, default=datetime.datetime.now)
+    created_date = db.Column(db.Date, default=datetime.date.today, index=True)
 
     # any other optional details
     details = db.Column(JSON)
@@ -681,6 +682,7 @@ class Door2DoorEntry(db.Model):
         self.town = town
         self.donation = donation
         self.created = created
+        self.created_date = created and created.date()
         self.details = details or {}
 
     @staticmethod
