@@ -34,7 +34,7 @@ class Door2DoorStats(Stats):
             " WHERE place_id=p.child_id" +
             "   AND p.parent_id=%s"
             )
-        result = db.engine.execute(q, [place.id, begin_date, end_date])
+        result = db.engine.execute(q, [place.id])
         return result.fetchone()[0]
 
     def get_stats(self, place):
