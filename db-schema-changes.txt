@@ -1,0 +1,25 @@
+Log of changes to Database Schema
+==================================
+
+2016-08-26 Anand -- Added created_date column to door2door_entry table
+
+    ALTER TABLE door2door_entry ADD COLUMN created_date date
+    UPDATE door2door_entry set created_date = created::date
+
+2016-05-29 Raghav Added details JOSN column to pending_member table
+    
+    ALTER TABLE pending_member ADD COLUMN details JSON
+
+2016-02-09 Raghav Added created column to door2door_entry table
+
+    ALTER TABLE door2door_entry ADD COLUMN created timestamp without time zone default (current_timestamp at time zone 'utc')
+
+2016-01-15 Raghav Added door2door_entry table
+    
+    # SQLAlchemy will create it
+
+2015-12-01 Added document table
+
+    # SQLAlchemy will create it
+
+
