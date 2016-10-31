@@ -459,10 +459,10 @@ class Place(db.Model, Mixable):
         return Door2DoorEntry.query.filter(place_parents.c.child_id == Door2DoorEntry.place_id,
                                            place_parents.c.parent_id == self.id).count()
 
-    def get_door2door_count_cached(self):
+    def get_door2door_count_cached(self, force_update=False):
         key = "get_door2door_count.{}".format(self.key)
         value = cache.get(key)
-        if not value:
+        if not value or force_update:
             value = self.get_door2door_count()
             cache.set(key, value, expiry=360)
         return value
