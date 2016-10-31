@@ -8,6 +8,7 @@ from sqlalchemy.sql.expression import func
 from sqlalchemy import text
 from sqlalchemy.orm.attributes import flag_modified
 from .app import app
+from .core import cache
 import uuid
 
 db = SQLAlchemy(app)
@@ -457,6 +458,14 @@ class Place(db.Model, Mixable):
     def get_door2door_count(self):
         return Door2DoorEntry.query.filter(place_parents.c.child_id == Door2DoorEntry.place_id,
                                            place_parents.c.parent_id == self.id).count()
+
+    def get_door2door_count_cached(self):
+        key = "get_door2door_count.{}".format(self.key)
+        value = cache.get(key)
+        if not value:
+            value = self.get_door2door_count()
+            cache.set(key, value, expiry=360)
+        return value
 
     def __eq__(self, other):
         return isinstance(other, Place) and self.id == other.id
