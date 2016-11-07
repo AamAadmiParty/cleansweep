@@ -4,7 +4,7 @@ from wtforms import validators
 
 from ... import models
 
-from cleansweep.core.voter_lookup import voterid_valid
+from cleansweep.core.voter_lookup import get_voter
 
 
 class SignupForm(Form):
@@ -28,5 +28,11 @@ class SignupForm(Form):
 
         if self.voterid.data:
             voterid = self.voterid.data
-            if not voterid_valid(voterid):
+            voter = get_voter(voterid)
+            if not voter:
+                raise validators.ValidationError("Invalid Voter ID")
+
+            place_key = voter['key']
+            place = models.Place.find(place_key)
+            if not place:
                 raise validators.ValidationError("Invalid Voter ID")
