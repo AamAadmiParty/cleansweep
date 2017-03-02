@@ -32,10 +32,10 @@ class Loader:
         self.load_levels()
         self.load_dir(self.root)
 
-    def load_levels(self):
+    def load_levels(self, path=None):
         """Loads the levels from level.txt file.
         """
-        path = os.path.join(self.root, "level.txt")
+        path = path or os.path.join(self.root, "level.txt")
         for i, line in enumerate(open(path)):
             short_name, name = line.strip().split(None, 1)
             t = PlaceType.query.filter_by(short_name=short_name).first()
@@ -45,6 +45,7 @@ class Loader:
                 t.level = i
                 t.name = name
             db.session.add(t)
+            logger.info("adding level %s", t.name)
         db.session.commit()
 
     def load_dir(self, dir):
@@ -169,6 +170,11 @@ def main_loadfiles(filenames):
     loader = Loader(None)
     for f in filenames:
         loader.load_file(f)
+
+def main_loadlevels(filename):
+    db.create_all()
+    loader = Loader(None)
+    loader.load_levels(filename)
 
 def xinput(prompt, pattern=None):
     while True:

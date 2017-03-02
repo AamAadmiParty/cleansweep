@@ -66,6 +66,13 @@ def load_file(filename):
     from cleansweep.loaddata import main_loadfiles
     main_loadfiles([filename])
 
+@manager.command
+def load_levels(filename):
+    "Loads levels from the specified file."
+
+    from cleansweep.loaddata import main_loadlevels
+    main_loadlevels(filename)
+
 
 @manager.command
 def add_member(place, name, email, phone):
