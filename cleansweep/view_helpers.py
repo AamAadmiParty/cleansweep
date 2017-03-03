@@ -93,7 +93,7 @@ class PlaceConverter(BaseConverter):
     """
     def __init__(self, url_map, *items):
         super(PlaceConverter, self).__init__(url_map)
-        self.regex = '[A-Z0-9/]+'
+        self.regex = '[A-Z0-9/-]+'
 
     def to_python(self, value):
         place = Place.find(key=value)
