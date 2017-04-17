@@ -10,7 +10,7 @@ SECRET_KEY = "uXRlssdhCjiVyDZYiQlMFOYdmEvUoKHf"
 
 SQLALCHEMY_DATABASE_URI = "postgresql:///cleansweep"
 TEST_DATABASE_URI = "postgresql:///cleansweep_test"
-SQLALCHEMY_ECHO = False
+SQLALCHEMY_ECHO = True
 
 # This picks the right database on Heroku
 if 'DATABASE_URL' in os.environ:
