@@ -90,11 +90,24 @@ class SMSCuppaProvider(GenericSMSProvider):
         else:
             return self.PROMO_URL_TEMPLATE
 
+class MobiglitzProvider(GenericSMSProvider):
+    TRANS_URL_TEMPLATE = "http://trans.mobiglitz.com/sendsms.jsp?user={username}&password={password}&mobiles={phone_numbers}&sms={message}&senderid={senderid}&version=3"
+    PROMO_URL_TEMPLATE = "http://promo.mobiglitz.com/sendsms.jsp?user={username}&password={password}&mobiles={phone_numbers}&sms={message}&senderid={senderid}&version=3"
+
+    def get_url_template(self):
+        if self.parameters.get("mode") == "transactional":
+            return self.TRANS_URL_TEMPLATE
+        else:
+            return self.PROMO_URL_TEMPLATE
+
+
 def get_sms_provider(provider, **kwargs):
     if provider == 'pinacle':
         return PinacleSMSProvider(**kwargs)
     elif provider == 'smscuppa':
         return SMSCuppaProvider(**kwargs)
+    elif provider == 'mobiglitz':
+        return MobiglitzProvider(**kwargs)
     else:
         return GenericSMSProvider(**kwargs)
 
