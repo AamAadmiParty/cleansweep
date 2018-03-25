@@ -58,7 +58,7 @@ def api_place(place):
             "name": place.name,
             "parents": [dict(key=p.key, type=p.type.short_name, name=p.name) for p in parents]
         }
-        return Response(json.dumps(d), mimetype="application/json")
+        return Response(json.dumps({"contacts": d}), mimetype="application/json")
 
 @app.route("/api/place/<place:place>/contacts", methods=["GET", "POST"])
 @require_permission("write")
