@@ -1,8 +1,8 @@
 """Views of the admin panel.
 """
 from flask import (render_template, abort, url_for, redirect, request,
-                    make_response, session, flash, jsonify)
-from ..models import Member, db, PendingMember, Place
+                    make_response, session, flash)
+from ..models import Member, db, Place
 from .. import forms
 from ..app import app
 from ..voterlib import voterdb
@@ -11,7 +11,6 @@ from ..helpers import get_current_user
 from ..core import mailer, smslib
 from ..core.permissions import get_all_permissions, PermissionGroup
 from ..core.divisions import Division
-from ..voterlib import voterdb
 from ..plugins.audit import record_audit
 import json
 from collections import defaultdict
