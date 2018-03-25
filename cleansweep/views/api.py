@@ -90,11 +90,16 @@ def api_contact(place, contact_id):
     elif request.method == "PUT":
         data = request.get_json()
         data.pop('id', None)
-        contact.update(data)
+        contact.name = data.get("name", "")
+        contact.email = data.get("email", "")
+        contact.phone = data.get("phone", "")
+        contact.voterid = data.get("voterid", "")
+        contact.place = Place.find(key=data.get("place", place.key))
+        db.session.add(contact)
         db.session.commit()
         return jsonify(contact.dict())
     elif request.method == "DELETE":
-        contact.delete()
+        db.session.delete(contact)
         db.session.commit()
         return jsonify("")
 
