@@ -1,9 +1,10 @@
-from flask import (request, Response, jsonify)
+from flask import (request, Response, jsonify, abort)
 import json
 import requests
 from .. import helpers as h
 from ..app import app
 from ..models import Place, Member, db
+from ..view_helpers import require_permission
 from ..core import rbac, smslib
 from ..plugins.audit import record_audit
 from admin import get_sms_config
@@ -59,6 +60,43 @@ def api_place(place):
         }
         return Response(json.dumps(d), mimetype="application/json")
 
+@app.route("/api/place/<place:place>/contacts", methods=["GET", "POST"])
+@require_permission("write")
+def api_contacts(place):
+    if request.method == "GET":
+        contacts = place.get_contacts_iter()
+        data = []
+        for c in contacts:
+            data.append(c.dict())
+        return jsonify(data)
+    else:
+        from .admin import _load_contacts
+        def prepare_row(row):
+            # columns: name, email, phone, voterid, location
+            return [row['name'], row.get('email'), row.get('phone'), row.get("voterid"), row.get("place", place.key)]
+        data = [prepare_row(d) for d in request.get_json()]
+        _load_contacts(place, data)
+        return jsonify("")
+
+@app.route("/api/place/<place:place>/contacts/<int:contact_id>", methods=["GET", "PUT", "DELETE"])
+@require_permission("write")
+def api_contact(place, contact_id):
+    contact = place.get_contact(contact_id=contact_id)
+    if not contact:
+        abort(404)
+
+    if request.method == "GET":
+        return jsonify(contact.dict())
+    elif request.method == "PUT":
+        data = request.get_json()
+        data.pop('id', None)
+        contact.update(data)
+        db.session.commit()
+        return jsonify(contact.dict())
+    elif request.method == "DELETE":
+        contact.delete()
+        db.session.commit()
+        return jsonify("")
 
 @app.route("/api/authorize", methods=['POST'])
 def authorize():
