@@ -423,6 +423,13 @@ class Place(db.Model, Mixable):
                     place_parents.c.parent_id==self.id)
                 .limit(limit).offset(offset).all())
 
+    def get_contact(self, contact_id):
+        return (Contact.query.filter(
+                    place_parents.c.child_id==Contact.place_id,
+                    place_parents.c.parent_id==self.id,
+                    Contact.id==contact_id)
+                .first())
+
     def get_contact_count(self):
         return Contact.query.filter(
                     place_parents.c.child_id==Contact.place_id,
@@ -665,6 +672,15 @@ class Contact(db.Model):
         self.phone = phone
         self.voterid = voterid
 
+    def dict(self):
+        return {
+            "id": self.id,
+            "place": self.place.key,
+            "name": self.name,
+            "email": self.email,
+            "phone": self.phone,
+            "voterid": self.voterid
+        }
 
 class Door2DoorEntry(db.Model):
     __tablename__ = "door2door_entry"

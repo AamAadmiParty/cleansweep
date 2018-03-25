@@ -1,7 +1,7 @@
 """Views of the admin panel.
 """
 from flask import (render_template, abort, url_for, redirect, request,
-                    make_response, session, flash)
+                    make_response, session, flash, jsonify)
 from ..models import Member, db, PendingMember, Place
 from .. import forms
 from ..app import app
@@ -213,6 +213,35 @@ def admin_contacts_download(place):
     response.headers['Content-Type'] = 'application/vnd.ms-excel;charset=utf-8'
     response.headers['Content-Disposition'] = "attachment; filename='{0}-contacts.xls'".format(place.key)
     return response
+
+@app.route("/<place:place>/admin/contacts.json")
+@require_permission("write")
+def admin_contacts_json(place):
+    contacts = place.get_contacts_iter()
+    data = []
+    for c in contacts:
+        data.append([c.id, c.place.key, c.name, c.phone, c.email, c.voterid])
+    return jsonify(data)
+
+@app.route("/<place:place>/admin/contacts/<int:contact_id>.json", methods=["GET", "PUT", "DELETE"])
+@require_permission("write")
+def admin_contact_entry_json(place, contact_id):
+    contact = place.get_contact(contact_id=contact_id)
+    if not contact:
+        abort(404)
+
+    if request.method == "GET":
+        return jsonify(contact.dict())
+    elif request.method == "PUT":
+        data = request.get_json()
+        data.pop('id', None)
+        contact.update(data)
+        db.session.commit()
+        return jsonify(contact.dict())
+    elif request.method == "DELETE":
+        contact.delete()
+        db.session.commit()
+        return jsonify("")
 
 @app.route("/<place:place>/admin/contacts/add", methods=['GET', 'POST'])
 @require_permission("write")
