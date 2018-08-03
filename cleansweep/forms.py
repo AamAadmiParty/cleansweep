@@ -35,18 +35,18 @@ class SignupForm(Form):
         if models.PendingMember.find(phone=phone) or models.Member.find(phone=phone):
             raise validators.ValidationError('This phone number is already used')
 
-    def validate_voterid(self, field):
-        if not self.voterid.data:
-            ## Anand - April 2016: Temporarily disabled location search
-            # if not self.place.data and (self._place and self._place.type.short_name not in ['PB', 'PX', 'LB', 'AC']):
-            #     raise validators.ValidationError("You must provide either a valid voter ID or locality.")
-            raise validators.ValidationError("You must provide a valid voter ID.")
+    # def validate_voterid(self, field):
+    #     if not self.voterid.data:
+    #         ## Anand - April 2016: Temporarily disabled location search
+    #         # if not self.place.data and (self._place and self._place.type.short_name not in ['PB', 'PX', 'LB', 'AC']):
+    #         #     raise validators.ValidationError("You must provide either a valid voter ID or locality.")
+    #         raise validators.ValidationError("You must provide a valid voter ID.")
 
-        if self.voterid.data:
-            voterid = self.voterid.data
-            voterinfo = voter_lookup.get_voter(voterid)
-            if not voterinfo:
-                raise validators.ValidationError("Invalid Voter ID")
+    #     if self.voterid.data:
+    #         voterid = self.voterid.data
+    #         voterinfo = voter_lookup.get_voter(voterid)
+    #         if not voterinfo:
+    #             raise validators.ValidationError("Invalid Voter ID")
 
 class BaseAddVolunteerForm(Form):
     name = StringField('Name', [validators.Required()])
@@ -115,22 +115,22 @@ class AddVolunteerForm(BaseAddVolunteerForm):
             ## Commenting it out to avoid that issue.
             # self.booth.flags.disabled = True
 
-    def validate_voterid(self, field):
-        #SignupForm.validate_voterid(self, field)
-        if self.voterid.data:
-            voterid = self.voterid.data
-            if not voterid.strip():
-                return
-            voterinfo = voter_lookup.get_voter(voterid)
+    # def validate_voterid(self, field):
+    #     #SignupForm.validate_voterid(self, field)
+    #     if self.voterid.data:
+    #         voterid = self.voterid.data
+    #         if not voterid.strip():
+    #             return
+    #         voterinfo = voter_lookup.get_voter(voterid)
 
-            if not voterinfo:
-                raise validators.ValidationError("Invalid voter ID")
+    #         if not voterinfo:
+    #             raise validators.ValidationError("Invalid voter ID")
 
-            place = voterinfo and models.Place.find(voterinfo['key'])
-            if not place or not place.has_parent(self._place):
-                raise validators.ValidationError("This voter ID doesn't belong to the current place.")
+    #         place = voterinfo and models.Place.find(voterinfo['key'])
+    #         if not place or not place.has_parent(self._place):
+    #             raise validators.ValidationError("This voter ID doesn't belong to the current place.")
 
-            self._voterid_place = place
+    #         self._voterid_place = place
 
     def get_voterid_place(self):
         return self._voterid_place
