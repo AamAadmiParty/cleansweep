@@ -10,13 +10,15 @@ def get_voter(voterid):
     :param voterid: The voter id
     :return: JSON object with contains 'state', 'pb', 'ac' and 'voterid'
     """
-    payload = {'voterid': voterid}
-    resp = requests.get("http://voter-lookup.missionvistaar.in/search", params=payload)
-    voter_data = resp.json()
-    if voter_data:
-        d = voter_data[0]
-        d['key'] = '{}/AC{:03d}/PB{:04d}'.format(d['state'], d['ac'], d['pb'])
-        return voter_data[0]
+    # voter-lookup service is no longer available
+    return None
+    # payload = {'voterid': voterid}
+    # resp = requests.get("http://voter-lookup.missionvistaar.in/search", params=payload)
+    # voter_data = resp.json()
+    # if voter_data:
+    #     d = voter_data[0]
+    #     d['key'] = '{}/AC{:03d}/PB{:04d}'.format(d['state'], d['ac'], d['pb'])
+    #     return voter_data[0]
 
 
 def voterid_valid(voterid):
