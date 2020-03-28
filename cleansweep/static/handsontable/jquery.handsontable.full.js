@@ -4839,7 +4839,7 @@ Handsontable.helper.toString = function (obj) {
  * @param {Number} col
  * @param {String|Number} prop Row object property name
  * @param value Value to render (remember to escape unsafe HTML before inserting to DOM!)
- * @param {Object} cellProperties Cell properites (shared by cell renderer and editor)
+ * @param {Object} cellProperties Cell properties (shared by cell renderer and editor)
  */
 (function (Handsontable) {
   'use strict';
@@ -4899,7 +4899,7 @@ Handsontable.helper.toString = function (obj) {
    * @param {Number} col
    * @param {String|Number} prop Row object property name
    * @param value Value to render (remember to escape unsafe HTML before inserting to DOM!)
-   * @param {Object} cellProperties Cell properites (shared by cell renderer and editor)
+   * @param {Object} cellProperties Cell properties (shared by cell renderer and editor)
    */
   var AutocompleteRenderer = function (instance, TD, row, col, prop, value, cellProperties) {
 
@@ -4946,7 +4946,7 @@ Handsontable.helper.toString = function (obj) {
  * @param {Number} col
  * @param {String|Number} prop Row object property name
  * @param value Value to render (remember to escape unsafe HTML before inserting to DOM!)
- * @param {Object} cellProperties Cell properites (shared by cell renderer and editor)
+ * @param {Object} cellProperties Cell properties (shared by cell renderer and editor)
  */
 (function (Handsontable) {
 
@@ -5067,7 +5067,7 @@ Handsontable.helper.toString = function (obj) {
  * @param {Number} col
  * @param {String|Number} prop Row object property name
  * @param value Value to render (remember to escape unsafe HTML before inserting to DOM!)
- * @param {Object} cellProperties Cell properites (shared by cell renderer and editor)
+ * @param {Object} cellProperties Cell properties (shared by cell renderer and editor)
  */
 (function (Handsontable) {
 
